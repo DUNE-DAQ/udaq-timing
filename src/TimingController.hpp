@@ -9,10 +9,10 @@
  * received with this code.
  */
 
-#ifndef UDAQTIMING_SRC_TIMINGCONTROLLER_HPP_
-#define UDAQTIMING_SRC_TIMINGCONTROLLER_HPP_
+#ifndef TIMING_SRC_TIMINGCONTROLLER_HPP_
+#define TIMING_SRC_TIMINGCONTROLLER_HPP_
 
-#include "udaqtiming/timingcmd/Structs.hpp"
+#include "timing/timingcmd/Structs.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace dunedaq {
-namespace udaqtiming {
+namespace timing {
 
 /**
  * @brief TimingController is a DAQModule implementation that
@@ -68,11 +68,11 @@ protected:
   virtual void sendHwCmd(const std::string& device, const timingcmd::TimingCmdId& cmdId);
 
 };
-} // namespace udaqtiming
+} // namespace timing
 
 } // namespace dunedaq
 
-#endif // UDAQTIMING_SRC_TIMINGCONTROLLER_HPP_
+#endif // TIMING_SRC_TIMINGCONTROLLER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

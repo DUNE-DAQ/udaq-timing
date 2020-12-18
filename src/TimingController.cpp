@@ -9,8 +9,8 @@
 
 #include "TimingController.hpp"
 
-#include "udaqtiming/timingcmd/Structs.hpp"
-#include "udaqtiming/timingcmd/Nljs.hpp"
+#include "timing/timingcmd/Structs.hpp"
+#include "timing/timingcmd/Nljs.hpp"
 
 #include "CommonIssues.hpp"
 
@@ -32,7 +32,7 @@
 #define TRACE_NAME "TimingController" // NOLINT
 
 namespace dunedaq {
-namespace udaqtiming {
+namespace timing {
 
 TimingController::TimingController(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
@@ -96,7 +96,7 @@ TimingController::sendHwCmd(const std::string& device, const timingcmd::TimingCm
   }
 }
 
-} // namespace udaqtiming 
+} // namespace timing 
 } // namespace dunedaq
 
 // Local Variables:

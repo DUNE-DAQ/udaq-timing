@@ -1,5 +1,5 @@
 local moo = import "moo.jsonnet";
-local ns = "dunedaq.udaqtiming.timingmastercontroller";
+local ns = "dunedaq.timing.timingmastercontroller";
 local s = moo.oschema.schema(ns);
 
 local types = {

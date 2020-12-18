@@ -9,11 +9,11 @@
 
 #include "TimingPartitionController.hpp"
 
-#include "udaqtiming/timingpartitioncontroller/Structs.hpp"
-#include "udaqtiming/timingpartitioncontroller/Nljs.hpp"
+#include "timing/timingpartitioncontroller/Structs.hpp"
+#include "timing/timingpartitioncontroller/Nljs.hpp"
 
-#include "udaqtiming/timingcmd/Structs.hpp"
-#include "udaqtiming/timingcmd/Nljs.hpp"
+#include "timing/timingcmd/Structs.hpp"
+#include "timing/timingcmd/Nljs.hpp"
 
 #include "CommonIssues.hpp"
 
@@ -35,10 +35,10 @@
 #define TRACE_NAME "TimingPartitionController" // NOLINT
 
 namespace dunedaq {
-namespace udaqtiming {
+namespace timing {
 
 TimingPartitionController::TimingPartitionController(const std::string& name)
-  : dunedaq::udaqtiming::TimingController(name)
+  : dunedaq::timing::TimingController(name)
 {
   register_command("conf", &TimingPartitionController::do_configure);
   //register_command("start", &TimingPartitionController::do_start);
@@ -111,10 +111,10 @@ TimingPartitionController::do_partitionPrintStatus(const nlohmann::json&)
   sendHwCmd(cfg_.device, "print_status");
 }
 
-} // namespace udaqtiming 
+} // namespace timing 
 } // namespace dunedaq
 
-DEFINE_DUNE_DAQ_MODULE(dunedaq::udaqtiming::TimingPartitionController)
+DEFINE_DUNE_DAQ_MODULE(dunedaq::timing::TimingPartitionController)
 
 // Local Variables:
 // c-basic-offset: 2

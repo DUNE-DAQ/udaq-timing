@@ -1,4 +1,4 @@
-// hand written helpers to make object compliant with udaqtiming-TimingPartitionController-schema
+// hand written helpers to make object compliant with timing-TimingPartitionController-schema
 {
     // The internally known name of the queue used
     hwCmdOutQueue: "hardware_commands_out",

@@ -1,4 +1,4 @@
-namespace dunedaq::udaqtiming {
+namespace dunedaq::timing {
 
 template<typename Child>
 void
@@ -13,4 +13,4 @@ TimingHardwareManager::register_timing_hw_command(const std::string& name, void 
   }
 }
 
-} // namespace dunedaq::udaqtiming
+} // namespace dunedaq::timing

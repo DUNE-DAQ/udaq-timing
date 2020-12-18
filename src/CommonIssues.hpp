@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef UDAQTIMING_SRC_COMMONISSUES_HPP_
-#define UDAQTIMING_SRC_COMMONISSUES_HPP_
+#ifndef TIMING_SRC_COMMONISSUES_HPP_
+#define TIMING_SRC_COMMONISSUES_HPP_
 
 #include "appfwk/DAQModule.hpp"
 #include "ers/Issue.h"
@@ -19,14 +19,14 @@
 
 namespace dunedaq {
 
-ERS_DECLARE_ISSUE_BASE(udaqtiming,
+ERS_DECLARE_ISSUE_BASE(timing,
                        ProgressUpdate,
                        appfwk::GeneralDAQModuleIssue,
                        message,
                        ((std::string)name),
                        ((std::string)message))
 
-ERS_DECLARE_ISSUE_BASE(udaqtiming,
+ERS_DECLARE_ISSUE_BASE(timing,
                        InvalidQueueFatalError,
                        appfwk::GeneralDAQModuleIssue,
                        "The " << queueType << " queue was not successfully created.",
@@ -35,4 +35,4 @@ ERS_DECLARE_ISSUE_BASE(udaqtiming,
 
 } // namespace dunedaq
 
-#endif // UDAQTIMING_SRC_COMMONISSUES_HPP_
+#endif // TIMING_SRC_COMMONISSUES_HPP_

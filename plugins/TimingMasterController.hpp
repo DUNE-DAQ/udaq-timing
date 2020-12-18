@@ -9,12 +9,12 @@
  * received with this code.
  */
 
-#ifndef UDAQTIMING_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
-#define UDAQTIMING_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
+#ifndef TIMING_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
+#define TIMING_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
 
-#include "udaqtiming/timingcmd/Structs.hpp"
+#include "timing/timingcmd/Structs.hpp"
 
-#include "udaqtiming/timingmastercontroller/Structs.hpp"
+#include "timing/timingmastercontroller/Structs.hpp"
 
 #include "TimingController.hpp"
 
@@ -30,13 +30,13 @@
 #include <vector>
 
 namespace dunedaq {
-namespace udaqtiming {
+namespace timing {
 
 /**
  * @brief TimingMasterController is a DAQModule implementation that
  * provides a control interface for timing master hardware.
  */
-class TimingMasterController : public dunedaq::udaqtiming::TimingController
+class TimingMasterController : public dunedaq::timing::TimingController
 {
 public:
   /**
@@ -67,11 +67,10 @@ private:
   timingmastercontroller::Conf cfg_;
 
 };
-} // namespace udaqtiming
-
+} // namespace timing
 } // namespace dunedaq
 
-#endif // UDAQTIMING_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
+#endif // TIMING_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

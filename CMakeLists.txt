@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(udaqtiming VERSION 0.0.1)
+project(timing VERSION 0.0.1)
 
 find_package(daq-cmake REQUIRED)
 
@@ -20,8 +20,8 @@ daq_add_library(TimingController.cpp LINK_LIBRARIES ers::ers appfwk::appfwk)
 
 ##############################################################################
 daq_add_plugin(TimingHardwareManager duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk ${LIST_OF_TIMING_SOFTWARE_LIBS})
-daq_add_plugin(TimingMasterController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk udaqtiming)
-daq_add_plugin(TimingPartitionController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk udaqtiming)
+daq_add_plugin(TimingMasterController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
+daq_add_plugin(TimingPartitionController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
 
 
 ##############################################################################

@@ -9,11 +9,11 @@
 
 #include "TimingHardwareManager.hpp"
 
-#include "udaqtiming/timinghardwaremanager/Structs.hpp"
-#include "udaqtiming/timinghardwaremanager/Nljs.hpp"
+#include "timing/timinghardwaremanager/Structs.hpp"
+#include "timing/timinghardwaremanager/Nljs.hpp"
 
-#include "udaqtiming/timingcmd/Structs.hpp"
-#include "udaqtiming/timingcmd/Nljs.hpp"
+#include "timing/timingcmd/Structs.hpp"
+#include "timing/timingcmd/Nljs.hpp"
 
 #include "CommonIssues.hpp"
 
@@ -36,7 +36,7 @@
 #define TRACE_NAME "TimingHardwareManager" // NOLINT
 
 namespace dunedaq {
-namespace udaqtiming {
+namespace timing {
 
 TimingHardwareManager::TimingHardwareManager(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
@@ -202,10 +202,10 @@ TimingHardwareManager::executePartitionCommand(const timingcmd::TimingCmd& cmd)
   }
 }
 
-} // namespace udaqtiming 
+} // namespace timing 
 } // namespace dunedaq
 
-DEFINE_DUNE_DAQ_MODULE(dunedaq::udaqtiming::TimingHardwareManager)
+DEFINE_DUNE_DAQ_MODULE(dunedaq::timing::TimingHardwareManager)
 
 // Local Variables:
 // c-basic-offset: 2

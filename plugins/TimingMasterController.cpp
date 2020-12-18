@@ -9,11 +9,11 @@
 
 #include "TimingMasterController.hpp"
 
-#include "udaqtiming/timingmastercontroller/Structs.hpp"
-#include "udaqtiming/timingmastercontroller/Nljs.hpp"
+#include "timing/timingmastercontroller/Structs.hpp"
+#include "timing/timingmastercontroller/Nljs.hpp"
 
-#include "udaqtiming/timingcmd/Structs.hpp"
-#include "udaqtiming/timingcmd/Nljs.hpp"
+#include "timing/timingcmd/Structs.hpp"
+#include "timing/timingcmd/Nljs.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
@@ -33,10 +33,10 @@
 #define TRACE_NAME "TimingMasterController" // NOLINT
 
 namespace dunedaq {
-namespace udaqtiming {
+namespace timing {
 
 TimingMasterController::TimingMasterController(const std::string& name)
-  : dunedaq::udaqtiming::TimingController(name)
+  : dunedaq::timing::TimingController(name)
 {
   register_command("conf", &TimingMasterController::do_configure);
   //register_command("start", &TimingMasterController::do_start);
@@ -74,10 +74,10 @@ TimingMasterController::do_masterPrintStatus(const nlohmann::json&)
   sendHwCmd(cfg_.device, "print_status");
 }
 
-} // namespace udaqtiming 
+} // namespace timing 
 } // namespace dunedaq
 
-DEFINE_DUNE_DAQ_MODULE(dunedaq::udaqtiming::TimingMasterController)
+DEFINE_DUNE_DAQ_MODULE(dunedaq::timing::TimingMasterController)
 
 // Local Variables:
 // c-basic-offset: 2

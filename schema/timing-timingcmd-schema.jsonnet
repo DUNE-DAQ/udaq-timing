@@ -1,7 +1,7 @@
 local moo = import "moo.jsonnet";
 
 // A schema builder in the given path (namespace)
-local ns = "dunedaq.udaqtiming.timingcmd";
+local ns = "dunedaq.timing.timingcmd";
 local s = moo.oschema.schema(ns);
 
 // A temporary schema construction context.

@@ -9,11 +9,11 @@
  * received with this code.
  */
 
-#ifndef UDAQTIMING_PLUGINS_TIMINGHARDWAREMANAGER_HPP_
-#define UDAQTIMING_PLUGINS_TIMINGHARDWAREMANAGER_HPP_
+#ifndef TIMING_PLUGINS_TIMINGHARDWAREMANAGER_HPP_
+#define TIMING_PLUGINS_TIMINGHARDWAREMANAGER_HPP_
 
-#include "udaqtiming/timingcmd/Structs.hpp"
-#include "udaqtiming/timinghardwaremanager/Structs.hpp"
+#include "timing/timingcmd/Structs.hpp"
+#include "timing/timinghardwaremanager/Structs.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -32,7 +32,7 @@
 #include <map>
 
 namespace dunedaq {
-namespace udaqtiming {
+namespace timing {
 
 /**
  * @brief TimingHardwareManager creates vectors of ints and writes
@@ -86,12 +86,12 @@ private:
   std::unique_ptr<uhal::ConnectionManager> connectionManager_;
 
 };
-} // namespace udaqtiming
+} // namespace timing
 } // namespace dunedaq
 
 #include "detail/TimingHardwareManager.hxx"
 
-#endif // UDAQTIMING_PLUGINS_TIMINGHARDWAREMANAGER_HPP_
+#endif // TIMING_PLUGINS_TIMINGHARDWAREMANAGER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

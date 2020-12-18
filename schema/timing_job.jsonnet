@@ -1,11 +1,11 @@
 local moo = import "moo.jsonnet";
 
 local cmd = import "appfwk-cmd-make.jsonnet";
-local thi = import "udaqtiming-TimingHardwareManager-make.jsonnet";
-local tmc = import "udaqtiming-TimingMasterController-make.jsonnet";
-local tpc = import "udaqtiming-TimingPartitionController-make.jsonnet";
+local thi = import "timing-TimingHardwareManager-make.jsonnet";
+local tmc = import "timing-TimingMasterController-make.jsonnet";
+local tpc = import "timing-TimingPartitionController-make.jsonnet";
 
-local tcmd = import "udaqtiming-timingcmd-make.jsonnet";
+local tcmd = import "timing-timingcmd-make.jsonnet";
 
 local qname = "hardware_commands";     // the name of the single queue in this job
 
