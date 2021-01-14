@@ -18,28 +18,31 @@ Timing DAQModules.
 1. If not already sourced, source `daq-buildtools/setup_dbt.sh`.
 2. Configure the DUNE DAQ run environment by running the command `setup_runtime_environment`.
 3. The timing core library uses the environment variable `PDT_TESTS` to find the uhal connnections file, and PLL configuration files. Set `PDT_TESTS` to point to your instance of the directory, `timing-board-software/tests/`.
-4. Clone a copy of the DUNE DAQ `appfwk` repository, https://github.com/DUNE-DAQ/appfwk. To make the instructions in the next step "copy and paste" compatible, clone the repository in the directory which contains the `daq-buildtools` directory.
-5. The file `timing/schema/timing_job.jsonnet` describes the timing commands available to be injected via the DUNE DAQ `restcmd` interface. To translate the `timing_job.jsonnet` file into a JSON file, navigate to `timning/schema` and execute the following command:
+4. To see the text output of status commands, set the environment variable `TRACE_LVLS` to `512`.
+5. Clone a copy of the DUNE DAQ `appfwk` repository, https://github.com/DUNE-DAQ/appfwk. To make the instructions in the next step "copy and paste" compatible, clone the repository in the directory which contains the `daq-buildtools` directory.
+6. The file `timing/schema/timing_job.jsonnet` describes the timing commands available to be injected via the DUNE DAQ `restcmd` interface. To translate the `timing_job.jsonnet` file into a JSON file, navigate to `timning/schema` and execute the following command:
 ```
 moo -M ../../../../appfwk/schema compile timing_job.jsonnet > timing_job.json
 ```
 where `../../../../appfwk/schema`, is the schema directory of your instance of the DUNE DAQ `appfwk` repository.
-6. Start an instance of the DUNE DAQ application, with a `restcmd` interface listening on the localhost port 12345, by executing the command
+
+7. Start an instance of the DUNE DAQ application, with a `restcmd` interface listening on the localhost port 12345, by executing the command
 ```
 daq_application --commandFacility rest://localhost:12345
 ```
-7. Start another session on the machine on which the DUNE DAQ application is running, and source `daq-buildtools/setup_dbt.sh`.
-8. Navigate to your work area, and execute the commands below.
+8. Start another session on the machine on which the DUNE DAQ application is running, and source `daq-buildtools/setup_dbt.sh`.
+9. Navigate to your work area, and execute the commands below.
 ```
 setup_runtime_environment
 curl -O https://raw.githubusercontent.com/DUNE-DAQ/restcmd/dunedaq-v2.0.0/scripts/send-restcmd.py
 ```
-9. To start the transmit end of the `restcmd` inteface, execute the command
+10. To start the transmit end of the `restcmd` inteface, execute the command
 ```
 python ./send-restcmd.py --interactive --file ./sourcecode/timing/schema/timing_job.json
 ```
 At this point you should see the list of available commands, e.g. `init`, `start`, `conf`, `master_reset`.
-10. To send a command, type the command you wish to send and press return. The sequence of commands to configure the timing DAQModules, and the reset the master hardware (TLU) is itemised below.
+
+11. To send a command, type the command you wish to send and press return. The sequence of commands to configure the timing DAQModules, and the reset the master hardware (TLU) is itemised below.
 ```
 init
 conf
