@@ -30,6 +30,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <regex>
 
 namespace dunedaq {
 namespace timing {
@@ -86,6 +87,17 @@ private:
   std::unique_ptr<uhal::ConnectionManager> connectionManager_;
 
 };
+
+void resolve_environment_variables(std::string& input_string) {
+    static std::regex env_var_pattern( "\\$\\{([^}]+)\\}" );
+    std::smatch match;
+    while ( std::regex_search( input_string, match, env_var_pattern ) ) {
+        const char * s = getenv( match[1].str().c_str() );
+        const std::string env_var( s == NULL ? "" : s );
+        input_string.replace( match[0].first, match[0].second, env_var );
+    }
+}
+
 } // namespace timing
 } // namespace dunedaq
 

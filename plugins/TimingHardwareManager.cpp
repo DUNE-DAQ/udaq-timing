@@ -73,8 +73,12 @@ TimingHardwareManager::do_configure(const nlohmann::json& obj)
   timinghardwaremanager::from_json(obj,cfg_);
   
   connectinsFile_ = cfg_.connectionsFile;
-  TLOG(TLVL_TRACE) << get_name() << "conf: con. file: " << connectinsFile_;
+  
+  ERS_INFO( get_name() << "conf: con. file before env var expansion: " << connectinsFile_);
+  resolve_environment_variables(connectinsFile_);
+  ERS_INFO( get_name() << "conf: con. file after env var expansion:  " << connectinsFile_);
 
+  // uhal log level to be passed in as parameter?
   uhal::setLogLevelTo(uhal::Notice());  
   connectionManager_ = std::make_unique< uhal::ConnectionManager >("file://"+connectinsFile_);
 }
