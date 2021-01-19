@@ -25,6 +25,7 @@
 #include "uhal/ConnectionManager.hpp"
 
 #include "pdt/PDIMasterDesign.hpp"
+#include "pdt/EndpointDesign.hpp"
 
 #include <memory>
 #include <string>
@@ -77,13 +78,14 @@ private:
 
   void executeMasterCommand(const timingcmd::TimingCmd& cmd);
   void executePartitionCommand(const timingcmd::TimingCmd& cmd);
+  void executeEndpointCommand(const timingcmd::TimingCmd& cmd);
 
   std::map<timingcmd::TimingHwCmdId, std::function<void(const timingcmd::TimingCmd)>> timingHwCmdMap_;
 
   template<typename Child>
   void register_timing_hw_command(const std::string& name, void (Child::*f)(const timingcmd::TimingCmd&));
 
-  std::string connectinsFile_;
+  std::string connections_file_;
   std::unique_ptr<uhal::ConnectionManager> connectionManager_;
 
 };

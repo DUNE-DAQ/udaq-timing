@@ -39,8 +39,8 @@ TimingMasterController::TimingMasterController(const std::string& name)
   : dunedaq::timing::TimingController(name)
 {
   register_command("conf", &TimingMasterController::do_configure);
-  //register_command("start", &TimingMasterController::do_start);
-  //register_command("stop",  &TimingMasterController::do_stop);
+  register_command("start", &TimingMasterController::do_start);
+  register_command("stop",  &TimingMasterController::do_stop);
   register_command("master_reset", &TimingMasterController::do_masterReset);
   register_command("master_set_timestamp", &TimingMasterController::do_masterSetTimestamp);
   register_command("master_print_status", &TimingMasterController::do_masterPrintStatus);

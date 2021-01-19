@@ -55,8 +55,8 @@ public:
 protected:
   // Commands
   virtual void do_configure(const nlohmann::json& obj) = 0;
-  //virtual void do_start(const nlohmann::json& obj);
-  //virtual void do_stop(const nlohmann::json& obj);
+  virtual void do_start(const nlohmann::json& obj);
+  virtual void do_stop(const nlohmann::json& obj);
 
   // Configuration
   using sink_t = dunedaq::appfwk::DAQSink<timingcmd::TimingHwCmd>;

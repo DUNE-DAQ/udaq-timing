@@ -51,6 +51,7 @@ TimingHardwareManager::TimingHardwareManager(const std::string& name)
   
   register_timing_hw_command("mastercmd", &TimingHardwareManager::executeMasterCommand);
   register_timing_hw_command("partitioncmd", &TimingHardwareManager::executePartitionCommand);
+  register_timing_hw_command("endpointcmd", &TimingHardwareManager::executeEndpointCommand);
 }
 
 void TimingHardwareManager::init(const nlohmann::json& obj)
@@ -72,15 +73,15 @@ TimingHardwareManager::do_configure(const nlohmann::json& obj)
 {
   timinghardwaremanager::from_json(obj,cfg_);
   
-  connectinsFile_ = cfg_.connectionsFile;
+  connections_file_ = cfg_.connectionsFile;
   
-  ERS_INFO( get_name() << "conf: con. file before env var expansion: " << connectinsFile_);
-  resolve_environment_variables(connectinsFile_);
-  ERS_INFO( get_name() << "conf: con. file after env var expansion:  " << connectinsFile_);
+  ERS_INFO( get_name() << "conf: con. file before env var expansion: " << connections_file_);
+  resolve_environment_variables(connections_file_);
+  ERS_INFO( get_name() << "conf: con. file after env var expansion:  " << connections_file_);
 
   // uhal log level to be passed in as parameter?
   uhal::setLogLevelTo(uhal::Notice());  
-  connectionManager_ = std::make_unique< uhal::ConnectionManager >("file://"+connectinsFile_);
+  connectionManager_ = std::make_unique< uhal::ConnectionManager >("file://"+connections_file_);
 }
 
 void
@@ -203,6 +204,35 @@ TimingHardwareManager::executePartitionCommand(const timingcmd::TimingCmd& cmd)
     TLOG(TLVL_TRACE) << std::endl << partition.getStatus();
   } else {
     ERS_LOG(get_name() << ": unrecognised partition command: " << cmd.id);
+  }
+}
+
+void
+TimingHardwareManager::executeEndpointCommand(const timingcmd::TimingCmd& cmd)
+{
+  auto endpointDevice = connectionManager_->getDevice(cmd.device);
+  auto endpointDesign = endpointDevice.getNode<pdt::EndpointDesign<pdt::FMCIONode>>("");
+
+  std::string cmdId = cmd.id;
+
+  if (cmdId == "reset") {
+    ERS_LOG( get_name() << ": ept device: " << cmd.device << " reset");
+    endpointDesign.reset();
+  } else if (cmdId == "enable") {
+    ERS_LOG( get_name() << ": ept device: " << cmd.device << " enable");
+    endpointDesign.getEndpointNode(0).enable();
+  } else if (cmdId == "disable") {
+    ERS_LOG( get_name() << ": ept device: " << cmd.device << " disable");
+    endpointDesign.getEndpointNode(0).disable();
+  } else if (cmdId == "print_timestamp") {
+    ERS_LOG( get_name() << ": ept " << cmd.device << " print timestamp");
+    uint64_t timestamp = endpointDesign.getEndpointNode(0).readTimestamp();
+    ERS_INFO( get_name() << ": ept device:" << cmd.device << " timestamp: " << pdt::formatRegValue(timestamp) );
+  } else if (cmdId == "print_status") {
+    ERS_LOG( get_name() << ": ept device: " << cmd.device << " print status");
+    ERS_INFO( std::endl << endpointDesign.getStatus() );
+  } else {
+    ERS_LOG(get_name() << ": unrecognised (endpoint) device command: " << cmd.id);
   }
 }
 

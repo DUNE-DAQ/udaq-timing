@@ -41,8 +41,8 @@ TimingPartitionController::TimingPartitionController(const std::string& name)
   : dunedaq::timing::TimingController(name)
 {
   register_command("conf", &TimingPartitionController::do_configure);
-  //register_command("start", &TimingPartitionController::do_start);
-  //register_command("stop",  &TimingPartitionController::do_stop);
+  register_command("start", &TimingPartitionController::do_start);
+  register_command("stop",  &TimingPartitionController::do_stop);
   register_command("partition_configure", &TimingPartitionController::do_partitionConfigure);
   register_command("partition_enable", &TimingPartitionController::do_partitionEnable);
   register_command("partition_disable", &TimingPartitionController::do_partitionDisable);

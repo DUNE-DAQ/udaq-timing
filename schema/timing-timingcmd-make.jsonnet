@@ -28,4 +28,10 @@ local appfwkcmd = import "appfwk-cmd-make.jsonnet";
     partition_disable_triggers(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("partition_disable_triggers", addr),
     partition_print_status(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("partition_print_status", addr),
 
+    endpoint_reset(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("endpoint_reset", addr),
+    endpoint_enable(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("endpoint_enable", addr),
+    endpoint_disable(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("endpoint_disable", addr),
+    endpoint_print_status(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("endpoint_print_status", addr),
+    endpoint_print_timestamp(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("endpoint_print_timestamp", addr),
+
 }

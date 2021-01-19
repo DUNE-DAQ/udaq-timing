@@ -57,19 +57,15 @@ TimingController::init( const data_t& obj)
   }
 }
 
-//void
-//TimingController::do_start(const nlohmann::json& obj)
-//{
-//  //TLOG(TLVL_INFO) << get_name() << ": Entering do_start() method";
-//  //TLOG(TLVL_INFO) << get_name() << ": Exiting do_start() method";
-//}
-//
-//void
-//TimingController::do_stop(const nlohmann::json& obj)
-//{
-//  //TLOG(TLVL_INFO) << get_name() << ": Entering do_stop() method";
-//  //TLOG(TLVL_INFO) << get_name() << ": Exiting do_stop() method";
-//}
+void
+TimingController::do_start(const nlohmann::json&)
+{
+}
+
+void
+TimingController::do_stop(const nlohmann::json&)
+{
+}
 
 void
 TimingController::sendHwCmd(const std::string& device, const timingcmd::TimingCmdId& cmdId)
