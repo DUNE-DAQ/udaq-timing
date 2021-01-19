@@ -60,16 +60,15 @@ protected:
 
   // Configuration
   using sink_t = dunedaq::appfwk::DAQSink<timingcmd::TimingHwCmd>;
-  std::unique_ptr<sink_t> hwCommandOutQueue_;
-  std::chrono::milliseconds hwCmdOutQueueTimeout_;
+  std::unique_ptr<sink_t> m_hw_command_out_queue_;
+  std::chrono::milliseconds m_hw_cmd_out_queue_timeout_;
 
-  timingcmd::TimingHwCmdId hwCmdId_;
+  timingcmd::TimingHwCmdId m_hw_cmd_id_;
 
-  virtual void sendHwCmd(const std::string& device, const timingcmd::TimingCmdId& cmdId);
+  virtual void send_hw_cmd(const std::string& device, const timingcmd::TimingCmdId& cmd_id);
 
 };
 } // namespace timing
-
 } // namespace dunedaq
 
 #endif // TIMING_SRC_TIMINGCONTROLLER_HPP_

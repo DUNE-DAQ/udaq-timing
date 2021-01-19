@@ -29,11 +29,6 @@
 #include <string>
 #include <vector>
 
-/**
- * @brief Name used by TRACE TLOG calls from this source file
- */
-#define TRACE_NAME "TimingPartitionController" // NOLINT
-
 namespace dunedaq {
 namespace timing {
 
@@ -43,72 +38,72 @@ TimingPartitionController::TimingPartitionController(const std::string& name)
   register_command("conf", &TimingPartitionController::do_configure);
   register_command("start", &TimingPartitionController::do_start);
   register_command("stop",  &TimingPartitionController::do_stop);
-  register_command("partition_configure", &TimingPartitionController::do_partitionConfigure);
-  register_command("partition_enable", &TimingPartitionController::do_partitionEnable);
-  register_command("partition_disable", &TimingPartitionController::do_partitionDisable);
-  register_command("partition_start", &TimingPartitionController::do_partitionStart);
-  register_command("partition_stop", &TimingPartitionController::do_partitionStop);
-  register_command("partition_enable_triggers", &TimingPartitionController::do_partitionEnableTriggers);
-  register_command("partition_disable_triggers", &TimingPartitionController::do_partitionDisableTriggers);
-  register_command("partition_print_status", &TimingPartitionController::do_partitionPrintStatus);
+  register_command("partition_configure", &TimingPartitionController::do_partition_configure);
+  register_command("partition_enable", &TimingPartitionController::do_partition_enable);
+  register_command("partition_disable", &TimingPartitionController::do_partition_disable);
+  register_command("partition_start", &TimingPartitionController::do_partition_start);
+  register_command("partition_stop", &TimingPartitionController::do_partition_stop);
+  register_command("partition_enable_triggers", &TimingPartitionController::do_partition_enable_triggers);
+  register_command("partition_disable_triggers", &TimingPartitionController::do_partition_disable_triggers);
+  register_command("partition_print_status", &TimingPartitionController::do_partition_print_status);
 }
 
 void
 TimingPartitionController::do_configure(const nlohmann::json& obj)
 {
-  hwCmdId_ = "partitioncmd";
+  m_hw_cmd_id_ = "partitioncmd";
 
   timingpartitioncontroller::from_json(obj,cfg_);
   
-  TLOG(TLVL_TRACE) << get_name() << " conf: managed partition, device: " << cfg_.partId << ", " << cfg_.device;
+  ERS_LOG( get_name() << " conf: managed partition, device: " << cfg_.device << ", part id: " << cfg_.partId );
 }
 
 void
-TimingPartitionController::do_partitionConfigure(const nlohmann::json&)
+TimingPartitionController::do_partition_configure(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "configure");
+  send_hw_cmd(cfg_.device, "configure");
 }
 
 void
-TimingPartitionController::do_partitionEnable(const nlohmann::json&)
+TimingPartitionController::do_partition_enable(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "enable");
+  send_hw_cmd(cfg_.device, "enable");
 }
 
 void
-TimingPartitionController::do_partitionDisable(const nlohmann::json&)
+TimingPartitionController::do_partition_disable(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "disable");
+  send_hw_cmd(cfg_.device, "disable");
 }
 
 void
-TimingPartitionController::do_partitionStart(const nlohmann::json&)
+TimingPartitionController::do_partition_start(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "start");
+  send_hw_cmd(cfg_.device, "start");
 }
 
 void
-TimingPartitionController::do_partitionStop(const nlohmann::json&)
+TimingPartitionController::do_partition_stop(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "stop");
+  send_hw_cmd(cfg_.device, "stop");
 }
 
 void
-TimingPartitionController::do_partitionEnableTriggers(const nlohmann::json&)
+TimingPartitionController::do_partition_enable_triggers(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "enable_triggers");
+  send_hw_cmd(cfg_.device, "enable_triggers");
 }
 
 void
-TimingPartitionController::do_partitionDisableTriggers(const nlohmann::json&)
+TimingPartitionController::do_partition_disable_triggers(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "disable_triggers");
+  send_hw_cmd(cfg_.device, "disable_triggers");
 }
 
 void
-TimingPartitionController::do_partitionPrintStatus(const nlohmann::json&)
+TimingPartitionController::do_partition_print_status(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "print_status");
+  send_hw_cmd(cfg_.device, "print_status");
 }
 
 } // namespace timing 

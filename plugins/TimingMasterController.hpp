@@ -59,9 +59,9 @@ private:
   void do_configure(const nlohmann::json& obj) override;
 
   // timing master commands
-  void do_masterReset(const nlohmann::json&);
-  void do_masterSetTimestamp(const nlohmann::json&);
-  void do_masterPrintStatus(const nlohmann::json&);
+  void do_master_reset(const nlohmann::json&);
+  void do_master_set_timestamp(const nlohmann::json&);
+  void do_master_print_status(const nlohmann::json&);
 
   // Configuration
   timingmastercontroller::Conf cfg_;

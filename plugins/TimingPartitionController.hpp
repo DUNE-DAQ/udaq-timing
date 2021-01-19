@@ -58,14 +58,14 @@ private:
   void do_configure(const nlohmann::json& obj) override;
 
   // timing partition commands
-  void do_partitionConfigure(const nlohmann::json&);
-  void do_partitionEnable(const nlohmann::json&);
-  void do_partitionDisable(const nlohmann::json&);
-  void do_partitionStart(const nlohmann::json&);
-  void do_partitionStop(const nlohmann::json&);
-  void do_partitionEnableTriggers(const nlohmann::json&);
-  void do_partitionDisableTriggers(const nlohmann::json&);
-  void do_partitionPrintStatus(const nlohmann::json&);
+  void do_partition_configure(const nlohmann::json&);
+  void do_partition_enable(const nlohmann::json&);
+  void do_partition_disable(const nlohmann::json&);
+  void do_partition_start(const nlohmann::json&);
+  void do_partition_stop(const nlohmann::json&);
+  void do_partition_enable_triggers(const nlohmann::json&);
+  void do_partition_disable_triggers(const nlohmann::json&);
+  void do_partition_print_status(const nlohmann::json&);
 
   // Configuration
   timingpartitioncontroller::Conf cfg_;

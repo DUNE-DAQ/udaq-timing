@@ -73,20 +73,20 @@ private:
   // Configuration
   timinghardwaremanager::Conf cfg_;
   using source_t = dunedaq::appfwk::DAQSource<timingcmd::TimingHwCmd>;
-  std::unique_ptr<source_t> hwCommandInQueue_;
-  std::chrono::milliseconds queueTimeout_;
+  std::unique_ptr<source_t> m_hw_command_in_queue_;
+  std::chrono::milliseconds m_queue_timeout_;
 
-  void executeMasterCommand(const timingcmd::TimingCmd& cmd);
-  void executePartitionCommand(const timingcmd::TimingCmd& cmd);
-  void executeEndpointCommand(const timingcmd::TimingCmd& cmd);
+  void execute_master_command(const timingcmd::TimingCmd& cmd);
+  void execute_partition_command(const timingcmd::TimingCmd& cmd);
+  void execute_endpoint_command(const timingcmd::TimingCmd& cmd);
 
-  std::map<timingcmd::TimingHwCmdId, std::function<void(const timingcmd::TimingCmd)>> timingHwCmdMap_;
+  std::map<timingcmd::TimingHwCmdId, std::function<void(const timingcmd::TimingCmd)>> m_timing_hw_cmd_map_;
 
   template<typename Child>
   void register_timing_hw_command(const std::string& name, void (Child::*f)(const timingcmd::TimingCmd&));
 
-  std::string connections_file_;
-  std::unique_ptr<uhal::ConnectionManager> connectionManager_;
+  std::string m_connections_file_;
+  std::unique_ptr<uhal::ConnectionManager> m_connection_manager_;
 
 };
 

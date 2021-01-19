@@ -27,11 +27,6 @@
 #include <string>
 #include <vector>
 
-/**
- * @brief Name used by TRACE TLOG calls from this source file
- */
-#define TRACE_NAME "TimingMasterController" // NOLINT
-
 namespace dunedaq {
 namespace timing {
 
@@ -41,37 +36,37 @@ TimingMasterController::TimingMasterController(const std::string& name)
   register_command("conf", &TimingMasterController::do_configure);
   register_command("start", &TimingMasterController::do_start);
   register_command("stop",  &TimingMasterController::do_stop);
-  register_command("master_reset", &TimingMasterController::do_masterReset);
-  register_command("master_set_timestamp", &TimingMasterController::do_masterSetTimestamp);
-  register_command("master_print_status", &TimingMasterController::do_masterPrintStatus);
+  register_command("master_reset", &TimingMasterController::do_master_reset);
+  register_command("master_set_timestamp", &TimingMasterController::do_master_set_timestamp);
+  register_command("master_print_status", &TimingMasterController::do_master_print_status);
 }
 
 void
 TimingMasterController::do_configure(const nlohmann::json& obj)
 {
-  hwCmdId_ = "mastercmd";
+  m_hw_cmd_id_ = "mastercmd";
 
-  timingmastercontroller::from_json(obj,cfg_);
+  timingmastercontroller::from_json(obj, cfg_);
 
-  TLOG(TLVL_TRACE) << get_name() << "conf: managed device: " << cfg_.device;
+  ERS_LOG( get_name() << "conf: managed device: " << cfg_.device );
 }
 
 void
-TimingMasterController::do_masterReset(const nlohmann::json&)
+TimingMasterController::do_master_reset(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "reset");
+  send_hw_cmd(cfg_.device, "reset");
 }
 
 void
-TimingMasterController::do_masterSetTimestamp(const nlohmann::json&)
+TimingMasterController::do_master_set_timestamp(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "set_timestamp");
+  send_hw_cmd(cfg_.device, "set_timestamp");
 }
 
 void
-TimingMasterController::do_masterPrintStatus(const nlohmann::json&)
+TimingMasterController::do_master_print_status(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "print_status");
+  send_hw_cmd(cfg_.device, "print_status");
 }
 
 } // namespace timing 

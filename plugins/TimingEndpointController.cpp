@@ -48,7 +48,7 @@ TimingEndpointController::TimingEndpointController(const std::string& name)
 void
 TimingEndpointController::do_configure(const nlohmann::json& obj)
 {
-  hwCmdId_ = "endpointcmd";
+  m_hw_cmd_id_ = "endpointcmd";
 
   timingendpointcontroller::from_json(obj,cfg_);
   
@@ -58,31 +58,31 @@ TimingEndpointController::do_configure(const nlohmann::json& obj)
 void
 TimingEndpointController::do_endpoint_reset(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "reset");
+  send_hw_cmd(cfg_.device, "reset");
 }
 
 void
 TimingEndpointController::do_endpoint_enable(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "enable");
+  send_hw_cmd(cfg_.device, "enable");
 }
 
 void
 TimingEndpointController::do_endpoint_disable(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "disable");
+  send_hw_cmd(cfg_.device, "disable");
 }
 
 void
 TimingEndpointController::do_endpoint_print_timestamp(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "print_timestamp");
+  send_hw_cmd(cfg_.device, "print_timestamp");
 }
 
 void
 TimingEndpointController::do_endpoint_print_status(const nlohmann::json&)
 {
-  sendHwCmd(cfg_.device, "print_status");
+  send_hw_cmd(cfg_.device, "print_status");
 }
 
 } // namespace timing 
