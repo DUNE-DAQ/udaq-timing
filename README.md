@@ -46,6 +46,8 @@ At this point you should see the list of available commands, e.g. `init`, `start
 init
 conf
 start
-master_reset
+master_io_reset
+partition_configure
+partition_enable
 ```
 After the sending of each command, you should see the DUNE DAQ application responding via the session running the application.

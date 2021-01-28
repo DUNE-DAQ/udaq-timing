@@ -68,7 +68,7 @@ private:
   void do_partition_print_status(const nlohmann::json&);
 
   // Configuration
-  timingpartitioncontroller::Conf cfg_;
+  timingpartitioncontroller::Conf m_cfg;
 
 };
 } // namespace timing

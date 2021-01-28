@@ -59,12 +59,12 @@ private:
   void do_configure(const nlohmann::json& obj) override;
 
   // timing master commands
-  void do_master_reset(const nlohmann::json&);
+  void do_master_io_reset(const nlohmann::json&);
   void do_master_set_timestamp(const nlohmann::json&);
   void do_master_print_status(const nlohmann::json&);
 
   // Configuration
-  timingmastercontroller::Conf cfg_;
+  timingmastercontroller::Conf m_cfg;
 
 };
 } // namespace timing

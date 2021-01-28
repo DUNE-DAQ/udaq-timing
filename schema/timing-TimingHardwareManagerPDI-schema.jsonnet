@@ -1,5 +1,5 @@
 local moo = import "moo.jsonnet";
-local ns = "dunedaq.timing.timinghardwaremanager";
+local ns = "dunedaq.timing.timinghardwaremanagerpdi";
 local s = moo.oschema.schema(ns);
 
 local types = {

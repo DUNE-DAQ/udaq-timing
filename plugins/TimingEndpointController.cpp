@@ -38,9 +38,12 @@ TimingEndpointController::TimingEndpointController(const std::string& name)
   register_command("conf", &TimingEndpointController::do_configure);
   register_command("start", &TimingEndpointController::do_start);
   register_command("stop",  &TimingEndpointController::do_stop);
-  register_command("endpoint_reset", &TimingEndpointController::do_endpoint_reset);
+  
+  // timing commands
+  register_command("endpoint_io_reset", &TimingEndpointController::do_endpoint_io_reset);
   register_command("endpoint_enable", &TimingEndpointController::do_endpoint_enable);
   register_command("endpoint_disable", &TimingEndpointController::do_endpoint_disable);
+  register_command("endpoint_reset", &TimingEndpointController::do_endpoint_reset);
   register_command("endpoint_print_status", &TimingEndpointController::do_endpoint_print_status);
   register_command("endpoint_print_timestamp", &TimingEndpointController::do_endpoint_print_timestamp);
 }
@@ -48,41 +51,45 @@ TimingEndpointController::TimingEndpointController(const std::string& name)
 void
 TimingEndpointController::do_configure(const nlohmann::json& obj)
 {
-  m_hw_cmd_id_ = "endpointcmd";
-
-  timingendpointcontroller::from_json(obj,cfg_);
+  timingendpointcontroller::from_json(obj,m_cfg);
   
-  ERS_INFO(get_name() << " conf: managed endpoint, device: " << cfg_.device);
+  ERS_INFO(get_name() << " conf: managed endpoint, device: " << m_cfg.device);
 }
 
 void
-TimingEndpointController::do_endpoint_reset(const nlohmann::json&)
+TimingEndpointController::do_endpoint_io_reset(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "reset");
+  send_hw_cmd(m_cfg.device, "endpoint_io_reset");
 }
 
 void
 TimingEndpointController::do_endpoint_enable(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "enable");
+  send_hw_cmd(m_cfg.device, "endpoint_enable");
 }
 
 void
 TimingEndpointController::do_endpoint_disable(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "disable");
+  send_hw_cmd(m_cfg.device, "endpoint_disable");
+}
+
+void
+TimingEndpointController::do_endpoint_reset(const nlohmann::json&)
+{
+  send_hw_cmd(m_cfg.device, "endpoint_reset");
 }
 
 void
 TimingEndpointController::do_endpoint_print_timestamp(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "print_timestamp");
+  send_hw_cmd(m_cfg.device, "endpoint_print_timestamp");
 }
 
 void
 TimingEndpointController::do_endpoint_print_status(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "print_status");
+  send_hw_cmd(m_cfg.device, "endpoint_print_status");
 }
 
 } // namespace timing 

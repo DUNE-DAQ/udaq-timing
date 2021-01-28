@@ -26,19 +26,13 @@
 #include <string>
 #include <vector>
 
-/**
- * @brief Name used by TRACE TLOG calls from this source file
- */
-#define TRACE_NAME "TimingController" // NOLINT
-
 namespace dunedaq {
 namespace timing {
 
 TimingController::TimingController(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
-  , m_hw_command_out_queue_(nullptr)
-  , m_hw_cmd_out_queue_timeout_(100)
-  , m_hw_cmd_id_("")
+  , m_hw_command_out_queue(nullptr)
+  , m_hw_cmd_out_queue_timeout(100)
 {
 }
 
@@ -49,7 +43,7 @@ TimingController::init( const data_t& obj)
   auto qi = appfwk::qindex(obj, {"hardware_commands_out"});
   try
   {
-    m_hw_command_out_queue_.reset(new sink_t(qi["hardware_commands_out"].inst));
+    m_hw_command_out_queue.reset(new sink_t(qi["hardware_commands_out"].inst));
   }
   catch (const ers::Issue& excpt)
   {
@@ -68,27 +62,23 @@ TimingController::do_stop(const nlohmann::json&)
 }
 
 void
-TimingController::send_hw_cmd(const std::string& device, const timingcmd::TimingCmdId& cmd_id)
+TimingController::send_hw_cmd(const std::string& device, const timingcmd::TimingHwCmdId& cmd_id)
 {
-  timingcmd::TimingCmd cmd;
-  cmd.id = cmd_id;
-  cmd.device = device;
-
   timingcmd::TimingHwCmd hw_cmd;
-  hw_cmd.id = m_hw_cmd_id_;
-  hw_cmd.cmd = cmd;
+  hw_cmd.id = cmd_id;
+  hw_cmd.device = device;
 
-  std::string thisQueueName = m_hw_command_out_queue_->get_name();
+  std::string thisQueueName = m_hw_command_out_queue->get_name();
   try
   {
-    m_hw_command_out_queue_->push(hw_cmd, m_hw_cmd_out_queue_timeout_);
+    m_hw_command_out_queue->push(hw_cmd, m_hw_cmd_out_queue_timeout);
   }
   catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
   {
     std::ostringstream oss_warn;
     oss_warn << "push to output queue \"" << thisQueueName << "\"";
     ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(),
-      std::chrono::duration_cast<std::chrono::milliseconds>(m_hw_cmd_out_queue_timeout_).count()));
+      std::chrono::duration_cast<std::chrono::milliseconds>(m_hw_cmd_out_queue_timeout).count()));
   }
 }
 

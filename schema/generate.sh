@@ -10,7 +10,7 @@ render () {
     local What="$1" ; shift
 
     local name_lc=$( echo "$name" | tr '[:upper:]' '[:lower:]' )
-    local outdir="${1:-$srcdir/include/timing/${name}}"
+    local outdir="${1:-$srcdir/include/timing/${name_lc}}"
     local what="$(echo $What | tr '[:upper:]' '[:lower:]')"
     local tmpl="o${what}.hpp.j2"
     local outhpp="$outdir/${What}.hpp"

@@ -1,7 +1,7 @@
 local moo = import "moo.jsonnet";
 
 local cmd = import "appfwk-cmd-make.jsonnet";
-local thi = import "timing-TimingHardwareManager-make.jsonnet";
+local thi = import "timing-TimingHardwareManagerPDI-make.jsonnet";
 local tmc = import "timing-TimingMasterController-make.jsonnet";
 local tpc = import "timing-TimingPartitionController-make.jsonnet";
 local tec = import "timing-TimingEndpointController-make.jsonnet";
@@ -15,7 +15,7 @@ local qname = "hardware_commands";     // the name of the single queue in this j
 
     cmd.init([cmd.qspec("hardware_commands", "StdDeQueue", 10)],
              [
-              cmd.mspec("thi", "TimingHardwareManager",
+              cmd.mspec("thi", "TimingHardwareManagerPDI",
                         [cmd.qinfo(thi.hwCmdInQueue, qname, cmd.qdir.input)]),
               cmd.mspec("tmc0", "TimingMasterController",
                         [cmd.qinfo(tmc.hwCmdOutQueue, qname, cmd.qdir.output)]),
@@ -39,7 +39,7 @@ local qname = "hardware_commands";     // the name of the single queue in this j
     // send to modules in explicit order
     cmd.stop([cmd.mcmd("thi")]),
 
-    tcmd.master_reset([cmd.mcmd("tmc0")]),
+    tcmd.master_io_reset([cmd.mcmd("tmc0")]),
     tcmd.master_set_timestamp([cmd.mcmd("tmc0")]),
     tcmd.master_print_status([cmd.mcmd("tmc0")]),
 
@@ -52,10 +52,12 @@ local qname = "hardware_commands";     // the name of the single queue in this j
     tcmd.partition_disable_triggers([cmd.mcmd("tpc0")]),
     tcmd.partition_print_status([cmd.mcmd("tpc0")]),
 
-    tcmd.endpoint_reset([cmd.mcmd("tec0")]),
+    tcmd.endpoint_io_reset([cmd.mcmd("tec0")]),
     tcmd.endpoint_enable([cmd.mcmd("tec0")]),
     tcmd.endpoint_disable([cmd.mcmd("tec0")]),
+    tcmd.endpoint_reset([cmd.mcmd("tec0")]),
+//    tcmd.endpoint_print_timestamp([cmd.mcmd("tec0")]),
     tcmd.endpoint_print_status([cmd.mcmd("tec0")]),
-    tcmd.endpoint_print_timestamp([cmd.mcmd("tec0")]),
+
 ]
 

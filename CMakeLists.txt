@@ -19,14 +19,14 @@ set(LIST_OF_TIMING_SOFTWARE_LIBS $ENV{TIMING_BOARD_SOFTWARE_LIB}/libprotodune_pd
 daq_add_library(TimingController.cpp LINK_LIBRARIES ers::ers appfwk::appfwk)
 
 ##############################################################################
-daq_add_plugin(TimingHardwareManager duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk ${LIST_OF_TIMING_SOFTWARE_LIBS})
+daq_add_plugin(TimingHardwareManagerPDI duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk ${LIST_OF_TIMING_SOFTWARE_LIBS})
 daq_add_plugin(TimingMasterController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
 daq_add_plugin(TimingPartitionController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
 daq_add_plugin(TimingEndpointController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
 
 
 ##############################################################################
-target_include_directories(${PROJECT_NAME}_TimingHardwareManager_duneDAQModule PUBLIC $ENV{TIMING_BOARD_SOFTWARE_INC} $ENV{UHAL_INC})
+target_include_directories(${PROJECT_NAME}_TimingHardwareManagerPDI_duneDAQModule PUBLIC $ENV{TIMING_BOARD_SOFTWARE_INC} $ENV{UHAL_INC})
 
 ##############################################################################
 daq_install()

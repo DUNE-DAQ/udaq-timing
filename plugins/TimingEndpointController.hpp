@@ -58,14 +58,15 @@ private:
   void do_configure(const nlohmann::json& obj) override;
 
   // timing endpoint commands
-  void do_endpoint_reset(const nlohmann::json&);
+  void do_endpoint_io_reset(const nlohmann::json&);
   void do_endpoint_enable(const nlohmann::json&);
   void do_endpoint_disable(const nlohmann::json&);
+  void do_endpoint_reset(const nlohmann::json&);
   void do_endpoint_print_status(const nlohmann::json&);
   void do_endpoint_print_timestamp(const nlohmann::json&);
 
   // Configuration
-  timingendpointcontroller::Conf cfg_;
+  timingendpointcontroller::Conf m_cfg;
 
 };
 } // namespace timing

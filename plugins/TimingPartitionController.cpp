@@ -51,59 +51,57 @@ TimingPartitionController::TimingPartitionController(const std::string& name)
 void
 TimingPartitionController::do_configure(const nlohmann::json& obj)
 {
-  m_hw_cmd_id_ = "partitioncmd";
-
-  timingpartitioncontroller::from_json(obj,cfg_);
+  timingpartitioncontroller::from_json(obj, m_cfg);
   
-  ERS_LOG( get_name() << " conf: managed partition, device: " << cfg_.device << ", part id: " << cfg_.partId );
+  ERS_LOG( get_name() << " conf: managed partition, device: " << m_cfg.device << ", part id: " << m_cfg.partId );
 }
 
 void
 TimingPartitionController::do_partition_configure(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "configure");
+  send_hw_cmd(m_cfg.device, "partition_configure");
 }
 
 void
 TimingPartitionController::do_partition_enable(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "enable");
+  send_hw_cmd(m_cfg.device, "partition_enable");
 }
 
 void
 TimingPartitionController::do_partition_disable(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "disable");
+  send_hw_cmd(m_cfg.device, "partition_disable");
 }
 
 void
 TimingPartitionController::do_partition_start(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "start");
+  send_hw_cmd(m_cfg.device, "partition_start");
 }
 
 void
 TimingPartitionController::do_partition_stop(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "stop");
+  send_hw_cmd(m_cfg.device, "partition_stop");
 }
 
 void
 TimingPartitionController::do_partition_enable_triggers(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "enable_triggers");
+  send_hw_cmd(m_cfg.device, "partition_enable_triggers");
 }
 
 void
 TimingPartitionController::do_partition_disable_triggers(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "disable_triggers");
+  send_hw_cmd(m_cfg.device, "partition_disable_triggers");
 }
 
 void
 TimingPartitionController::do_partition_print_status(const nlohmann::json&)
 {
-  send_hw_cmd(cfg_.device, "print_status");
+  send_hw_cmd(m_cfg.device, "partition_print_status");
 }
 
 } // namespace timing 
