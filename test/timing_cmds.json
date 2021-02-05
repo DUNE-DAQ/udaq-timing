@@ -1,0 +1,300 @@
+[
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "hardware_commands",
+                                "name": "hardware_commands_in"
+                            }
+                        ]
+                    },
+                    "inst": "thi",
+                    "plugin": "TimingHardwareManagerPDI"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "output",
+                                "inst": "hardware_commands",
+                                "name": "hardware_commands_out"
+                            }
+                        ]
+                    },
+                    "inst": "tmc0",
+                    "plugin": "TimingMasterController"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "output",
+                                "inst": "hardware_commands",
+                                "name": "hardware_commands_out"
+                            }
+                        ]
+                    },
+                    "inst": "tpc0",
+                    "plugin": "TimingPartitionController"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "output",
+                                "inst": "hardware_commands",
+                                "name": "hardware_commands_out"
+                            }
+                        ]
+                    },
+                    "inst": "tec0",
+                    "plugin": "TimingEndpointController"
+                }
+            ],
+            "queues": [
+                {
+                    "capacity": 10,
+                    "inst": "hardware_commands",
+                    "kind": "StdDeQueue"
+                }
+            ]
+        },
+        "id": "init"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "connectionsFile": "${PDT_TESTS}/etc/connections.xml"
+                    },
+                    "match": "thi"
+                },
+                {
+                    "data": {
+                        "device": "PROD_MASTER"
+                    },
+                    "match": "tmc0"
+                },
+                {
+                    "data": {
+                        "device": "PROD_MASTER",
+                        "partId": 0
+                    },
+                    "match": "tpc0"
+                },
+                {
+                    "data": {
+                        "device": "EPT_0"
+                    },
+                    "match": "tec0"
+                }
+            ]
+        },
+        "id": "conf"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "run": 42
+                    },
+                    "match": ""
+                }
+            ]
+        },
+        "id": "start"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "thi"
+                }
+            ]
+        },
+        "id": "stop"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tmc0"
+                }
+            ]
+        },
+        "id": "master_io_reset"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tmc0"
+                }
+            ]
+        },
+        "id": "master_set_timestamp"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tmc0"
+                }
+            ]
+        },
+        "id": "master_print_status"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_configure"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_enable"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_disable"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_start"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_stop"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_enable_triggers"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_disable_triggers"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tpc0"
+                }
+            ]
+        },
+        "id": "partition_print_status"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tec0"
+                }
+            ]
+        },
+        "id": "endpoint_io_reset"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tec0"
+                }
+            ]
+        },
+        "id": "endpoint_enable"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tec0"
+                }
+            ]
+        },
+        "id": "endpoint_disable"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tec0"
+                }
+            ]
+        },
+        "id": "endpoint_reset"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": "tec0"
+                }
+            ]
+        },
+        "id": "endpoint_print_status"
+    }
+]
