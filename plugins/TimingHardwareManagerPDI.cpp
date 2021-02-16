@@ -34,8 +34,11 @@ namespace timing {
 
 TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
   : TimingHardwareManager<pdt::PDIMasterDesign<pdt::TLUIONode>,pdt::EndpointDesign<pdt::FMCIONode>>(name)
+  , m_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_monitor_data, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) )
 { 
   register_command("conf", &TimingHardwareManagerPDI::do_configure);
+
+  register_command("get_info", &TimingHardwareManagerPDI::get_info);
 
   // register only the commands which are needed for this hardware manager
   
@@ -76,8 +79,50 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   // uhal log level to be passed in as parameter?
   //uhal::setLogLevelTo(uhal::Notice());  
   m_connection_manager = std::make_unique< uhal::ConnectionManager >("file://"+m_connections_file);
+
 }
 
+void
+TimingHardwareManagerPDI::do_start(const nlohmann::json&)
+{
+  m_monitor_data_gatherer.start_monitoring_thread();
+  thread_.start_working_thread();
+  ERS_LOG(get_name() << " successfully started");
+}
+
+void
+TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
+{
+  m_monitor_data_gatherer.stop_monitoring_thread();
+  thread_.stop_working_thread();
+  ERS_LOG(get_name() << " successfully stopped");
+}
+
+void
+TimingHardwareManagerPDI::gather_monitor_data(std::atomic<bool>& monitor_running, std::atomic<MonInfo>& monitor_data, std::atomic<uint>& monitor_interval)
+{
+  std::ostringstream oss_enter;
+  oss_enter << ": Entering gather_monitor_data() method";
+  ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_enter.str()));
+
+  uint cntr = 0;
+  while (monitor_running.load()) 
+  {
+    monitor_data.store(MonInfo(cntr));
+    usleep(monitor_interval);
+    ++cntr;
+  }
+
+  std::ostringstream oss_summ;
+  oss_summ << ": Exiting gather_monitor_data() method, counter " << cntr;
+  ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
+}
+
+void
+TimingHardwareManagerPDI::get_info(const nlohmann::json&)
+{
+  ERS_INFO( get_name() << "get_info():  counter: " << m_monitor_data_gatherer.get_monitoring_data().counter);
+}
 } // namespace timing 
 } // namespace dunedaq
 

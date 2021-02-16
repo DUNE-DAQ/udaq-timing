@@ -69,6 +69,15 @@ public:
 private:
   timinghardwaremanagerpdi::Conf m_cfg;
   void do_configure(const data_t& obj) override;
+  void do_start(const nlohmann::json&) override;
+  void do_stop(const nlohmann::json&)  override;
+
+  // monitoring
+  //std::unique_ptr<ModuleMonitor<MonInfo>> m_monitor_data_gatherer;
+  ModuleMonitor<MonInfo> m_monitor_data_gatherer;
+  virtual void gather_monitor_data(std::atomic<bool>& monitor_running, std::atomic<MonInfo>& monitor_data, std::atomic<uint>& monitor_interval);
+
+  void get_info(const nlohmann::json&) override;
 };
 } // namespace timing
 } // namespace dunedaq
