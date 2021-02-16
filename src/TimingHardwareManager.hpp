@@ -16,6 +16,7 @@
 #include "timing/timingcmd/Nljs.hpp"
 
 #include "CommonIssues.hpp"
+#include "ModuleMonitor.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -39,6 +40,15 @@
 
 namespace dunedaq {
 namespace timing {
+
+struct MonInfo {
+  uint counter;
+  MonInfo() 
+  {}
+  MonInfo(uint cntr) 
+  : counter(cntr)
+  {}
+};
 
 /**
  * @brief TimingHardwareManager creates vectors of ints and writes
@@ -115,6 +125,9 @@ protected:
   virtual void endpoint_disable(const std::string& device);
   virtual void endpoint_reset(const std::string& device);
   virtual void endpoint_print_status(const std::string& device);
+
+  // ship mon data off
+  virtual void get_info(const nlohmann::json&) = 0;
 
 };
 

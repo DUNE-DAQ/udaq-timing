@@ -23,4 +23,6 @@ local appfwkcmd = import "appfwk-cmd-make.jsonnet";
     //endpoint_print_timestamp(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("endpoint_print_timestamp", addr),
     endpoint_print_status(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("endpoint_print_status", addr),
 
+    get_info(addr=appfwkcmd.defaddr) :: appfwkcmd.cmd("get_info", addr),
+
 }
