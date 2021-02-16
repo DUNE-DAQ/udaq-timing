@@ -134,7 +134,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::master_set_timestamp(const std::stri
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
   ERS_LOG( get_name() << ": " << device << " set timestamp" );
-  master_design.getMasterNode().syncTimestamp();
+  master_design.get_master_node().sync_timestamp();
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
@@ -143,7 +143,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::master_print_status(const std::strin
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
   ERS_LOG( get_name() << ": " << device << " print status" );
-  ERS_INFO( std::endl << master_design.getStatus() );
+  ERS_INFO( std::endl << master_design.get_status() );
 }
 
 // partition commands
@@ -152,7 +152,7 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_configure(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   
   uint32_t partition_id = 0;
 
@@ -173,7 +173,7 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_enable(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   ERS_LOG( get_name() << ": " << device << " partition 0 enable" );
   partition.enable(true);
 }
@@ -183,7 +183,7 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_disable(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   ERS_LOG( get_name() << ": " << device << " partition 0 disable" );
   partition.enable(false);
 }
@@ -193,7 +193,7 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_start(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   ERS_LOG( get_name() << ": " << device << " partition 0 start" );
   partition.start();
 }
@@ -203,7 +203,7 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_stop(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   ERS_LOG( get_name() << ": " << device << " partition 0 stop" );
   partition.stop();
 }
@@ -213,9 +213,9 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_enable_triggers(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   ERS_LOG( get_name() << ": " << device << " partition 0 start triggers" );
-  partition.enableTriggers(true);
+  partition.enable_triggers(true);
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
@@ -223,9 +223,9 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_disable_triggers(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   ERS_LOG( get_name() << ": " << device << " partition 0 stop triggers" );
-  partition.enableTriggers(false);
+  partition.enable_triggers(false);
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
@@ -233,10 +233,10 @@ void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_print_status(const std::string& device)
 {
   auto master_design = get_timing_device<MSTR_DSGN>(device);
-  auto partition = master_design.getMasterNode().getPartitionNode(0);
+  auto partition = master_design.get_master_node().get_partition_node(0);
   
   ERS_LOG( get_name() << ": " << device << " print partition 0 status" );
-  ERS_INFO( std::endl << partition.getStatus() );
+  ERS_INFO( std::endl << partition.get_status() );
 }
 
 // endpoint commands
@@ -246,7 +246,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_io_reset(const std::string&
 {
   auto endpoint_design = get_timing_device<EPT_DSGN>(device);
   ERS_LOG( get_name() << ": " << device << " print status" );
-  endpoint_design.getIONode().reset();
+  endpoint_design.get_io_node().reset();
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
@@ -255,7 +255,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_enable(const std::string& d
 {
   auto endpoint_design = get_timing_device<EPT_DSGN>(device);
   ERS_LOG( get_name() << ": " << device << " enable" );
-  endpoint_design.getEndpointNode(0).enable();
+  endpoint_design.get_endpoint_node(0).enable();
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
@@ -264,7 +264,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_disable(const std::string& 
 {
   auto endpoint_design = get_timing_device<EPT_DSGN>(device);
   ERS_LOG( get_name() << ": " << device << " disable" );
-  endpoint_design.getEndpointNode(0).disable();
+  endpoint_design.get_endpoint_node(0).disable();
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
@@ -273,7 +273,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_reset(const std::string& de
 {
   auto endpoint_design = get_timing_device<EPT_DSGN>(device);
   ERS_LOG( get_name() << ": " << device << " reset" );
-  endpoint_design.getEndpointNode(0).reset();
+  endpoint_design.get_endpoint_node(0).reset();
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
@@ -282,7 +282,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_print_status(const std::str
 {
   auto endpoint_design = get_timing_device<EPT_DSGN>(device);
   ERS_LOG( get_name() << ": " << device << " print status" );
-  ERS_INFO( std::endl << endpoint_design.getEndpointNode(0).getStatus() );
+  ERS_INFO( std::endl << endpoint_design.get_endpoint_node(0).get_status() );
 }
 
 } // namespace dunedaq::timing
