@@ -94,6 +94,7 @@ protected:
   std::string m_connections_file;
   std::unique_ptr<uhal::ConnectionManager> m_connection_manager;
   std::map < std::string, std::unique_ptr<uhal::HwInterface> > m_hw_device_map;
+  std::mutex m_hw_device_map_mutex;
 
   // retrieve top level/design object for a timing device
   template<class TIMING_DEV>

@@ -17,7 +17,7 @@ find_package(timing-board-software REQUIRED)
 daq_add_library(TimingController.cpp LINK_LIBRARIES ers::ers appfwk::appfwk)
 
 ##############################################################################
-daq_add_plugin(TimingHardwareManagerPDI duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing-board-software)
+daq_add_plugin(TimingHardwareManagerPDI duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing-board-software libatomic.so)
 daq_add_plugin(TimingMasterController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
 daq_add_plugin(TimingPartitionController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
 daq_add_plugin(TimingEndpointController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)

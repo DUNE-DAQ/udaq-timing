@@ -105,6 +105,8 @@ template<class TIMING_DEV>
 const TIMING_DEV&
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::get_timing_device(const std::string& device_name) {
 	
+  std::lock_guard<std::mutex> hw_device_map_guard(m_hw_device_map_mutex);
+  
 	if (auto hw_device_entry = m_hw_device_map.find(device_name); hw_device_entry != m_hw_device_map.end()) {
       return hw_device_entry->second->getNode<TIMING_DEV>("");
     } else {

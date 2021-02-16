@@ -22,6 +22,9 @@
 
 #include "CommonIssues.hpp"
 
+// in timing-board-software at the moment
+#include "timing/timingmon/Structs.hpp"
+
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
 #include "appfwk/DAQSource.hpp"
@@ -73,9 +76,8 @@ private:
   void do_stop(const nlohmann::json&)  override;
 
   // monitoring
-  //std::unique_ptr<ModuleMonitor<MonInfo>> m_monitor_data_gatherer;
-  ModuleMonitor<MonInfo> m_monitor_data_gatherer;
-  virtual void gather_monitor_data(std::atomic<bool>& monitor_running, std::atomic<MonInfo>& monitor_data, std::atomic<uint>& monitor_interval);
+  ModuleMonitor<timingmon::TimingTLUMonitorData> m_monitor_data_gatherer;
+  virtual void gather_monitor_data(std::atomic<bool>& monitor_running, std::atomic<timingmon::TimingTLUMonitorData>& monitor_data, std::atomic<uint>& monitor_interval);
 
   void get_info(const nlohmann::json&) override;
 };
