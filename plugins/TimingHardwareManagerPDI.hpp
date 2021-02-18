@@ -23,7 +23,9 @@
 #include "CommonIssues.hpp"
 
 // in timing-board-software at the moment
-#include "timing/timingmon/Structs.hpp"
+#include "pdt/timingmon/Structs.hpp"
+#include "pdt/PDIMasterDesign.hpp"
+#include "pdt/EndpointDesign.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -34,9 +36,6 @@
 #include "ers/Issue.h"
 
 #include "uhal/ConnectionManager.hpp"
-
-#include "pdt/PDIMasterDesign.hpp"
-#include "pdt/EndpointDesign.hpp"
 
 #include <memory>
 #include <string>
@@ -76,8 +75,8 @@ private:
   void do_stop(const nlohmann::json&)  override;
 
   // monitoring
-  ModuleMonitor<timingmon::TimingTLUMonitorData> m_monitor_data_gatherer;
-  virtual void gather_monitor_data(std::atomic<bool>& monitor_running, std::atomic<timingmon::TimingTLUMonitorData>& monitor_data, std::atomic<uint>& monitor_interval);
+  ModuleMonitor<pdt::timingmon::TimingPDIMasterDesignTLUMonitorData> m_monitor_data_gatherer;
+  virtual void gather_monitor_data(std::atomic<bool>& monitor_running, ModuleMonitor<pdt::timingmon::TimingPDIMasterDesignTLUMonitorData>& monitor, std::atomic<uint>& monitor_interval);
 
   void get_info(const nlohmann::json&) override;
 };

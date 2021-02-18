@@ -34,7 +34,7 @@ namespace timing {
 
 TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
   : TimingHardwareManager<pdt::PDIMasterDesign<pdt::TLUIONode>,pdt::EndpointDesign<pdt::FMCIONode>>(name)
-  , m_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_monitor_data, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) )
+  , m_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_monitor_data, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 1e6 )
 { 
   register_command("conf", &TimingHardwareManagerPDI::do_configure);
 
@@ -99,19 +99,21 @@ TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
 }
 
 void
-TimingHardwareManagerPDI::gather_monitor_data(std::atomic<bool>& monitor_running, std::atomic<timingmon::TimingTLUMonitorData>& monitor_data, std::atomic<uint>& monitor_interval)
+TimingHardwareManagerPDI::gather_monitor_data(std::atomic<bool>& monitor_running, ModuleMonitor<pdt::timingmon::TimingPDIMasterDesignTLUMonitorData>& monitor, std::atomic<uint>& monitor_interval)
 {
   std::ostringstream oss_enter;
   oss_enter << ": Entering gather_monitor_data() method";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_enter.str()));
 
-  timingmon::TimingTLUMonitorData tlu_mon_data;
   while (monitor_running.load()) 
   {
+    pdt::timingmon::TimingPDIMasterDesignTLUMonitorData mon_data;
     auto master_design = get_timing_device<pdt::PDIMasterDesign<pdt::TLUIONode>>("PROD_MASTER");
-    master_design.get_io_node().get_info(tlu_mon_data);
+    
+    master_design.get_io_node().get_info(mon_data.hardware_data);
+    master_design.get_master_node().get_info(mon_data.firmware_data);
 
-    monitor_data.store(tlu_mon_data);
+    monitor.update_monitoring_data(mon_data);
     usleep(monitor_interval);
   }
 
@@ -123,10 +125,11 @@ TimingHardwareManagerPDI::gather_monitor_data(std::atomic<bool>& monitor_running
 void
 TimingHardwareManagerPDI::get_info(const nlohmann::json&)
 {
-  auto tlu_mon_data = m_monitor_data_gatherer.get_monitoring_data();
-  ERS_INFO( get_name() << "get_info():\ncdr_lol: " << tlu_mon_data.cdr_lol
-                      << "\ncdr_los: " << tlu_mon_data.cdr_los 
-                      << "\nmmcm_ok: " << tlu_mon_data.mmcm_ok 
+  auto mon_data = m_monitor_data_gatherer.get_monitoring_data();
+  ERS_INFO( get_name() << "get_info():\ncdr_lol: " << mon_data.hardware_data.cdr_lol
+                      << "\ncdr_los: " << mon_data.hardware_data.cdr_los 
+                      << "\npll_ok: " << mon_data.hardware_data.pll_ok 
+                      << "\nfl cmd acc counter 0: " << mon_data.firmware_data.command_counters.at(0).accepted
                         );
 }
 } // namespace timing 
