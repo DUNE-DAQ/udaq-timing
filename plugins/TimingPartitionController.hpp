@@ -57,6 +57,8 @@ private:
   // Commands
   void do_configure(const nlohmann::json& obj) override;
 
+  void construct_partition_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
+
   // timing partition commands
   void do_partition_configure(const nlohmann::json&);
   void do_partition_enable(const nlohmann::json&);

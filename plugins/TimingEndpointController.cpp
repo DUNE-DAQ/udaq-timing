@@ -57,39 +57,57 @@ TimingEndpointController::do_configure(const nlohmann::json& obj)
 }
 
 void
+TimingEndpointController::construct_endpoint_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id) {
+  hw_cmd.id = cmd_id;
+  hw_cmd.device = m_cfg.device;
+}
+
+void
 TimingEndpointController::do_endpoint_io_reset(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "endpoint_io_reset");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_endpoint_hw_cmd(hw_cmd, "endpoint_io_reset");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingEndpointController::do_endpoint_enable(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "endpoint_enable");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_endpoint_hw_cmd(hw_cmd, "endpoint_enable");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingEndpointController::do_endpoint_disable(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "endpoint_disable");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_endpoint_hw_cmd(hw_cmd, "endpoint_disable");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingEndpointController::do_endpoint_reset(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "endpoint_reset");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_endpoint_hw_cmd(hw_cmd, "endpoint_reset");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingEndpointController::do_endpoint_print_timestamp(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "endpoint_print_timestamp");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_endpoint_hw_cmd(hw_cmd, "endpoint_print_timestamp");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingEndpointController::do_endpoint_print_status(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "endpoint_print_status");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_endpoint_hw_cmd(hw_cmd, "endpoint_print_status");
+  send_hw_cmd(hw_cmd);
 }
 
 } // namespace timing 

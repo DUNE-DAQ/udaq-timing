@@ -101,31 +101,31 @@ protected:
   const TIMING_DEV& get_timing_device(const std::string& device_name);
   
   // timing hw cmds stuff
-  std::map<timingcmd::TimingHwCmdId, std::function<void(const std::string& device)>> m_timing_hw_cmd_map_;
+  std::map<timingcmd::TimingHwCmdId, std::function<void(const timingcmd::TimingHwCmd&)>> m_timing_hw_cmd_map_;
   template<typename Child>
-  void register_timing_hw_command(const std::string& name, void (Child::*f)(const std::string& device));
+  void register_timing_hw_command(const std::string& name, void (Child::*f)(const timingcmd::TimingHwCmd&));
 
   // timing master commands
-  virtual void master_io_reset(const std::string& device);
-  virtual void master_set_timestamp(const std::string& device);
-  virtual void master_print_status(const std::string& device);
+  virtual void master_io_reset(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void master_set_timestamp(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void master_print_status(const timingcmd::TimingHwCmd& hw_cmd);
 
   // timing partition commands
-  virtual void partition_configure(const std::string& device);
-  virtual void partition_enable(const std::string& device);
-  virtual void partition_disable(const std::string& device);
-  virtual void partition_start(const std::string& device);
-  virtual void partition_stop(const std::string& device);
-  virtual void partition_enable_triggers(const std::string& device);
-  virtual void partition_disable_triggers(const std::string& device);
-  virtual void partition_print_status(const std::string& device);
+  virtual void partition_configure(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void partition_enable(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void partition_disable(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void partition_start(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void partition_stop(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void partition_enable_triggers(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void partition_disable_triggers(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void partition_print_status(const timingcmd::TimingHwCmd& hw_cmd);
 
   // timing endpoint commands
-  virtual void endpoint_io_reset(const std::string& device);
-  virtual void endpoint_enable(const std::string& device);
-  virtual void endpoint_disable(const std::string& device);
-  virtual void endpoint_reset(const std::string& device);
-  virtual void endpoint_print_status(const std::string& device);
+  virtual void endpoint_io_reset(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void endpoint_enable(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void endpoint_disable(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void endpoint_reset(const timingcmd::TimingHwCmd& hw_cmd);
+  virtual void endpoint_print_status(const timingcmd::TimingHwCmd& hw_cmd);
 
   // ship mon data off
   virtual void get_info(const nlohmann::json&) = 0;

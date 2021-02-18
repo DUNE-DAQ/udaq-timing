@@ -63,7 +63,7 @@ protected:
   std::unique_ptr<sink_t> m_hw_command_out_queue;
   std::chrono::milliseconds m_hw_cmd_out_queue_timeout;
 
-  virtual void send_hw_cmd(const std::string& device, const timingcmd::TimingHwCmdId& cmd_id);
+  virtual void send_hw_cmd(const timingcmd::TimingHwCmd& hw_cmd);
 
 };
 } // namespace timing

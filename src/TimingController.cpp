@@ -62,12 +62,8 @@ TimingController::do_stop(const nlohmann::json&)
 }
 
 void
-TimingController::send_hw_cmd(const std::string& device, const timingcmd::TimingHwCmdId& cmd_id)
+TimingController::send_hw_cmd(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  timingcmd::TimingHwCmd hw_cmd;
-  hw_cmd.id = cmd_id;
-  hw_cmd.device = device;
-
   std::string thisQueueName = m_hw_command_out_queue->get_name();
   try
   {

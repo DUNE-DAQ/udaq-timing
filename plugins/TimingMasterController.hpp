@@ -58,6 +58,8 @@ private:
   // Commands
   void do_configure(const nlohmann::json& obj) override;
 
+  void construct_master_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
+
   // timing master commands
   void do_master_io_reset(const nlohmann::json&);
   void do_master_set_timestamp(const nlohmann::json&);

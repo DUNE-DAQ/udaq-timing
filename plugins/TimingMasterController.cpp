@@ -52,21 +52,33 @@ TimingMasterController::do_configure(const nlohmann::json& obj)
 }
 
 void
+TimingMasterController::construct_master_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id) {
+  hw_cmd.id = cmd_id;
+  hw_cmd.device = m_cfg.device;
+}
+
+void
 TimingMasterController::do_master_io_reset(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "master_io_reset");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_master_hw_cmd(hw_cmd, "master_io_reset");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingMasterController::do_master_set_timestamp(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "master_set_timestamp");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_master_hw_cmd(hw_cmd, "master_set_timestamp");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingMasterController::do_master_print_status(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "master_print_status");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_master_hw_cmd(hw_cmd, "master_print_status");
+  send_hw_cmd(hw_cmd);
 }
 
 } // namespace timing 
