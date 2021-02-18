@@ -53,14 +53,14 @@ TimingPartitionController::do_configure(const nlohmann::json& obj)
 {
   timingpartitioncontroller::from_json(obj, m_cfg);
   
-  ERS_LOG( get_name() << " conf: managed partition, device: " << m_cfg.device << ", part id: " << m_cfg.partId );
+  ERS_LOG( get_name() << " conf: managed partition, device: " << m_cfg.device << ", part id: " << m_cfg.partition_id );
 }
 
 void
 TimingPartitionController::construct_partition_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
-  cmd_payload.partition_id = m_cfg.partId;
+  cmd_payload.partition_id = m_cfg.partition_id;
   timingcmd::to_json(hw_cmd.payload, cmd_payload);
 
   hw_cmd.id = cmd_id;

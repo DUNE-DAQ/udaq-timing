@@ -66,7 +66,7 @@ private:
   void do_master_print_status(const nlohmann::json&);
 
   // Configuration
-  timingmastercontroller::Conf m_cfg;
+  timingmastercontroller::ConfParams m_cfg;
 
 };
 } // namespace timing

@@ -4,10 +4,9 @@ local s = moo.oschema.schema(ns);
 
 local types = {
 
-    str : s.string("Str", "string",
-                   doc="A string field"),
+    str : s.string("Str", doc="A string field"),
 
-    conf: s.record("Conf", [
+    conf: s.record("ConfParams", [
         s.field("device", self.str, "",
                 doc="String of managed device name"),
     ], doc="TimingMasterController configuration"),

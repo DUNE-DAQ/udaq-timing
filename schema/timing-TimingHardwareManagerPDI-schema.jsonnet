@@ -9,11 +9,10 @@ local types = {
     count : s.number("Count", "i4",
                      doc="A count of not too many things"),
 
-    str : s.string("Str", "string",
-                   doc="A string field"),
+    str : s.string("Str", doc="A string field"),
 
-    conf: s.record("Conf", [
-        s.field("connectionsFile", self.str, "",
+    conf: s.record("ConfParams", [
+        s.field("connections_file", self.str, "",
                 doc="device connections file"),
     ], doc="TimingHardwareManager configuration"),
 

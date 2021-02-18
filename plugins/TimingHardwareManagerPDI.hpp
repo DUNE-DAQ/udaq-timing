@@ -69,7 +69,7 @@ public:
 
   // configuration
 private:
-  timinghardwaremanagerpdi::Conf m_cfg;
+  timinghardwaremanagerpdi::ConfParams m_cfg;
   void do_configure(const data_t& obj) override;
   void do_start(const nlohmann::json&) override;
   void do_stop(const nlohmann::json&)  override;

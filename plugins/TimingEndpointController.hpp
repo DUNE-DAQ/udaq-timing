@@ -68,7 +68,7 @@ private:
   void do_endpoint_print_timestamp(const nlohmann::json&);
 
   // Configuration
-  timingendpointcontroller::Conf m_cfg;
+  timingendpointcontroller::ConfParams m_cfg;
 
 };
 } // namespace timing

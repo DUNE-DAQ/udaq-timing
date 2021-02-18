@@ -70,7 +70,7 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
 {
   timinghardwaremanagerpdi::from_json(obj, m_cfg);
   
-  m_connections_file = m_cfg.connectionsFile;
+  m_connections_file = m_cfg.connections_file;
   
   ERS_INFO( get_name() << "conf: con. file before env var expansion: " << m_connections_file);
   resolve_environment_variables(m_connections_file);
