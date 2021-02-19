@@ -7,7 +7,10 @@ local types = {
     str : s.string("Str", doc="A string field"),
     
     size: s.number("Size", "u8",
-                   doc="A count of very many things"),
+        doc="A count of very many things"),
+
+    uint_data: s.number("UintData", "u4",
+        doc="A count of very many things"),
 
     conf: s.record("ConfParams", [
         s.field("device", self.str, "",

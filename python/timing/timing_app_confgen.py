@@ -24,7 +24,8 @@ import json
 import math
 # Time to waait on pop()
 QUEUE_POP_WAIT_MS=100;
-
+# how often do we poll for hardware data [us]
+GATHER_INTERVAL=1e6;
 def generate(
         RUN_NUMBER = 333, 
         MONITOR_RATE_HZ = 1.0,
@@ -70,17 +71,20 @@ def generate(
 
     confcmd = mcmd("conf", [
                 ("thi", thi.ConfParams(
-                        connections_file="${PDT_TESTS}/etc/connections.xml",               
+                        connections_file="${PDT_TESTS}/etc/connections.xml",
+                        gather_interval=GATHER_INTERVAL,
+                        monitored_device_name_master="PROD_MASTER",
+                        monitored_device_name_endpoint="EPT_0",
                         )),
                 ("tmc0", tmc.ConfParams(
-                        device="PROD_MASTER"
+                        device="PROD_MASTER",
                         )),
                 ("tpc0", tpc.ConfParams(
                         device="PROD_MASTER",
-                        partition_id=0
+                        partition_id=0,
                         )),
                 ("tec0", tec.ConfParams(
-                        device="EPT_0"
+                        device="EPT_0",
                         )),
             ])
     

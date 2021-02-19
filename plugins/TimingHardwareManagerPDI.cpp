@@ -34,7 +34,9 @@ namespace timing {
 
 TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
   : TimingHardwareManager<pdt::PDIMasterDesign<pdt::TLUIONode>,pdt::EndpointDesign<pdt::FMCIONode>>(name)
-  , m_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_monitor_data, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), 1e6 )
+  , m_master_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_master_monitor_data, this, std::placeholders::_1), 1e6 )
+  , m_endpoint_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_endpoint_monitor_data, this, std::placeholders::_1), 1e6 )
+
 { 
   register_command("conf", &TimingHardwareManagerPDI::do_configure);
 
@@ -71,7 +73,10 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   timinghardwaremanagerpdi::from_json(obj, m_cfg);
   
   m_connections_file = m_cfg.connections_file;
-  
+
+  m_master_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
+  m_endpoint_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
+
   ERS_INFO( get_name() << "conf: con. file before env var expansion: " << m_connections_file);
   resolve_environment_variables(m_connections_file);
   ERS_INFO( get_name() << "conf: con. file after env var expansion:  " << m_connections_file);
@@ -84,8 +89,11 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
 
 void
 TimingHardwareManagerPDI::do_start(const nlohmann::json&)
-{
-  m_monitor_data_gatherer.start_monitoring_thread();
+{ 
+  // only start monitor threads if we have been given the name of the device to monitor
+  if (m_cfg.monitored_device_name_master.compare("")) m_master_monitor_data_gatherer.start_gathering_thread();
+  if (m_cfg.monitored_device_name_endpoint.compare("")) m_endpoint_monitor_data_gatherer.start_gathering_thread();
+
   thread_.start_working_thread();
   ERS_LOG(get_name() << " successfully started");
 }
@@ -93,43 +101,72 @@ TimingHardwareManagerPDI::do_start(const nlohmann::json&)
 void
 TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
 {
-  m_monitor_data_gatherer.stop_monitoring_thread();
+  // do not attempt to stop monitor threads if we have not been given the name of the device to monitor
+  if (m_cfg.monitored_device_name_master.compare("")) m_master_monitor_data_gatherer.stop_gathering_thread();
+  if (m_cfg.monitored_device_name_endpoint.compare("")) m_endpoint_monitor_data_gatherer.stop_gathering_thread();
+
   thread_.stop_working_thread();
   ERS_LOG(get_name() << " successfully stopped");
 }
 
 void
-TimingHardwareManagerPDI::gather_monitor_data(std::atomic<bool>& monitor_running, ModuleMonitor<pdt::timingmon::TimingPDIMasterDesignTLUMonitorData>& monitor, std::atomic<uint>& monitor_interval)
+TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData>& gatherer)
 {
-  std::ostringstream oss_enter;
-  oss_enter << ": Entering gather_monitor_data() method";
-  ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_enter.str()));
-
-  while (monitor_running.load()) 
+  while (gatherer.run_gathering())
   {
-    pdt::timingmon::TimingPDIMasterDesignTLUMonitorData mon_data;
-    auto master_design = get_timing_device<pdt::PDIMasterDesign<pdt::TLUIONode>>("PROD_MASTER");
-    
+    // monitoring data recepticle
+    pdt::timingmon::TimingPDIMasterTLUMonitorData mon_data;
+
+    // collect the data from the hardware
+    auto master_design = get_timing_device<pdt::PDIMasterDesign<pdt::TLUIONode>>(m_cfg.monitored_device_name_master);    
     master_design.get_io_node().get_info(mon_data.hardware_data);
     master_design.get_master_node().get_info(mon_data.firmware_data);
 
-    monitor.update_monitoring_data(mon_data);
-    usleep(monitor_interval);
-  }
+    // store the monitor data for retrieveal by get_info at a later time
+    gatherer.update_monitoring_data(mon_data);
 
-  std::ostringstream oss_summ;
-  oss_summ << ": Exiting gather_monitor_data() method";
-  ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
+    // sleep for a bit
+    usleep(gatherer.get_gather_interval());
+  }
+}
+
+void
+TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData>& gatherer)
+{
+  while (gatherer.run_gathering())
+  {
+    // monitoring data recepticle
+    pdt::timingmon::TimingEndpointFMCMonitorData mon_data;
+
+    // collect the data from the hardware
+    auto endpoint_design = get_timing_device<pdt::EndpointDesign<pdt::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
+    endpoint_design.get_io_node().get_info(mon_data.hardware_data);
+    endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
+
+    // store the monitor data for retrieveal by get_info at a later time
+    gatherer.update_monitoring_data(mon_data);
+
+    // sleep for a bit
+    usleep(gatherer.get_gather_interval());
+  }
 }
 
 void
 TimingHardwareManagerPDI::get_info(const nlohmann::json&)
 {
-  auto mon_data = m_monitor_data_gatherer.get_monitoring_data();
-  ERS_INFO( get_name() << "get_info():\ncdr_lol: " << mon_data.hardware_data.cdr_lol
-                      << "\ncdr_los: " << mon_data.hardware_data.cdr_los 
-                      << "\npll_ok: " << mon_data.hardware_data.pll_ok 
-                      << "\nfl cmd acc counter 0: " << mon_data.firmware_data.command_counters.at(0).accepted
+  auto master_mon_data = m_master_monitor_data_gatherer.get_monitoring_data();
+  auto endpoint_mon_data = m_endpoint_monitor_data_gatherer.get_monitoring_data();
+
+  ERS_INFO( get_name() << "get_info(): "
+  //                    << "\nmaster: "
+  //                    << "\ncdr_lol: " << master_mon_data.hardware_data.cdr_lol
+  //                    << "\ncdr_los: " << master_mon_data.hardware_data.cdr_los 
+  //                    << "\npll_ok: " << master_mon_data.hardware_data.pll_ok 
+  //                    << "\nfl cmd acc counter 0: " << master_mon_data.firmware_data.command_counters.at(0).accepted
+
+                      << "\nendpoint: "
+                      << "\ntimestamp: " << endpoint_mon_data.firmware_data.timestamp
+                      << "\nstate: " << endpoint_mon_data.firmware_data.state
                         );
 }
 } // namespace timing 

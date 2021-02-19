@@ -16,7 +16,7 @@
 #include "timing/timingcmd/Nljs.hpp"
 
 #include "CommonIssues.hpp"
-#include "ModuleMonitor.hpp"
+#include "InfoGatherer.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"

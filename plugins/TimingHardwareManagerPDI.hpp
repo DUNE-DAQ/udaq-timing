@@ -19,6 +19,7 @@
 #include "timing/timinghardwaremanagerpdi/Nljs.hpp"
 
 #include "TimingHardwareManager.hpp"
+#include "InfoGatherer.hpp"
 
 #include "CommonIssues.hpp"
 
@@ -75,8 +76,12 @@ private:
   void do_stop(const nlohmann::json&)  override;
 
   // monitoring
-  ModuleMonitor<pdt::timingmon::TimingPDIMasterDesignTLUMonitorData> m_monitor_data_gatherer;
-  virtual void gather_monitor_data(std::atomic<bool>& monitor_running, ModuleMonitor<pdt::timingmon::TimingPDIMasterDesignTLUMonitorData>& monitor, std::atomic<uint>& monitor_interval);
+  InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData> m_master_monitor_data_gatherer;
+  virtual void gather_master_monitor_data(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData>& gatherer);
+
+  InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData> m_endpoint_monitor_data_gatherer;
+  virtual void gather_endpoint_monitor_data(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData>& gatherer);
+
 
   void get_info(const nlohmann::json&) override;
 };
