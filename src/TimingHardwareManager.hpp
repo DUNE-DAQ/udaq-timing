@@ -23,6 +23,8 @@
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 #include "appfwk/DAQModuleHelper.hpp"
+#include "appfwk/app/Structs.hpp"
+#include "appfwk/app/Nljs.hpp"
 
 #include "ers/Issue.h"
 
@@ -73,11 +75,11 @@ public:
   TimingHardwareManager& operator=(TimingHardwareManager&&) =
     delete; ///< TimingHardwareManager is not move-assignable
 
-  void init(const nlohmann::json& obj) override;
+  void init(const nlohmann::json& init_data) override;
 
 protected:
   // Commands
-  virtual void do_configure(const data_t& obj) = 0;
+  virtual void do_configure(const nlohmann::json& obj) = 0;
   virtual void do_start(const nlohmann::json&);
   virtual void do_stop(const nlohmann::json&);
 
@@ -126,9 +128,6 @@ protected:
   virtual void endpoint_disable(const timingcmd::TimingHwCmd& hw_cmd);
   virtual void endpoint_reset(const timingcmd::TimingHwCmd& hw_cmd);
   virtual void endpoint_print_status(const timingcmd::TimingHwCmd& hw_cmd);
-
-  // ship mon data off
-  virtual void get_info(const nlohmann::json&) = 0;
 
 };
 

@@ -40,8 +40,6 @@ TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
 { 
   register_command("conf", &TimingHardwareManagerPDI::do_configure);
 
-  register_command("get_info", &TimingHardwareManagerPDI::get_info);
-
   // register only the commands which are needed for this hardware manager
   
   // commands for master device
@@ -152,22 +150,13 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<pdt::timingm
 }
 
 void
-TimingHardwareManagerPDI::get_info(const nlohmann::json&)
+TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector & ci, int level)
 {
   auto master_mon_data = m_master_monitor_data_gatherer.get_monitoring_data();
-  auto endpoint_mon_data = m_endpoint_monitor_data_gatherer.get_monitoring_data();
+  //auto endpoint_mon_data = m_endpoint_monitor_data_gatherer.get_monitoring_data();
 
-  ERS_INFO( get_name() << "get_info(): "
-  //                    << "\nmaster: "
-  //                    << "\ncdr_lol: " << master_mon_data.hardware_data.cdr_lol
-  //                    << "\ncdr_los: " << master_mon_data.hardware_data.cdr_los 
-  //                    << "\npll_ok: " << master_mon_data.hardware_data.pll_ok 
-  //                    << "\nfl cmd acc counter 0: " << master_mon_data.firmware_data.command_counters.at(0).accepted
-
-                      << "\nendpoint: "
-                      << "\ntimestamp: " << endpoint_mon_data.firmware_data.timestamp
-                      << "\nstate: " << endpoint_mon_data.firmware_data.state
-                        );
+  ci.add(master_mon_data);
+  //ci.add(endpoint_mon_data);
 }
 } // namespace timing 
 } // namespace dunedaq

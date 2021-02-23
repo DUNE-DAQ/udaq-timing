@@ -5,14 +5,19 @@ moo.io.default_load_path = get_moo_model_path()
 
 # Load configuration types
 import moo.otypes
-moo.otypes.load_types('appfwk-cmd-schema.jsonnet')
-moo.otypes.load_types('timing-TimingHardwareManagerPDI-schema.jsonnet')
-moo.otypes.load_types('timing-TimingMasterController-schema.jsonnet')
-moo.otypes.load_types('timing-TimingPartitionController-schema.jsonnet')
-moo.otypes.load_types('timing-TimingEndpointController-schema.jsonnet')
+moo.otypes.load_types('appfwk/cmd.jsonnet')
+moo.otypes.load_types('appfwk/app.jsonnet')
+moo.otypes.load_types('cmdlib/cmd.jsonnet')
+moo.otypes.load_types('timing/TimingHardwareManagerPDI.jsonnet')
+moo.otypes.load_types('timing/TimingMasterController.jsonnet')
+moo.otypes.load_types('timing/TimingPartitionController.jsonnet')
+moo.otypes.load_types('timing/TimingEndpointController.jsonnet')
 
 # Import new types
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
+import dunedaq.appfwk.app as app # Queue spec
+import dunedaq.cmdlib.cmd as cmdlib # Command
+
 import dunedaq.timing.timinghardwaremanagerpdi as thi
 import dunedaq.timing.timingmastercontroller as tmc
 import dunedaq.timing.timingpartitioncontroller as tpc
@@ -34,37 +39,37 @@ def generate(
     
     # Define modules and queues
     queue_bare_specs = [
-            cmd.QueueSpec(inst="hardware_commands", kind='StdDeQueue', capacity=100),
+            app.QueueSpec(inst="hardware_commands", kind='StdDeQueue', capacity=100),
         ]
 
     # Only needed to reproduce the same order as when using jsonnet
-    queue_specs = cmd.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
+    queue_specs = app.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
 
     mod_specs = [
         mspec("thi", "TimingHardwareManagerPDI", [
-                        cmd.QueueInfo(name="hardware_commands_in", inst="hardware_commands", dir="input"),
+                        app.QueueInfo(name="hardware_commands_in", inst="hardware_commands", dir="input"),
                     ]),
 
         mspec("tmc0", "TimingMasterController", [
-                        cmd.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
                     ]),
 
         mspec("tpc0", "TimingPartitionController", [
-                        cmd.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
                     ]),
 
         mspec("tec0", "TimingEndpointController", [
-                        cmd.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
                     ]),
         ]
 
-    init_specs = cmd.Init(queues=queue_specs, modules=mod_specs)
+    init_specs = app.Init(queues=queue_specs, modules=mod_specs)
 
     jstr = json.dumps(init_specs.pod(), indent=4, sort_keys=True)
     print(jstr)
 
-    initcmd = cmd.Command(
-        id=cmd.CmdId("init"),
+    initcmd = cmdlib.Command(
+        id=cmdlib.CmdId("init"),
         data=init_specs
     )
 

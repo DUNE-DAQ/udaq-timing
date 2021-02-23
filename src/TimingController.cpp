@@ -37,17 +37,21 @@ TimingController::TimingController(const std::string& name)
 }
 
 void
-TimingController::init( const data_t& obj)
+TimingController::init( const nlohmann::json& init_data)
 {
   // set up queues
-  auto qi = appfwk::qindex(obj, {"hardware_commands_out"});
-  try
-  {
-    m_hw_command_out_queue.reset(new sink_t(qi["hardware_commands_out"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
-    throw InvalidQueueFatalError(ERS_HERE, get_name(), "hardware_commands_out", excpt);
+  auto ini = init_data.get<appfwk::app::ModInit>();
+  for (const auto& qi : ini.qinfos) {
+    if (!qi.name.compare("hardware_commands_out")) {
+      try
+      {
+        m_hw_command_out_queue.reset(new sink_t(qi.inst));
+      }
+      catch (const ers::Issue& excpt)
+      {
+        throw InvalidQueueFatalError(ERS_HERE, get_name(), qi.name, excpt);
+      }
+    }
   }
 }
 

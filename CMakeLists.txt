@@ -13,6 +13,8 @@ find_package(TRACE REQUIRED)
 find_package(appfwk REQUIRED)
 find_package(timing-board-software REQUIRED)
 
+daq_codegen_schema(*.jsonnet TEMPL Structs.hpp Nljs.hpp )
+
 ##############################################################################
 daq_add_library(TimingController.cpp LINK_LIBRARIES ers::ers appfwk::appfwk)
 

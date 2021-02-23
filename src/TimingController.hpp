@@ -19,6 +19,9 @@
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 
+#include "appfwk/app/Structs.hpp"
+#include "appfwk/app/Nljs.hpp"
+
 #include <ers/Issue.h>
 
 #include <memory>
@@ -50,7 +53,7 @@ public:
   TimingController& operator=(TimingController&&) =
     delete; ///< TimingController is not move-assignable
 
-  void init( const data_t& obj) override;
+  void init( const nlohmann::json& init_data) override;
 
 protected:
   // Commands

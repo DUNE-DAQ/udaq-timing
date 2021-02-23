@@ -25,6 +25,8 @@
 
 // in timing-board-software at the moment
 #include "pdt/timingmon/Structs.hpp"
+#include "pdt/timingmon/Nljs.hpp"
+
 #include "pdt/PDIMasterDesign.hpp"
 #include "pdt/EndpointDesign.hpp"
 
@@ -33,6 +35,9 @@
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 #include "appfwk/DAQModuleHelper.hpp"
+
+#include "appfwk/app/Structs.hpp"
+#include "appfwk/app/Nljs.hpp"
 
 #include "ers/Issue.h"
 
@@ -83,7 +88,7 @@ private:
   virtual void gather_endpoint_monitor_data(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData>& gatherer);
 
 
-  void get_info(const nlohmann::json&) override;
+  void get_info(opmonlib::InfoCollector & ci, int level) override;
 };
 } // namespace timing
 } // namespace dunedaq

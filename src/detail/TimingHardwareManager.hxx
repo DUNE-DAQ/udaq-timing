@@ -14,17 +14,21 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::TimingHardwareManager(const std::str
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
-void TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::init(const nlohmann::json& obj)
-{  
+void TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::init(const nlohmann::json& init_data)
+{
   // set up queues
-  auto qi = appfwk::qindex(obj, {"hardware_commands_in"});
-  try
-  {
-    m_hw_command_in_queue.reset(new source_t(qi["hardware_commands_in"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
-    throw InvalidQueueFatalError(ERS_HERE, get_name(), "hardware_commands_in", excpt);
+  auto ini = init_data.get<appfwk::app::ModInit>();
+  for (const auto& qi : ini.qinfos) {
+    if (!qi.name.compare("hardware_commands_in")) {
+      try
+      {
+        m_hw_command_in_queue.reset(new source_t(qi.inst));
+      }
+      catch (const ers::Issue& excpt)
+      {
+        throw InvalidQueueFatalError(ERS_HERE, get_name(), qi.name, excpt);
+      }
+    }
   }
 }
 
