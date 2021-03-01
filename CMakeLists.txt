@@ -9,20 +9,31 @@ daq_setup_environment()
 # TRACE: for low-level debugging statements
 
 find_package(ers REQUIRED)     
-find_package(TRACE REQUIRED)
+find_package(logging REQUIRED)
 find_package(appfwk REQUIRED)
 find_package(timing-board-software REQUIRED)
+find_package(nlohmann_json REQUIRED )
 
-daq_codegen_schema(*.jsonnet TEMPL Structs.hpp Nljs.hpp )
-
-##############################################################################
-daq_add_library(TimingController.cpp LINK_LIBRARIES ers::ers appfwk::appfwk)
+daq_codegen(*.jsonnet TEMPLATES Structs.hpp.j2 Nljs.hpp.j2 )
 
 ##############################################################################
-daq_add_plugin(TimingHardwareManagerPDI duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing-board-software libatomic.so)
-daq_add_plugin(TimingMasterController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
-daq_add_plugin(TimingPartitionController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
-daq_add_plugin(TimingEndpointController duneDAQModule SCHEMA LINK_LIBRARIES ers::ers appfwk::appfwk timing)
+# Dependency sets
+set(TIMING_DEPENDENCIES 
+  appfwk::appfwk
+  ers::ers
+  logging::logging
+  opmonlib::opmonlib
+  nlohmann_json::nlohmann_json
+)
+
+##############################################################################
+daq_add_library(TimingController.cpp LINK_LIBRARIES ${TIMING_DEPENDENCIES})
+
+##############################################################################
+daq_add_plugin(TimingHardwareManagerPDI duneDAQModule LINK_LIBRARIES timing-board-software timing)
+daq_add_plugin(TimingMasterController duneDAQModule LINK_LIBRARIES timing)
+daq_add_plugin(TimingPartitionController duneDAQModule LINK_LIBRARIES timing)
+daq_add_plugin(TimingEndpointController duneDAQModule LINK_LIBRARIES timing)
 
 
 ##############################################################################

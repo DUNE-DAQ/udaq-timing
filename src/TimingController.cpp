@@ -17,8 +17,8 @@
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
 
-#include "ers/ers.h"
-#include "TRACE/trace.h"
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include <chrono>
 #include <cstdlib>

@@ -12,8 +12,8 @@
 #ifndef TIMING_SRC_InfoGatherer_HPP_
 #define TIMING_SRC_InfoGatherer_HPP_
 
-#include "ers/Issue.h"
-#include "ers/ers.h"
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include <functional>
 #include <future>

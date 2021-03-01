@@ -20,7 +20,8 @@
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
 
-#include "ers/ers.h"
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include <chrono>
 #include <cstdlib>
@@ -75,9 +76,9 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   m_master_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
   m_endpoint_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
 
-  ERS_INFO( get_name() << "conf: con. file before env var expansion: " << m_connections_file);
+  TLOG() << get_name() << "conf: con. file before env var expansion: " << m_connections_file;
   resolve_environment_variables(m_connections_file);
-  ERS_INFO( get_name() << "conf: con. file after env var expansion:  " << m_connections_file);
+  TLOG() << get_name() << "conf: con. file after env var expansion:  " << m_connections_file;
 
   // uhal log level to be passed in as parameter?
   //uhal::setLogLevelTo(uhal::Notice());  
@@ -93,7 +94,7 @@ TimingHardwareManagerPDI::do_start(const nlohmann::json&)
   if (m_cfg.monitored_device_name_endpoint.compare("")) m_endpoint_monitor_data_gatherer.start_gathering_thread();
 
   thread_.start_working_thread();
-  ERS_LOG(get_name() << " successfully started");
+  TLOG() << get_name() << " successfully started";
 }
 
 void
@@ -104,7 +105,7 @@ TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
   if (m_cfg.monitored_device_name_endpoint.compare("")) m_endpoint_monitor_data_gatherer.stop_gathering_thread();
 
   thread_.stop_working_thread();
-  ERS_LOG(get_name() << " successfully stopped");
+  TLOG() << get_name() << " successfully stopped";
 }
 
 void

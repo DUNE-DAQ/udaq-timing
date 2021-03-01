@@ -18,8 +18,7 @@
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
 
-#include "ers/ers.h"
-#include "TRACE/trace.h"
+#include "ers/Issue.hpp"
 
 #include <chrono>
 #include <cstdlib>
@@ -48,7 +47,7 @@ TimingMasterController::do_configure(const nlohmann::json& obj)
 {
   timingmastercontroller::from_json(obj, m_cfg);
 
-  ERS_LOG( get_name() << "conf: managed device: " << m_cfg.device );
+  TLOG() << get_name() << "conf: managed device: " << m_cfg.device;
 }
 
 void

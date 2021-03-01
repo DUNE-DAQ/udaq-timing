@@ -20,8 +20,7 @@
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
 
-#include "ers/ers.h"
-#include "TRACE/trace.h"
+#include "ers/Issue.hpp"
 
 #include <chrono>
 #include <cstdlib>
@@ -53,7 +52,7 @@ TimingPartitionController::do_configure(const nlohmann::json& obj)
 {
   timingpartitioncontroller::from_json(obj, m_cfg);
   
-  ERS_LOG( get_name() << " conf: managed partition, device: " << m_cfg.device << ", part id: " << m_cfg.partition_id );
+  TLOG() << get_name() << " conf: managed partition, device: " << m_cfg.device << ", part id: " << m_cfg.partition_id;
 }
 
 void

@@ -39,7 +39,8 @@
 #include "appfwk/app/Structs.hpp"
 #include "appfwk/app/Nljs.hpp"
 
-#include "ers/Issue.h"
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include "uhal/ConnectionManager.hpp"
 

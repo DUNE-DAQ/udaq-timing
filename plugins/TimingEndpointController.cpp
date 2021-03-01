@@ -20,8 +20,8 @@
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
 
-#include "ers/ers.h"
-#include "TRACE/trace.h"
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include <chrono>
 #include <cstdlib>
@@ -53,7 +53,7 @@ TimingEndpointController::do_configure(const nlohmann::json& obj)
 {
   timingendpointcontroller::from_json(obj,m_cfg);
   
-  ERS_INFO(get_name() << " conf: managed endpoint, device: " << m_cfg.device);
+  TLOG() << get_name() << " conf: managed endpoint, device: " << m_cfg.device;
 }
 
 void
