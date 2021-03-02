@@ -21,7 +21,7 @@
 #include "TimingHardwareManager.hpp"
 #include "InfoGatherer.hpp"
 
-#include "CommonIssues.hpp"
+#include "TimingIssues.hpp"
 
 // in timing-board-software at the moment
 #include "pdt/timingmon/Structs.hpp"
@@ -43,6 +43,7 @@
 #include "logging/Logging.hpp"
 
 #include "uhal/ConnectionManager.hpp"
+#include "uhal/utilities/files.hpp"
 
 #include <memory>
 #include <string>

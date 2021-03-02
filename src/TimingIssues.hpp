@@ -1,5 +1,5 @@
 /**
- * @file CommonIssues.hpp
+ * @file TimingIssues.hpp
  *
  * This file contains the definitions of ERS Issues that are common
  * to two or more of the DAQModules in this package.
@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef TIMING_SRC_COMMONISSUES_HPP_
-#define TIMING_SRC_COMMONISSUES_HPP_
+#ifndef TIMING_SRC_TIMINGISSUES_HPP_
+#define TIMING_SRC_TIMINGISSUES_HPP_
 
 #include "appfwk/DAQModule.hpp"
 #include "ers/Issue.hpp"
@@ -33,6 +33,19 @@ ERS_DECLARE_ISSUE_BASE(timing,
                        ((std::string)name),
                        ((std::string)queueType))
 
+ERS_DECLARE_ISSUE(timing,                             ///< Namespace
+                  UHALIssue,                          ///< Issue class name
+                  " UHAL related issue: " << message, ///< Message
+                  ((std::string)message)              ///< Message parameters
+)
+
+ERS_DECLARE_ISSUE_BASE(timing,
+                       UHALConnectionsFileIssue,
+                       timing::UHALIssue,
+                       " UHAL connections file issue: " << message,
+                       ((std::string)message),
+                       ERS_EMPTY
+)
 } // namespace dunedaq
 
-#endif // TIMING_SRC_COMMONISSUES_HPP_
+#endif // TIMING_SRC_TIMINGISSUES_HPP_

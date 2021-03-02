@@ -15,7 +15,7 @@
 #include "timing/timingcmd/Structs.hpp"
 #include "timing/timingcmd/Nljs.hpp"
 
-#include "CommonIssues.hpp"
+#include "TimingIssues.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
@@ -81,9 +81,18 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   TLOG() << get_name() << "conf: con. file after env var expansion:  " << m_connections_file;
 
   // uhal log level to be passed in as parameter?
-  //uhal::setLogLevelTo(uhal::Notice());  
-  m_connection_manager = std::make_unique< uhal::ConnectionManager >("file://"+m_connections_file);
+  //uhal::setLogLevelTo(uhal::Notice()); 
 
+  try
+  {
+    m_connection_manager = std::make_unique< uhal::ConnectionManager >("file://"+m_connections_file);
+  }
+  catch (const uhal::exception::FileNotFound& excpt)
+  {
+    std::stringstream message;
+    message << m_connections_file << " not found. Have you set PDT_TESTS?";
+    throw UHALConnectionsFileIssue(ERS_HERE, message.str(), excpt);
+  }
 }
 
 void

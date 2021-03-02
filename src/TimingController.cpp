@@ -12,7 +12,7 @@
 #include "timing/timingcmd/Structs.hpp"
 #include "timing/timingcmd/Nljs.hpp"
 
-#include "CommonIssues.hpp"
+#include "TimingIssues.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"

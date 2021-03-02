@@ -12,7 +12,7 @@ find_package(ers REQUIRED)
 find_package(logging REQUIRED)
 find_package(appfwk REQUIRED)
 find_package(timing-board-software REQUIRED)
-find_package(nlohmann_json REQUIRED )
+find_package(nlohmann_json REQUIRED)
 
 daq_codegen(*.jsonnet TEMPLATES Structs.hpp.j2 Nljs.hpp.j2 )
 
@@ -37,7 +37,7 @@ daq_add_plugin(TimingEndpointController duneDAQModule LINK_LIBRARIES timing)
 
 
 ##############################################################################
-target_include_directories(${PROJECT_NAME}_TimingHardwareManagerPDI_duneDAQModule PUBLIC $ENV{UHAL_INC})
+target_include_directories(${PROJECT_NAME}_TimingHardwareManagerPDI_duneDAQModule PUBLIC $ENV{UHAL_INC} $ENV{PUGIXML_INC})
 
 ##############################################################################
 daq_install()

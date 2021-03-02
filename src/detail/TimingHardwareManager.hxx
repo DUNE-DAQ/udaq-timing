@@ -80,6 +80,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_work(std::atomic<bool>& running_f
       std::invoke(cmd->second, timing_hw_cmd);
       ++accepted_command_counts;
     } else {
+      // TODO should ers warning
       TLOG() << get_name() << ": Invalid hw cmd: " << timing_hw_cmd.id;
       ++rejected_command_counts;
     }
