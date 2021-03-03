@@ -5,9 +5,6 @@ find_package(daq-cmake REQUIRED)
 
 daq_setup_environment()
 
-# ers: for exceptions and normal output
-# TRACE: for low-level debugging statements
-
 find_package(ers REQUIRED)     
 find_package(logging REQUIRED)
 find_package(appfwk REQUIRED)

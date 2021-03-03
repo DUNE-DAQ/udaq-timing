@@ -35,8 +35,14 @@ namespace timing {
 
 TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
   : TimingHardwareManager<pdt::PDIMasterDesign<pdt::TLUIONode>,pdt::EndpointDesign<pdt::FMCIONode>>(name)
+  
+  // default gather interval of 1e6 us, may be overidden by config below
   , m_master_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_master_monitor_data, this, std::placeholders::_1), 1e6 )
   , m_endpoint_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_endpoint_monitor_data, this, std::placeholders::_1), 1e6 )
+  
+  // default gather interval of 10e6 us, may be overidden by config below
+  , m_master_monitor_data_gatherer_debug ( std::bind(&TimingHardwareManagerPDI::gather_master_monitor_data_debug, this, std::placeholders::_1), 10e6 )
+  , m_endpoint_monitor_data_gatherer_debug ( std::bind(&TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug, this, std::placeholders::_1), 10e6 )
 
 { 
   register_command("conf", &TimingHardwareManagerPDI::do_configure);
@@ -76,6 +82,8 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   m_master_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
   m_endpoint_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
 
+  // TODO debug gather interval config
+
   TLOG() << get_name() << "conf: con. file before env var expansion: " << m_connections_file;
   resolve_environment_variables(m_connections_file);
   TLOG() << get_name() << "conf: con. file after env var expansion:  " << m_connections_file;
@@ -99,8 +107,16 @@ void
 TimingHardwareManagerPDI::do_start(const nlohmann::json&)
 { 
   // only start monitor threads if we have been given the name of the device to monitor
-  if (m_cfg.monitored_device_name_master.compare("")) m_master_monitor_data_gatherer.start_gathering_thread();
-  if (m_cfg.monitored_device_name_endpoint.compare("")) m_endpoint_monitor_data_gatherer.start_gathering_thread();
+  if (m_cfg.monitored_device_name_master.compare(""))
+  {
+    m_master_monitor_data_gatherer.start_gathering_thread();
+    m_master_monitor_data_gatherer_debug.start_gathering_thread();
+  } 
+  if (m_cfg.monitored_device_name_endpoint.compare(""))
+  {
+    m_endpoint_monitor_data_gatherer.start_gathering_thread();
+    m_endpoint_monitor_data_gatherer_debug.start_gathering_thread();
+  } 
 
   thread_.start_working_thread();
   TLOG() << get_name() << " successfully started";
@@ -110,8 +126,16 @@ void
 TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
 {
   // do not attempt to stop monitor threads if we have not been given the name of the device to monitor
-  if (m_cfg.monitored_device_name_master.compare("")) m_master_monitor_data_gatherer.stop_gathering_thread();
-  if (m_cfg.monitored_device_name_endpoint.compare("")) m_endpoint_monitor_data_gatherer.stop_gathering_thread();
+  if (m_cfg.monitored_device_name_master.compare(""))
+  {
+   m_master_monitor_data_gatherer.stop_gathering_thread();
+   m_master_monitor_data_gatherer_debug.stop_gathering_thread();
+  } 
+  if (m_cfg.monitored_device_name_endpoint.compare(""))
+  {
+    m_endpoint_monitor_data_gatherer.stop_gathering_thread();
+    m_endpoint_monitor_data_gatherer_debug.stop_gathering_thread();
+  }
 
   thread_.stop_working_thread();
   TLOG() << get_name() << " successfully stopped";
@@ -129,6 +153,9 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<pdt::timingmon
     auto master_design = get_timing_device<pdt::PDIMasterDesign<pdt::TLUIONode>>(m_cfg.monitored_device_name_master);    
     master_design.get_io_node().get_info(mon_data.hardware_data);
     master_design.get_master_node().get_info(mon_data.firmware_data);
+
+    // when do we actually collect the data
+    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
     gatherer.update_monitoring_data(mon_data);
@@ -151,6 +178,57 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<pdt::timingm
     endpoint_design.get_io_node().get_info(mon_data.hardware_data);
     endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
 
+    // when do we actually collect the data
+    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+
+    // store the monitor data for retrieveal by get_info at a later time
+    gatherer.update_monitoring_data(mon_data);
+
+    // sleep for a bit
+    usleep(gatherer.get_gather_interval());
+  }
+}
+
+void
+TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug>& gatherer)
+{
+  while (gatherer.run_gathering())
+  {
+    // monitoring data recepticle
+    pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug mon_data;
+
+    // collect the data from the hardware
+    auto master_design = get_timing_device<pdt::PDIMasterDesign<pdt::TLUIONode>>(m_cfg.monitored_device_name_master);    
+    master_design.get_io_node().get_info(mon_data.hardware_data);
+    master_design.get_master_node().get_info(mon_data.firmware_data);
+
+    // when do we actually collect the data
+    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+
+    // store the monitor data for retrieveal by get_info at a later time
+    gatherer.update_monitoring_data(mon_data);
+
+    // sleep for a bit
+    usleep(gatherer.get_gather_interval());
+  }
+}
+
+void
+TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug>& gatherer)
+{
+  while (gatherer.run_gathering())
+  {
+    // monitoring data recepticle
+    pdt::timingmon::TimingEndpointFMCMonitorDataDebug mon_data;
+
+    // collect the data from the hardware
+    auto endpoint_design = get_timing_device<pdt::EndpointDesign<pdt::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
+    endpoint_design.get_io_node().get_info(mon_data.hardware_data);
+    endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
+
+    // when do we actually collect the data
+    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+
     // store the monitor data for retrieveal by get_info at a later time
     gatherer.update_monitoring_data(mon_data);
 
@@ -163,10 +241,20 @@ void
 TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector & ci, int level)
 {
   auto master_mon_data = m_master_monitor_data_gatherer.get_monitoring_data();
-  //auto endpoint_mon_data = m_endpoint_monitor_data_gatherer.get_monitoring_data();
+  auto endpoint_mon_data = m_endpoint_monitor_data_gatherer.get_monitoring_data();
 
-  ci.add(master_mon_data);
-  //ci.add(endpoint_mon_data);
+  auto master_mon_data_debug = m_master_monitor_data_gatherer_debug.get_monitoring_data();
+  auto endpoint_mon_data_debug = m_endpoint_monitor_data_gatherer_debug.get_monitoring_data();
+
+  // maybe we should keep track of when we last send data, and only send if we have had an update since
+  // only send data if we it has been gathered at least once
+  if (master_mon_data.time_gathered != 0) ci.add(master_mon_data);
+  if (endpoint_mon_data.time_gathered != 0) ci.add(endpoint_mon_data);
+
+  if (level > 0) {
+    if (master_mon_data_debug.time_gathered != 0) ci.add(master_mon_data_debug);
+    if (endpoint_mon_data_debug.time_gathered != 0) ci.add(endpoint_mon_data_debug);
+  }
 }
 } // namespace timing 
 } // namespace dunedaq

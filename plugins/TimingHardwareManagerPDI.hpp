@@ -89,6 +89,12 @@ private:
   InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData> m_endpoint_monitor_data_gatherer;
   virtual void gather_endpoint_monitor_data(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData>& gatherer);
 
+  InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug> m_master_monitor_data_gatherer_debug;
+  virtual void gather_master_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug>& gatherer);
+
+  InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug> m_endpoint_monitor_data_gatherer_debug;
+  virtual void gather_endpoint_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug>& gatherer);
+
 
   void get_info(opmonlib::InfoCollector & ci, int level) override;
 };
