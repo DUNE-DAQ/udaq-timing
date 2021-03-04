@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef TIMING_SRC_InfoGatherer_HPP_
-#define TIMING_SRC_InfoGatherer_HPP_
+#ifndef TIMING_SRC_INFOGATHERER_HPP_
+#define TIMING_SRC_INFOGATHERER_HPP_
 
 #include "ers/Issue.hpp"
 #include "logging/Logging.hpp"
@@ -121,8 +121,6 @@ public:
   }
 
   const MON_DATA get_monitoring_data() const { 
-
-    // TODO, what happens if the m_mon_data has not been filled before?
     std::shared_lock mon_data_lock(m_mon_data_mutex);
     return m_mon_data; 
   }
@@ -143,7 +141,7 @@ private:
 } // namespace timing
 } // namespace dunedaq
 
-#endif // TIMING_SRC_InfoGatherer_HPP_
+#endif // TIMING_SRC_INFOGATHERER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2
