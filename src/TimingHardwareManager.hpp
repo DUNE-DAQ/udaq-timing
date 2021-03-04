@@ -44,15 +44,6 @@
 namespace dunedaq {
 namespace timing {
 
-struct MonInfo {
-  uint counter;
-  MonInfo() 
-  {}
-  MonInfo(uint cntr) 
-  : counter(cntr)
-  {}
-};
-
 /**
  * @brief TimingHardwareManager creates vectors of ints and writes
  * them to the configured output queues.

@@ -82,14 +82,41 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   m_master_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
   m_endpoint_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
 
-  // TODO debug gather interval config
+  m_master_monitor_data_gatherer_debug.update_gather_interval(m_cfg.gather_interval_debug);
+  m_endpoint_monitor_data_gatherer_debug.update_gather_interval(m_cfg.gather_interval_debug);
 
   TLOG() << get_name() << "conf: con. file before env var expansion: " << m_connections_file;
   resolve_environment_variables(m_connections_file);
   TLOG() << get_name() << "conf: con. file after env var expansion:  " << m_connections_file;
 
-  // uhal log level to be passed in as parameter?
-  //uhal::setLogLevelTo(uhal::Notice()); 
+  if (!m_cfg.uhal_log_level.compare("debug"))
+  {
+    uhal::setLogLevelTo ( uhal::Debug() );
+  }
+  else if (!m_cfg.uhal_log_level.compare("info"))
+  {
+    uhal::setLogLevelTo ( uhal::Info() );
+  }
+  else if (!m_cfg.uhal_log_level.compare("notice"))
+  {
+    uhal::setLogLevelTo ( uhal::Notice() );
+  }
+  else if (!m_cfg.uhal_log_level.compare("warning"))
+  {
+    uhal::setLogLevelTo ( uhal::Warning() );
+  }
+  else if (!m_cfg.uhal_log_level.compare("error"))
+  {
+    uhal::setLogLevelTo ( uhal::Error() );
+  }  
+  else if (!m_cfg.uhal_log_level.compare("fatal"))
+  {
+    uhal::setLogLevelTo ( uhal::Fatal() );
+  }
+  else
+  {
+    throw InvalidUHALLogLevel(ERS_HERE, m_cfg.uhal_log_level);
+  }
 
   try
   {
@@ -154,7 +181,7 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<pdt::timingmon
     master_design.get_io_node().get_info(mon_data.hardware_data);
     master_design.get_master_node().get_info(mon_data.firmware_data);
 
-    // when do we actually collect the data
+    // when did we actually collect the data
     mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
@@ -178,7 +205,7 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<pdt::timingm
     endpoint_design.get_io_node().get_info(mon_data.hardware_data);
     endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
 
-    // when do we actually collect the data
+    // when did we actually collect the data
     mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
@@ -202,7 +229,7 @@ TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<pdt::tim
     master_design.get_io_node().get_info(mon_data.hardware_data);
     master_design.get_master_node().get_info(mon_data.firmware_data);
 
-    // when do we actually collect the data
+    // when did we actually collect the data
     mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
@@ -226,7 +253,7 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<pdt::t
     endpoint_design.get_io_node().get_info(mon_data.hardware_data);
     endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
 
-    // when do we actually collect the data
+    // when did we actually collect the data
     mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
@@ -245,16 +272,18 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector & ci, int level)
 
   auto master_mon_data_debug = m_master_monitor_data_gatherer_debug.get_monitoring_data();
   auto endpoint_mon_data_debug = m_endpoint_monitor_data_gatherer_debug.get_monitoring_data();
-
-  // maybe we should keep track of when we last send data, and only send if we have had an update since
+  
   // only send data if we it has been gathered at least once
   if (master_mon_data.time_gathered != 0) ci.add(master_mon_data);
   if (endpoint_mon_data.time_gathered != 0) ci.add(endpoint_mon_data);
 
-  if (level > 0) {
+  if (level > 1) {
     if (master_mon_data_debug.time_gathered != 0) ci.add(master_mon_data_debug);
     if (endpoint_mon_data_debug.time_gathered != 0) ci.add(endpoint_mon_data_debug);
   }
+
+  // maybe we should keep track of when we last send data, and only send if we have had an update since
+
 }
 } // namespace timing 
 } // namespace dunedaq

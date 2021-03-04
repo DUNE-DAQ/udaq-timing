@@ -46,6 +46,14 @@ ERS_DECLARE_ISSUE_BASE(timing,
                        ((std::string)message),
                        ERS_EMPTY
 )
+
+ERS_DECLARE_ISSUE_BASE(timing,
+                       InvalidUHALLogLevel,
+                       timing::UHALIssue,
+                       " Invalid UHAL log level supplied: " << log_level,
+                       ((std::string)log_level),
+                       ERS_EMPTY
+)
 } // namespace dunedaq
 
 #endif // TIMING_SRC_TIMINGISSUES_HPP_
