@@ -15,13 +15,12 @@
 #include "timing/timingcmd/Structs.hpp"
 #include "timing/timingcmd/Nljs.hpp"
 
-#include "CommonIssues.hpp"
+#include "TimingIssues.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
 
-#include "ers/ers.h"
-#include "TRACE/trace.h"
+#include "ers/Issue.hpp"
 
 #include <chrono>
 #include <cstdlib>
@@ -53,55 +52,81 @@ TimingPartitionController::do_configure(const nlohmann::json& obj)
 {
   timingpartitioncontroller::from_json(obj, m_cfg);
   
-  ERS_LOG( get_name() << " conf: managed partition, device: " << m_cfg.device << ", part id: " << m_cfg.partId );
+  TLOG() << get_name() << " conf: managed partition, device: " << m_cfg.device << ", part id: " << m_cfg.partition_id;
 }
 
 void
+TimingPartitionController::construct_partition_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id)
+{
+  timingcmd::TimingPartitionCmdPayload cmd_payload;
+  cmd_payload.partition_id = m_cfg.partition_id;
+  timingcmd::to_json(hw_cmd.payload, cmd_payload);
+
+  hw_cmd.id = cmd_id;
+  hw_cmd.device = m_cfg.device;
+}
+void
 TimingPartitionController::do_partition_configure(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_configure");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_configure");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingPartitionController::do_partition_enable(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_enable");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_enable");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingPartitionController::do_partition_disable(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_disable");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_disable");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingPartitionController::do_partition_start(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_start");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_start");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingPartitionController::do_partition_stop(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_stop");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_stop");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingPartitionController::do_partition_enable_triggers(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_enable_triggers");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_enable_triggers");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingPartitionController::do_partition_disable_triggers(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_disable_triggers");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_disable_triggers");
+  send_hw_cmd(hw_cmd);
 }
 
 void
 TimingPartitionController::do_partition_print_status(const nlohmann::json&)
 {
-  send_hw_cmd(m_cfg.device, "partition_print_status");
+  timingcmd::TimingHwCmd hw_cmd;
+  construct_partition_hw_cmd(hw_cmd, "partition_print_status");
+  send_hw_cmd(hw_cmd);
 }
 
 } // namespace timing 

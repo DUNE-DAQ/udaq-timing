@@ -22,7 +22,8 @@
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 
-#include <ers/Issue.h>
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include <memory>
 #include <string>
@@ -57,6 +58,8 @@ private:
   // Commands
   void do_configure(const nlohmann::json& obj) override;
 
+  void construct_endpoint_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
+  
   // timing endpoint commands
   void do_endpoint_io_reset(const nlohmann::json&);
   void do_endpoint_enable(const nlohmann::json&);
@@ -66,7 +69,7 @@ private:
   void do_endpoint_print_timestamp(const nlohmann::json&);
 
   // Configuration
-  timingendpointcontroller::Conf m_cfg;
+  timingendpointcontroller::ConfParams m_cfg;
 
 };
 } // namespace timing

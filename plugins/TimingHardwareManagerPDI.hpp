@@ -19,8 +19,16 @@
 #include "timing/timinghardwaremanagerpdi/Nljs.hpp"
 
 #include "TimingHardwareManager.hpp"
+#include "InfoGatherer.hpp"
 
-#include "CommonIssues.hpp"
+#include "TimingIssues.hpp"
+
+// in timing-board-software at the moment
+#include "pdt/timingmon/Structs.hpp"
+#include "pdt/timingmon/Nljs.hpp"
+
+#include "pdt/PDIMasterDesign.hpp"
+#include "pdt/EndpointDesign.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -28,12 +36,14 @@
 #include "appfwk/ThreadHelper.hpp"
 #include "appfwk/DAQModuleHelper.hpp"
 
-#include "ers/Issue.h"
+#include "appfwk/app/Structs.hpp"
+#include "appfwk/app/Nljs.hpp"
+
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include "uhal/ConnectionManager.hpp"
-
-#include "pdt/PDIMasterDesign.hpp"
-#include "pdt/EndpointDesign.hpp"
+#include "uhal/utilities/files.hpp"
 
 #include <memory>
 #include <string>
@@ -67,8 +77,26 @@ public:
 
   // configuration
 private:
-  timinghardwaremanagerpdi::Conf m_cfg;
+  timinghardwaremanagerpdi::ConfParams m_cfg;
   void do_configure(const data_t& obj) override;
+  void do_start(const nlohmann::json&) override;
+  void do_stop(const nlohmann::json&)  override;
+
+  // monitoring
+  InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData> m_master_monitor_data_gatherer;
+  virtual void gather_master_monitor_data(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData>& gatherer);
+
+  InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData> m_endpoint_monitor_data_gatherer;
+  virtual void gather_endpoint_monitor_data(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData>& gatherer);
+
+  InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug> m_master_monitor_data_gatherer_debug;
+  virtual void gather_master_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug>& gatherer);
+
+  InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug> m_endpoint_monitor_data_gatherer_debug;
+  virtual void gather_endpoint_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug>& gatherer);
+
+
+  void get_info(opmonlib::InfoCollector & ci, int level) override;
 };
 } // namespace timing
 } // namespace dunedaq

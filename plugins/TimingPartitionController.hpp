@@ -22,7 +22,8 @@
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 
-#include <ers/Issue.h>
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include <memory>
 #include <string>
@@ -57,6 +58,8 @@ private:
   // Commands
   void do_configure(const nlohmann::json& obj) override;
 
+  void construct_partition_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
+
   // timing partition commands
   void do_partition_configure(const nlohmann::json&);
   void do_partition_enable(const nlohmann::json&);
@@ -68,7 +71,7 @@ private:
   void do_partition_print_status(const nlohmann::json&);
 
   // Configuration
-  timingpartitioncontroller::Conf m_cfg;
+  timingpartitioncontroller::ConfParams m_cfg;
 
 };
 } // namespace timing

@@ -58,6 +58,7 @@ local qname = "hardware_commands";     // the name of the single queue in this j
     tcmd.endpoint_reset([cmd.mcmd("tec0")]),
 //    tcmd.endpoint_print_timestamp([cmd.mcmd("tec0")]),
     tcmd.endpoint_print_status([cmd.mcmd("tec0")]),
-
+    
+    tcmd.get_info([cmd.mcmd("thi")])
 ]
 

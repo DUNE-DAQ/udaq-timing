@@ -19,7 +19,11 @@
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 
-#include <ers/Issue.h>
+#include "appfwk/app/Structs.hpp"
+#include "appfwk/app/Nljs.hpp"
+
+#include "ers/Issue.hpp"
+#include "logging/Logging.hpp"
 
 #include <memory>
 #include <string>
@@ -50,7 +54,7 @@ public:
   TimingController& operator=(TimingController&&) =
     delete; ///< TimingController is not move-assignable
 
-  void init( const data_t& obj) override;
+  void init( const nlohmann::json& init_data) override;
 
 protected:
   // Commands
@@ -63,7 +67,7 @@ protected:
   std::unique_ptr<sink_t> m_hw_command_out_queue;
   std::chrono::milliseconds m_hw_cmd_out_queue_timeout;
 
-  virtual void send_hw_cmd(const std::string& device, const timingcmd::TimingHwCmdId& cmd_id);
+  virtual void send_hw_cmd(const timingcmd::TimingHwCmd& hw_cmd);
 
 };
 } // namespace timing
