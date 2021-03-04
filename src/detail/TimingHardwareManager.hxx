@@ -110,6 +110,12 @@ template<class TIMING_DEV>
 const TIMING_DEV&
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::get_timing_device(const std::string& device_name) {
 	
+  if (!device_name.compare("")) {
+    std::stringstream message;
+    message << "UHAL device name is an empty string";
+    throw UHALDeviceNameIssue(ERS_HERE, message.str());
+  }
+
   std::lock_guard<std::mutex> hw_device_map_guard(m_hw_device_map_mutex);
   
 	if (auto hw_device_entry = m_hw_device_map.find(device_name); hw_device_entry != m_hw_device_map.end()) {
@@ -117,12 +123,21 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::get_timing_device(const std::string&
     } else {
       TLOG_DEBUG(0) << get_name() << ": hw device interface for: " << device_name << " does not exist. I will try to create it.";
 
-      m_hw_device_map.emplace( device_name, std::make_unique<uhal::HwInterface>( m_connection_manager->getDevice(device_name) ) );
+      try
+      {
+        m_hw_device_map.emplace( device_name, std::make_unique<uhal::HwInterface>( m_connection_manager->getDevice(device_name) ) );
+      }
+      catch (const uhal::exception::ConnectionUIDDoesNotExist& exception)
+      { 
+        std::stringstream message;
+        message << "UHAL device name not " << device_name << " in connections file";
+        throw UHALDeviceNameIssue(ERS_HERE, message.str(), exception);
+      }
 
       TLOG_DEBUG(0) << get_name() << ": hw device interface for: " << device_name << " successfully created.";
+
+      return m_hw_device_map.find(device_name)->second->getNode<TIMING_DEV>("");
     }
-    // TODO catch an an exception and throw a proper issue if device cannot be found
-    return m_hw_device_map.find(device_name)->second->getNode<TIMING_DEV>("");
 }
 
 // master commands

@@ -54,6 +54,14 @@ ERS_DECLARE_ISSUE_BASE(timing,
                        ((std::string)log_level),
                        ERS_EMPTY
 )
+
+ERS_DECLARE_ISSUE_BASE(timing,
+                       UHALDeviceNameIssue,
+                       timing::UHALIssue,
+                       " UHAL device name issue: " << message,
+                       ((std::string)message),
+                       ERS_EMPTY
+)
 } // namespace dunedaq
 
 #endif // TIMING_SRC_TIMINGISSUES_HPP_
