@@ -16,6 +16,9 @@
 
 #include "timinglibs/timingmastercontroller/Structs.hpp"
 
+#include "timinglibs/timingmastercontrollerinfo/Structs.hpp"
+#include "timinglibs/timingmastercontrollerinfo/Nljs.hpp"
+
 #include "TimingController.hpp"
 
 #include "appfwk/DAQModule.hpp"
@@ -69,6 +72,8 @@ private:
   // Configuration
   timingmastercontroller::ConfParams m_cfg;
 
+  // pass op mon info
+  void get_info(opmonlib::InfoCollector & ci, int level) override;
 };
 } // namespace timinglibs
 } // namespace dunedaq

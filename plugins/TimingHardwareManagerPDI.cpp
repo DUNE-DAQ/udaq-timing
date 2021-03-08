@@ -145,6 +145,10 @@ TimingHardwareManagerPDI::do_start(const nlohmann::json&)
     m_endpoint_monitor_data_gatherer_debug.start_gathering_thread();
   } 
 
+  m_received_hw_commands_counter = 0;
+  m_accepted_hw_commands_counter = 0;
+  m_rejected_hw_commands_counter = 0;
+  
   thread_.start_working_thread();
   TLOG() << get_name() << " successfully started";
 }
@@ -265,6 +269,15 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<timing
 void
 TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector & ci, int level)
 {
+
+  // send counters internal to the module
+  timinghardwaremanagerpdiinfo::Info module_info;
+  module_info.received_hw_commands_counter = m_received_hw_commands_counter.load();
+  module_info.accepted_hw_commands_counter = m_accepted_hw_commands_counter.load();
+  module_info.rejected_hw_commands_counter = m_rejected_hw_commands_counter.load();
+  ci.add(module_info);
+
+  // retrieve and send hardware info
   auto master_mon_data = m_master_monitor_data_gatherer.get_monitoring_data();
   auto endpoint_mon_data = m_endpoint_monitor_data_gatherer.get_monitoring_data();
 

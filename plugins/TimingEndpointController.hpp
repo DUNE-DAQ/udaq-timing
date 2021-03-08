@@ -17,6 +17,9 @@
 #include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingendpointcontroller/Structs.hpp"
 
+#include "timinglibs/timingendpointcontrollerinfo/Structs.hpp"
+#include "timinglibs/timingendpointcontrollerinfo/Nljs.hpp"
+
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
 #include "appfwk/DAQSource.hpp"
@@ -70,6 +73,9 @@ private:
 
   // Configuration
   timingendpointcontroller::ConfParams m_cfg;
+
+  // pass op mon info
+  void get_info(opmonlib::InfoCollector & ci, int level) override;
 
 };
 } // namespace timinglibs

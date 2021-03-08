@@ -32,11 +32,13 @@ namespace dunedaq {
 namespace timinglibs {
 
 TimingPartitionController::TimingPartitionController(const std::string& name)
-  : dunedaq::timinglibs::TimingController(name)
+  : dunedaq::timinglibs::TimingController(name, 8)   // 2nd arg: how many hw commands can this module send?
 {
   register_command("conf", &TimingPartitionController::do_configure);
   register_command("start", &TimingPartitionController::do_start);
   register_command("stop",  &TimingPartitionController::do_stop);
+
+  // timing partition hw commands
   register_command("partition_configure", &TimingPartitionController::do_partition_configure);
   register_command("partition_enable", &TimingPartitionController::do_partition_enable);
   register_command("partition_disable", &TimingPartitionController::do_partition_disable);
@@ -71,6 +73,7 @@ TimingPartitionController::do_partition_configure(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_configure");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(0).atomic;
 }
 
 void
@@ -79,6 +82,7 @@ TimingPartitionController::do_partition_enable(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_enable");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(1).atomic;
 }
 
 void
@@ -87,6 +91,7 @@ TimingPartitionController::do_partition_disable(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_disable");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(2).atomic;
 }
 
 void
@@ -95,6 +100,7 @@ TimingPartitionController::do_partition_start(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_start");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(3).atomic;
 }
 
 void
@@ -103,6 +109,7 @@ TimingPartitionController::do_partition_stop(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_stop");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(4).atomic;
 }
 
 void
@@ -111,6 +118,7 @@ TimingPartitionController::do_partition_enable_triggers(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_enable_triggers");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(5).atomic;
 }
 
 void
@@ -119,6 +127,7 @@ TimingPartitionController::do_partition_disable_triggers(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_disable_triggers");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(6).atomic;
 }
 
 void
@@ -127,8 +136,19 @@ TimingPartitionController::do_partition_print_status(const nlohmann::json&)
   timingcmd::TimingHwCmd hw_cmd;
   construct_partition_hw_cmd(hw_cmd, "partition_print_status");
   send_hw_cmd(hw_cmd);
+  ++m_sent_hw_command_counters.at(7).atomic;
 }
 
+void
+TimingPartitionController::get_info(opmonlib::InfoCollector & ci, int /*level*/)
+{
+  // send counters internal to the module
+  timingpartitioncontrollerinfo::Info module_info;
+  for (uint i=0; i < m_number_hw_commands; ++i) {
+    module_info.sent_hw_command_counters.push_back( m_sent_hw_command_counters.at(i).atomic.load() );
+  }
+  ci.add(module_info);
+}
 } // namespace timinglibs 
 } // namespace dunedaq
 

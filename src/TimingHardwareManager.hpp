@@ -72,8 +72,8 @@ public:
 protected:
   // Commands
   virtual void do_configure(const nlohmann::json& obj) = 0;
-  virtual void do_start(const nlohmann::json&);
-  virtual void do_stop(const nlohmann::json&);
+  virtual void do_start(const nlohmann::json&) = 0;
+  virtual void do_stop(const nlohmann::json&) = 0;
 
   // Threading
   dunedaq::appfwk::ThreadHelper thread_;
@@ -120,6 +120,11 @@ protected:
   virtual void endpoint_disable(const timingcmd::TimingHwCmd& hw_cmd);
   virtual void endpoint_reset(const timingcmd::TimingHwCmd& hw_cmd);
   virtual void endpoint_print_status(const timingcmd::TimingHwCmd& hw_cmd);
+
+  // opmon stuff
+  std::atomic<uint64_t> m_received_hw_commands_counter;
+  std::atomic<uint64_t> m_accepted_hw_commands_counter;
+  std::atomic<uint64_t> m_rejected_hw_commands_counter;
 
 };
 

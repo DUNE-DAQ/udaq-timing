@@ -18,6 +18,9 @@
 #include "timinglibs/timinghardwaremanagerpdi/Structs.hpp"
 #include "timinglibs/timinghardwaremanagerpdi/Nljs.hpp"
 
+#include "timinglibs/timinghardwaremanagerpdiinfo/Structs.hpp"
+#include "timinglibs/timinghardwaremanagerpdiinfo/Nljs.hpp"
+
 #include "TimingHardwareManager.hpp"
 #include "InfoGatherer.hpp"
 

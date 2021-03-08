@@ -17,6 +17,9 @@
 #include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingpartitioncontroller/Structs.hpp"
 
+#include "timinglibs/timingpartitioncontrollerinfo/Structs.hpp"
+#include "timinglibs/timingpartitioncontrollerinfo/Nljs.hpp"
+
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
 #include "appfwk/DAQSource.hpp"
@@ -72,6 +75,9 @@ private:
 
   // Configuration
   timingpartitioncontroller::ConfParams m_cfg;
+
+  // pass op mon info
+  void get_info(opmonlib::InfoCollector & ci, int level) override;
 
 };
 } // namespace timinglibs

@@ -29,10 +29,12 @@
 namespace dunedaq {
 namespace timinglibs {
 
-TimingController::TimingController(const std::string& name)
+TimingController::TimingController(const std::string& name, uint number_hw_commands)
   : dunedaq::appfwk::DAQModule(name)
   , m_hw_command_out_queue(nullptr)
   , m_hw_cmd_out_queue_timeout(100)
+  , m_number_hw_commands(number_hw_commands)
+  , m_sent_hw_command_counters(m_number_hw_commands)
 {
 }
 

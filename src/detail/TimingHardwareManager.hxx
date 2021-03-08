@@ -7,6 +7,9 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::TimingHardwareManager(const std::str
   , m_hw_command_in_queue(nullptr)
   , m_queue_timeout(100)
   , m_connection_manager(nullptr)
+  , m_received_hw_commands_counter{0}
+  , m_accepted_hw_commands_counter{0}
+  , m_rejected_hw_commands_counter{0}
 {
   // all hardware manager variants will need these commands
   register_command("start", &TimingHardwareManager::do_start);
@@ -34,28 +37,8 @@ void TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::init(const nlohmann::json& init
 
 template<class MSTR_DSGN, class EPT_DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_start(const nlohmann::json&)
-{
-  thread_.start_working_thread();
-  TLOG() << get_name() << " successfully started";
-}
-
-template<class MSTR_DSGN, class EPT_DSGN>
-void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_stop(const nlohmann::json&)
-{
-  thread_.stop_working_thread();
-  TLOG() << get_name() << " successfully stopped";
-}
-
-template<class MSTR_DSGN, class EPT_DSGN>
-void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_work(std::atomic<bool>& running_flag)
 {
-  int received_command_counts = 0;
-  int accepted_command_counts = 0;
-  int rejected_command_counts = 0;
-
 
   while (running_flag.load()) 
   {
@@ -72,22 +55,22 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_work(std::atomic<bool>& running_f
       continue;
     }
     
-    ++received_command_counts;
+    ++m_received_hw_commands_counter;
 
-    TLOG_DEBUG(0) << get_name() << ": Received hardware command #" << received_command_counts << ", it is of type: " << timing_hw_cmd.id;
+    TLOG_DEBUG(0) << get_name() << ": Received hardware command #" << m_received_hw_commands_counter.load() << ", it is of type: " << timing_hw_cmd.id;
 
     if (auto cmd = m_timing_hw_cmd_map_.find(timing_hw_cmd.id); cmd != m_timing_hw_cmd_map_.end()) {
       std::invoke(cmd->second, timing_hw_cmd);
-      ++accepted_command_counts;
+      ++m_accepted_hw_commands_counter;
     } else {
       // TODO should ers warning
       TLOG() << get_name() << ": Invalid hw cmd: " << timing_hw_cmd.id;
-      ++rejected_command_counts;
+      ++m_rejected_hw_commands_counter;
     }
   }
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting do_work() method, received " << received_command_counts << " commands";
+  oss_summ << ": Exiting do_work() method, received " << m_received_hw_commands_counter.load() << " commands";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
 }
 

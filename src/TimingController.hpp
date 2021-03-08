@@ -32,6 +32,27 @@
 namespace dunedaq {
 namespace timinglibs {
 
+template<typename T>
+struct MobileAtomic
+{
+  std::atomic<T> atomic;
+
+  MobileAtomic() : atomic(T()) {}
+
+  explicit MobileAtomic ( T const& v ) : atomic ( v ) {}
+  explicit MobileAtomic ( std::atomic<T> const& a ) : atomic ( a.load() ) {}
+
+  MobileAtomic ( MobileAtomic const&other ) : atomic( other.atomic.load() ) {}
+
+  MobileAtomic& operator=( MobileAtomic const &other )
+  {
+    atomic.store( other.atomic.load() );
+    return *this;
+  }
+};
+
+typedef MobileAtomic<uint64_t> AtomicUInt64;
+
 /**
  * @brief TimingController is a DAQModule implementation that
  * provides a base class for timing controller modules.
@@ -43,7 +64,7 @@ public:
    * @brief TimingController Constructor
    * @param name Instance name for this TimingController instance
    */
-  explicit TimingController(const std::string& name);
+  explicit TimingController(const std::string& name, uint number_hw_commands);
 
   TimingController(const TimingController&) =
     delete; ///< TimingController is not copy-constructible
@@ -68,6 +89,10 @@ protected:
   std::chrono::milliseconds m_hw_cmd_out_queue_timeout;
 
   virtual void send_hw_cmd(const timingcmd::TimingHwCmd& hw_cmd);
+
+  // opmon
+  uint m_number_hw_commands;
+  std::vector<AtomicUInt64> m_sent_hw_command_counters;
 
 };
 } // namespace timinglibs
