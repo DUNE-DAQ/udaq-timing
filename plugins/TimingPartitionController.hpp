@@ -15,7 +15,10 @@
 #include "TimingController.hpp"
 
 #include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingcmd/Nljs.hpp"
+
 #include "timinglibs/timingpartitioncontroller/Structs.hpp"
+#include "timinglibs/timingpartitioncontroller/Nljs.hpp"
 
 #include "timinglibs/timingpartitioncontrollerinfo/Structs.hpp"
 #include "timinglibs/timingpartitioncontrollerinfo/Nljs.hpp"

@@ -117,7 +117,7 @@ TimingEndpointController::do_endpoint_print_status(const nlohmann::json&)
 }
 
 void
-TimingEndpointController::get_info(opmonlib::InfoCollector & ci, int level)
+TimingEndpointController::get_info(opmonlib::InfoCollector & ci, int /*level*/)
 {
 
   // send counters internal to the module
