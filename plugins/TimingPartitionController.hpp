@@ -9,13 +9,13 @@
  * received with this code.
  */
 
-#ifndef TIMING_PLUGINS_TIMINGPARTITIONCONTROLLER_HPP_
-#define TIMING_PLUGINS_TIMINGPARTITIONCONTROLLER_HPP_
+#ifndef TIMINGLIBS_PLUGINS_TIMINGPARTITIONCONTROLLER_HPP_
+#define TIMINGLIBS_PLUGINS_TIMINGPARTITIONCONTROLLER_HPP_
 
 #include "TimingController.hpp"
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingpartitioncontroller/Structs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingpartitioncontroller/Structs.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -30,13 +30,13 @@
 #include <vector>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 /**
  * @brief TimingPartitionController is a DAQModule implementation that
  * provides that provides a control interface for a timing partition.
  */
-class TimingPartitionController : public dunedaq::timing::TimingController
+class TimingPartitionController : public dunedaq::timinglibs::TimingController
 {
 public:
   /**
@@ -74,10 +74,10 @@ private:
   timingpartitioncontroller::ConfParams m_cfg;
 
 };
-} // namespace timing
+} // namespace timinglibs
 } // namespace dunedaq
 
-#endif // TIMING_PLUGINS_TIMINGPARTITIONCONTROLLER_HPP_
+#endif // TIMINGLIBS_PLUGINS_TIMINGPARTITIONCONTROLLER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

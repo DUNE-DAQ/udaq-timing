@@ -1,4 +1,4 @@
-namespace dunedaq::timing {
+namespace dunedaq::timinglibs {
 
 template<class MSTR_DSGN, class EPT_DSGN>
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::TimingHardwareManager(const std::string& name)
@@ -330,4 +330,4 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_print_status(const timingcm
   TLOG() << std::endl << endpoint_design.get_endpoint_node(0).get_status();
 }
 
-} // namespace dunedaq::timing
+} // namespace dunedaq::timinglibs

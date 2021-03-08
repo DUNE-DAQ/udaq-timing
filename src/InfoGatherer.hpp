@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef TIMING_SRC_INFOGATHERER_HPP_
-#define TIMING_SRC_INFOGATHERER_HPP_
+#ifndef TIMINGLIBS_SRC_INFOGATHERER_HPP_
+#define TIMINGLIBS_SRC_INFOGATHERER_HPP_
 
 #include "ers/Issue.hpp"
 #include "logging/Logging.hpp"
@@ -27,12 +27,12 @@ namespace dunedaq {
 /**
  * @brief An ERS Issue raised when a threading state error occurs
  */
-ERS_DECLARE_ISSUE(timing,                                      // Namespace
+ERS_DECLARE_ISSUE(timinglibs,                                      // Namespace
                   GatherThreadingIssue,                       // Issue Class Name
                   "Gather Threading Issue detected: " << err, // Message
                   ((std::string)err))                          // Message parameters
 
-namespace timing {
+namespace timinglibs {
 
 /**
  * @brief InfoGatherer helper class for DAQ module monitor
@@ -138,10 +138,10 @@ private:
   mutable std::shared_mutex m_mon_data_mutex;
 };
 
-} // namespace timing
+} // namespace timinglibs
 } // namespace dunedaq
 
-#endif // TIMING_SRC_INFOGATHERER_HPP_
+#endif // TIMINGLIBS_SRC_INFOGATHERER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

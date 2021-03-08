@@ -9,11 +9,11 @@
  * received with this code.
  */
 
-#ifndef TIMING_SRC_TIMINGHARDWAREMANAGER_HPP_
-#define TIMING_SRC_TIMINGHARDWAREMANAGER_HPP_
+#ifndef TIMINGLIBS_SRC_TIMINGHARDWAREMANAGER_HPP_
+#define TIMINGLIBS_SRC_TIMINGHARDWAREMANAGER_HPP_
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingcmd/Nljs.hpp"
 
 #include "TimingIssues.hpp"
 #include "InfoGatherer.hpp"
@@ -31,9 +31,9 @@
 
 #include "uhal/ConnectionManager.hpp"
 
-#include "pdt/PDIMasterDesign.hpp"
-#include "pdt/EndpointDesign.hpp"
-#include "pdt/EndpointNode.hpp"
+#include "timing/PDIMasterDesign.hpp"
+#include "timing/EndpointDesign.hpp"
+#include "timing/EndpointNode.hpp"
 
 #include <memory>
 #include <string>
@@ -42,7 +42,7 @@
 #include <regex>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 /**
  * @brief TimingHardwareManager creates vectors of ints and writes
@@ -133,12 +133,12 @@ void resolve_environment_variables(std::string& input_string) {
     }
 }
 
-} // namespace timing
+} // namespace timinglibs
 } // namespace dunedaq
 
 #include "detail/TimingHardwareManager.hxx"
 
-#endif // TIMING_SRC_TIMINGHARDWAREMANAGER_HPP_
+#endif // TIMINGLIBS_SRC_TIMINGHARDWAREMANAGER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

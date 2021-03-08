@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef TIMING_SRC_TIMINGISSUES_HPP_
-#define TIMING_SRC_TIMINGISSUES_HPP_
+#ifndef TIMINGLIBS_SRC_TIMINGISSUES_HPP_
+#define TIMINGLIBS_SRC_TIMINGISSUES_HPP_
 
 #include "appfwk/DAQModule.hpp"
 #include "ers/Issue.hpp"
@@ -19,49 +19,49 @@
 
 namespace dunedaq {
 
-ERS_DECLARE_ISSUE_BASE(timing,
+ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ProgressUpdate,
                        appfwk::GeneralDAQModuleIssue,
                        message,
                        ((std::string)name),
                        ((std::string)message))
 
-ERS_DECLARE_ISSUE_BASE(timing,
+ERS_DECLARE_ISSUE_BASE(timinglibs,
                        InvalidQueueFatalError,
                        appfwk::GeneralDAQModuleIssue,
                        "The " << queueType << " queue was not successfully created.",
                        ((std::string)name),
                        ((std::string)queueType))
 
-ERS_DECLARE_ISSUE(timing,                             ///< Namespace
+ERS_DECLARE_ISSUE(timinglibs,                             ///< Namespace
                   UHALIssue,                          ///< Issue class name
                   " UHAL related issue: " << message, ///< Message
                   ((std::string)message)              ///< Message parameters
 )
 
-ERS_DECLARE_ISSUE_BASE(timing,
+ERS_DECLARE_ISSUE_BASE(timinglibs,
                        UHALConnectionsFileIssue,
-                       timing::UHALIssue,
+                       timinglibs::UHALIssue,
                        " UHAL connections file issue: " << message,
                        ((std::string)message),
                        ERS_EMPTY
 )
 
-ERS_DECLARE_ISSUE_BASE(timing,
+ERS_DECLARE_ISSUE_BASE(timinglibs,
                        InvalidUHALLogLevel,
-                       timing::UHALIssue,
+                       timinglibs::UHALIssue,
                        " Invalid UHAL log level supplied: " << log_level,
                        ((std::string)log_level),
                        ERS_EMPTY
 )
 
-ERS_DECLARE_ISSUE_BASE(timing,
+ERS_DECLARE_ISSUE_BASE(timinglibs,
                        UHALDeviceNameIssue,
-                       timing::UHALIssue,
+                       timinglibs::UHALIssue,
                        " UHAL device name issue: " << message,
                        ((std::string)message),
                        ERS_EMPTY
 )
 } // namespace dunedaq
 
-#endif // TIMING_SRC_TIMINGISSUES_HPP_
+#endif // TIMINGLIBS_SRC_TIMINGISSUES_HPP_

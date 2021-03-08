@@ -9,11 +9,11 @@
 
 #include "TimingEndpointController.hpp"
 
-#include "timing/timingendpointcontroller/Structs.hpp"
-#include "timing/timingendpointcontroller/Nljs.hpp"
+#include "timinglibs/timingendpointcontroller/Structs.hpp"
+#include "timinglibs/timingendpointcontroller/Nljs.hpp"
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingcmd/Nljs.hpp"
 
 #include "TimingIssues.hpp"
 
@@ -30,10 +30,10 @@
 #include <vector>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 TimingEndpointController::TimingEndpointController(const std::string& name)
-  : dunedaq::timing::TimingController(name)
+  : dunedaq::timinglibs::TimingController(name)
 {
   register_command("conf", &TimingEndpointController::do_configure);
   register_command("start", &TimingEndpointController::do_start);
@@ -110,10 +110,10 @@ TimingEndpointController::do_endpoint_print_status(const nlohmann::json&)
   send_hw_cmd(hw_cmd);
 }
 
-} // namespace timing 
+} // namespace timinglibs 
 } // namespace dunedaq
 
-DEFINE_DUNE_DAQ_MODULE(dunedaq::timing::TimingEndpointController)
+DEFINE_DUNE_DAQ_MODULE(dunedaq::timinglibs::TimingEndpointController)
 
 // Local Variables:
 // c-basic-offset: 2

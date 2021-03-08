@@ -9,11 +9,11 @@
 
 #include "TimingPartitionController.hpp"
 
-#include "timing/timingpartitioncontroller/Structs.hpp"
-#include "timing/timingpartitioncontroller/Nljs.hpp"
+#include "timinglibs/timingpartitioncontroller/Structs.hpp"
+#include "timinglibs/timingpartitioncontroller/Nljs.hpp"
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingcmd/Nljs.hpp"
 
 #include "TimingIssues.hpp"
 
@@ -29,10 +29,10 @@
 #include <vector>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 TimingPartitionController::TimingPartitionController(const std::string& name)
-  : dunedaq::timing::TimingController(name)
+  : dunedaq::timinglibs::TimingController(name)
 {
   register_command("conf", &TimingPartitionController::do_configure);
   register_command("start", &TimingPartitionController::do_start);
@@ -129,10 +129,10 @@ TimingPartitionController::do_partition_print_status(const nlohmann::json&)
   send_hw_cmd(hw_cmd);
 }
 
-} // namespace timing 
+} // namespace timinglibs 
 } // namespace dunedaq
 
-DEFINE_DUNE_DAQ_MODULE(dunedaq::timing::TimingPartitionController)
+DEFINE_DUNE_DAQ_MODULE(dunedaq::timinglibs::TimingPartitionController)
 
 // Local Variables:
 // c-basic-offset: 2

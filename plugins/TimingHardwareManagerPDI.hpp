@@ -9,14 +9,14 @@
  * received with this code.
  */
 
-#ifndef TIMING_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
-#define TIMING_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
+#ifndef TIMINGLIBS_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
+#define TIMINGLIBS_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingcmd/Nljs.hpp"
 
-#include "timing/timinghardwaremanagerpdi/Structs.hpp"
-#include "timing/timinghardwaremanagerpdi/Nljs.hpp"
+#include "timinglibs/timinghardwaremanagerpdi/Structs.hpp"
+#include "timinglibs/timinghardwaremanagerpdi/Nljs.hpp"
 
 #include "TimingHardwareManager.hpp"
 #include "InfoGatherer.hpp"
@@ -24,11 +24,11 @@
 #include "TimingIssues.hpp"
 
 // in timing-board-software at the moment
-#include "pdt/timingmon/Structs.hpp"
-#include "pdt/timingmon/Nljs.hpp"
+#include "timing/timingfirmwareinfo/Structs.hpp"
+#include "timing/timingfirmwareinfo/Nljs.hpp"
 
-#include "pdt/PDIMasterDesign.hpp"
-#include "pdt/EndpointDesign.hpp"
+#include "timing/PDIMasterDesign.hpp"
+#include "timing/EndpointDesign.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -52,12 +52,12 @@
 #include <regex>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 /**
  * @brief Hardware manager for PD-I hardware.
  */
-class TimingHardwareManagerPDI : public TimingHardwareManager<pdt::PDIMasterDesign<pdt::TLUIONode>,pdt::EndpointDesign<pdt::FMCIONode>>
+class TimingHardwareManagerPDI : public TimingHardwareManager<timing::PDIMasterDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>
 {
 public:
   /**
@@ -83,25 +83,25 @@ private:
   void do_stop(const nlohmann::json&)  override;
 
   // monitoring
-  InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData> m_master_monitor_data_gatherer;
-  virtual void gather_master_monitor_data(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData>& gatherer);
+  InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData> m_master_monitor_data_gatherer;
+  virtual void gather_master_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData>& gatherer);
 
-  InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData> m_endpoint_monitor_data_gatherer;
-  virtual void gather_endpoint_monitor_data(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData>& gatherer);
+  InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorData> m_endpoint_monitor_data_gatherer;
+  virtual void gather_endpoint_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorData>& gatherer);
 
-  InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug> m_master_monitor_data_gatherer_debug;
-  virtual void gather_master_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug>& gatherer);
+  InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug> m_master_monitor_data_gatherer_debug;
+  virtual void gather_master_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug>& gatherer);
 
-  InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug> m_endpoint_monitor_data_gatherer_debug;
-  virtual void gather_endpoint_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug>& gatherer);
+  InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug> m_endpoint_monitor_data_gatherer_debug;
+  virtual void gather_endpoint_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug>& gatherer);
 
 
   void get_info(opmonlib::InfoCollector & ci, int level) override;
 };
-} // namespace timing
+} // namespace timinglibs
 } // namespace dunedaq
 
-#endif // TIMING_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
+#endif // TIMINGLIBS_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

@@ -9,8 +9,8 @@
 
 #include "TimingController.hpp"
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingcmd/Nljs.hpp"
 
 #include "TimingIssues.hpp"
 
@@ -27,7 +27,7 @@
 #include <vector>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 TimingController::TimingController(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
@@ -82,7 +82,7 @@ TimingController::send_hw_cmd(const timingcmd::TimingHwCmd& hw_cmd)
   }
 }
 
-} // namespace timing 
+} // namespace timinglibs 
 } // namespace dunedaq
 
 // Local Variables:

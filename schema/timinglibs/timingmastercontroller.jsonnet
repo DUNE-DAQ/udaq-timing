@@ -1,9 +1,9 @@
 local moo = import "moo.jsonnet";
-local ns = "dunedaq.timing.timingpartitioncontroller";
+local ns = "dunedaq.timinglibs.timingmastercontroller";
 local s = moo.oschema.schema(ns);
 
 local types = {
-	
+
     str : s.string("Str", doc="A string field"),
 
     uint_data: s.number("UintData", "u4",
@@ -12,9 +12,7 @@ local types = {
     conf: s.record("ConfParams", [
         s.field("device", self.str, "",
                 doc="String of managed device name"),
-        s.field("partition_id", self.uint_data, 0,
-                doc="Part id number"),
-    ], doc="TimingPartitionController configuration"),
+    ], doc="TimingMasterController configuration"),
 
 };
 

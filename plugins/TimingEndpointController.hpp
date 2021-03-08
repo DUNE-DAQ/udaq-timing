@@ -9,13 +9,13 @@
  * received with this code.
  */
 
-#ifndef TIMING_PLUGINS_TIMINGENDPOINTCONTROLLER_HPP_
-#define TIMING_PLUGINS_TIMINGENDPOINTCONTROLLER_HPP_
+#ifndef TIMINGLIBS_PLUGINS_TIMINGENDPOINTCONTROLLER_HPP_
+#define TIMINGLIBS_PLUGINS_TIMINGENDPOINTCONTROLLER_HPP_
 
 #include "TimingController.hpp"
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingendpointcontroller/Structs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingendpointcontroller/Structs.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -30,13 +30,13 @@
 #include <vector>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 /**
  * @brief TimingEndpointController is a DAQModule implementation that
  * provides that provides a control interface for a timing endpoint.
  */
-class TimingEndpointController : public dunedaq::timing::TimingController
+class TimingEndpointController : public dunedaq::timinglibs::TimingController
 {
 public:
   /**
@@ -60,7 +60,7 @@ private:
 
   void construct_endpoint_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
   
-  // timing endpoint commands
+  // timinglibs endpoint commands
   void do_endpoint_io_reset(const nlohmann::json&);
   void do_endpoint_enable(const nlohmann::json&);
   void do_endpoint_disable(const nlohmann::json&);
@@ -72,10 +72,10 @@ private:
   timingendpointcontroller::ConfParams m_cfg;
 
 };
-} // namespace timing
+} // namespace timinglibs
 } // namespace dunedaq
 
-#endif // TIMING_PLUGINS_TIMINGENDPOINTCONTROLLER_HPP_
+#endif // TIMINGLIBS_PLUGINS_TIMINGENDPOINTCONTROLLER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

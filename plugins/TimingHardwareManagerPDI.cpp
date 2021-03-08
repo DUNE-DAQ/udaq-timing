@@ -9,11 +9,11 @@
 
 #include "TimingHardwareManagerPDI.hpp"
 
-#include "timing/timinghardwaremanagerpdi/Structs.hpp"
-#include "timing/timinghardwaremanagerpdi/Nljs.hpp"
+#include "timinglibs/timinghardwaremanagerpdi/Structs.hpp"
+#include "timinglibs/timinghardwaremanagerpdi/Nljs.hpp"
 
-#include "timing/timingcmd/Structs.hpp"
-#include "timing/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
+#include "timinglibs/timingcmd/Nljs.hpp"
 
 #include "TimingIssues.hpp"
 
@@ -31,10 +31,10 @@
 #include <memory>
 
 namespace dunedaq {
-namespace timing {
+namespace timinglibs {
 
 TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
-  : TimingHardwareManager<pdt::PDIMasterDesign<pdt::TLUIONode>,pdt::EndpointDesign<pdt::FMCIONode>>(name)
+  : TimingHardwareManager<timing::PDIMasterDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>(name)
   
   // default gather interval of 1e6 us, may be overidden by config below
   , m_master_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_master_monitor_data, this, std::placeholders::_1), 1e6 )
@@ -169,15 +169,15 @@ TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
 }
 
 void
-TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorData>& gatherer)
+TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData>& gatherer)
 {
   while (gatherer.run_gathering())
   {
     // monitoring data recepticle
-    pdt::timingmon::TimingPDIMasterTLUMonitorData mon_data;
+    timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData mon_data;
 
     // collect the data from the hardware
-    auto master_design = get_timing_device<pdt::PDIMasterDesign<pdt::TLUIONode>>(m_cfg.monitored_device_name_master);    
+    auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master);    
     master_design.get_io_node().get_info(mon_data.hardware_data);
     master_design.get_master_node().get_info(mon_data.firmware_data);
 
@@ -193,15 +193,15 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<pdt::timingmon
 }
 
 void
-TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorData>& gatherer)
+TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorData>& gatherer)
 {
   while (gatherer.run_gathering())
   {
     // monitoring data recepticle
-    pdt::timingmon::TimingEndpointFMCMonitorData mon_data;
+    timing::timingfirmwareinfo::TimingEndpointFMCMonitorData mon_data;
 
     // collect the data from the hardware
-    auto endpoint_design = get_timing_device<pdt::EndpointDesign<pdt::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
+    auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
     endpoint_design.get_io_node().get_info(mon_data.hardware_data);
     endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
 
@@ -217,17 +217,16 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<pdt::timingm
 }
 
 void
-TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug>& gatherer)
+TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug>& gatherer)
 {
   while (gatherer.run_gathering())
   {
     // monitoring data recepticle
-    pdt::timingmon::TimingPDIMasterTLUMonitorDataDebug mon_data;
+    timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug mon_data;
 
     // collect the data from the hardware
-    auto master_design = get_timing_device<pdt::PDIMasterDesign<pdt::TLUIONode>>(m_cfg.monitored_device_name_master);    
+    auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master);    
     master_design.get_io_node().get_info(mon_data.hardware_data);
-    master_design.get_master_node().get_info(mon_data.firmware_data);
 
     // when did we actually collect the data
     mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
@@ -241,17 +240,16 @@ TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<pdt::tim
 }
 
 void
-TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<pdt::timingmon::TimingEndpointFMCMonitorDataDebug>& gatherer)
+TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug>& gatherer)
 {
   while (gatherer.run_gathering())
   {
     // monitoring data recepticle
-    pdt::timingmon::TimingEndpointFMCMonitorDataDebug mon_data;
+    timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug mon_data;
 
     // collect the data from the hardware
-    auto endpoint_design = get_timing_device<pdt::EndpointDesign<pdt::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
+    auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
     endpoint_design.get_io_node().get_info(mon_data.hardware_data);
-    endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
 
     // when did we actually collect the data
     mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
@@ -285,10 +283,10 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector & ci, int level)
   // maybe we should keep track of when we last send data, and only send if we have had an update since
 
 }
-} // namespace timing 
+} // namespace timinglibs 
 } // namespace dunedaq
 
-DEFINE_DUNE_DAQ_MODULE(dunedaq::timing::TimingHardwareManagerPDI)
+DEFINE_DUNE_DAQ_MODULE(dunedaq::timinglibs::TimingHardwareManagerPDI)
 
 // Local Variables:
 // c-basic-offset: 2
