@@ -9,10 +9,10 @@ moo.otypes.load_types('appfwk/cmd.jsonnet')
 moo.otypes.load_types('appfwk/app.jsonnet')
 moo.otypes.load_types('cmdlib/cmd.jsonnet')
 moo.otypes.load_types('rcif/cmd.jsonnet')
-moo.otypes.load_types('timing/timinghardwaremanagerpdi.jsonnet')
-moo.otypes.load_types('timing/timingmastercontroller.jsonnet')
-moo.otypes.load_types('timing/timingpartitioncontroller.jsonnet')
-moo.otypes.load_types('timing/timingendpointcontroller.jsonnet')
+moo.otypes.load_types('timinglibs/timinghardwaremanagerpdi.jsonnet')
+moo.otypes.load_types('timinglibs/timingmastercontroller.jsonnet')
+moo.otypes.load_types('timinglibs/timingpartitioncontroller.jsonnet')
+moo.otypes.load_types('timinglibs/timingendpointcontroller.jsonnet')
 
 # Import new types
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
@@ -20,10 +20,10 @@ import dunedaq.appfwk.app as app # Queue spec
 import dunedaq.cmdlib.cmd as cmdlib # Command
 import dunedaq.rcif.cmd as rcif # rcif
 
-import dunedaq.timing.timinghardwaremanagerpdi as thi
-import dunedaq.timing.timingmastercontroller as tmc
-import dunedaq.timing.timingpartitioncontroller as tpc
-import dunedaq.timing.timingendpointcontroller as tec
+import dunedaq.timinglibs.timinghardwaremanagerpdi as thi
+import dunedaq.timinglibs.timingmastercontroller as tmc
+import dunedaq.timinglibs.timingpartitioncontroller as tpc
+import dunedaq.timinglibs.timingendpointcontroller as tec
 
 from appfwk.utils import mcmd, mspec, mrccmd
 
