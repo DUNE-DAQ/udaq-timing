@@ -57,12 +57,14 @@
             ],
             "queues": [
                 {
-                    "capacity": 10,
+                    "capacity": 100,
                     "inst": "hardware_commands",
                     "kind": "StdDeQueue"
                 }
             ]
         },
+        "entry_state": "NONE",
+        "exit_state": "INITIAL",
         "id": "init"
     },
     {
@@ -70,7 +72,12 @@
             "modules": [
                 {
                     "data": {
-                        "connectionsFile": "${PDT_TESTS}/etc/connections.xml"
+                        "connections_file": "${PDT_TESTS}/etc/connections.xml",
+                        "gather_interval": 1000000,
+                        "gather_interval_debug": 10000000,
+                        "monitored_device_name_endpoint": "",
+                        "monitored_device_name_master": "PROD_MASTER",
+                        "uhal_log_level": "notice"
                     },
                     "match": "thi"
                 },
@@ -83,50 +90,88 @@
                 {
                     "data": {
                         "device": "PROD_MASTER",
-                        "partId": 0
+                        "partition_id": 0
                     },
                     "match": "tpc0"
                 },
                 {
                     "data": {
-                        "device": "EPT_0"
+                        "device": ""
                     },
                     "match": "tec0"
                 }
             ]
         },
+        "entry_state": "INITIAL",
+        "exit_state": "CONFIGURED",
         "id": "conf"
     },
     {
         "data": {
             "modules": [
                 {
-                    "data": {
-                        "run": 42
-                    },
-                    "match": ""
+                    "match": "thi"
+                },
+                {
+                    "match": "tmc.*"
+                },
+                {
+                    "match": "tpc.*"
+                },
+                {
+                    "match": "tec.*"
                 }
             ]
         },
+        "entry_state": "CONFIGURED",
+        "exit_state": "RUNNING",
         "id": "start"
     },
     {
         "data": {
             "modules": [
                 {
-                    "data": {},
                     "match": "thi"
+                },
+                {
+                    "match": "tmc.*"
+                },
+                {
+                    "match": "tpc.*"
+                },
+                {
+                    "match": "tec.*"
                 }
             ]
         },
+        "entry_state": "RUNNING",
+        "exit_state": "CONFIGURED",
         "id": "stop"
     },
     {
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tmc0"
+                    "match": "thi"
+                },
+                {
+                    "match": "tmc.*"
+                },
+                {
+                    "match": "tpc.*"
+                },
+                {
+                    "match": "tec.*"
+                }
+            ]
+        },
+        "id": "get_info"
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "match": "tmc.*"
                 }
             ]
         },
@@ -136,8 +181,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tmc0"
+                    "match": "tmc.*"
                 }
             ]
         },
@@ -147,8 +191,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tmc0"
+                    "match": "tmc.*"
                 }
             ]
         },
@@ -158,8 +201,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -169,8 +211,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -180,8 +221,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -191,8 +231,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -202,8 +241,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -213,8 +251,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -224,8 +261,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -235,8 +271,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tpc0"
+                    "match": "tpc.*"
                 }
             ]
         },
@@ -246,8 +281,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tec0"
+                    "match": "tec.*"
                 }
             ]
         },
@@ -257,8 +291,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tec0"
+                    "match": "tec.*"
                 }
             ]
         },
@@ -268,8 +301,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tec0"
+                    "match": "tec.*"
                 }
             ]
         },
@@ -279,8 +311,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tec0"
+                    "match": "tec.*"
                 }
             ]
         },
@@ -290,8 +321,7 @@
         "data": {
             "modules": [
                 {
-                    "data": {},
-                    "match": "tec0"
+                    "match": "tec.*"
                 }
             ]
         },
