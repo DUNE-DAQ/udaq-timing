@@ -205,13 +205,16 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timing
       ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.firmware_data.class_name, m_cfg.monitored_device_name_master, excpt));
     }
     
+    // did we actually manage to gather any new data?
+    if (successful_infos_gathered > 0)
+    {
+      // when did we actually collect the data
+      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
-    // when did we actually collect the data
-    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
-
-    // store the monitor data for retrieveal by get_info at a later time
-    gatherer.update_monitoring_data(mon_data);
-
+      // store the monitor data for retrieveal by get_info at a later time
+      gatherer.update_monitoring_data(mon_data);
+    } 
+    
     // sleep for a bit
     usleep(gatherer.get_gather_interval());
   }
@@ -250,11 +253,15 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<timing::timi
     }
     
 
-    // when did we actually collect the data
-    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+    // did we actually manage to gather any new data?
+    if (successful_infos_gathered > 0)
+    {
+      // when did we actually collect the data
+      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
-    // store the monitor data for retrieveal by get_info at a later time
-    gatherer.update_monitoring_data(mon_data);
+      // store the monitor data for retrieveal by get_info at a later time
+      gatherer.update_monitoring_data(mon_data);
+    }
 
     // sleep for a bit
     usleep(gatherer.get_gather_interval());
@@ -284,11 +291,15 @@ TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<timing::
       --successful_infos_gathered;
     }
 
-    // when did we actually collect the data
-    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+    // did we actually manage to gather any new data?
+    if (successful_infos_gathered > 0) {
+      // when did we actually collect the data
+      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
-    // store the monitor data for retrieveal by get_info at a later time
-    gatherer.update_monitoring_data(mon_data);
+      // store the monitor data for retrieveal by get_info at a later time
+      gatherer.update_monitoring_data(mon_data);
+    }
+    
 
     // sleep for a bit
     usleep(gatherer.get_gather_interval());
@@ -317,11 +328,16 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<timing
       --successful_infos_gathered;
     }
 
-    // when did we actually collect the data
-    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
-
-    // store the monitor data for retrieveal by get_info at a later time
-    gatherer.update_monitoring_data(mon_data);
+    // did we actually manage to gather any new data?
+    if (successful_infos_gathered > 0) 
+    { 
+      // when did we actually gather the data
+      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+      
+      // store the monitor data for retrieveal by get_info at a later time
+      gatherer.update_monitoring_data(mon_data);
+    }
+    
 
     // sleep for a bit
     usleep(gatherer.get_gather_interval());
