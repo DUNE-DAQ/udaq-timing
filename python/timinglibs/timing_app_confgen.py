@@ -60,13 +60,30 @@ def generate(
         mspec("tpc0", "TimingPartitionController", [
                         app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
                     ]),
+        ]
+
+    mod_specs_with_ept = [
+        mspec("thi", "TimingHardwareManagerPDI", [
+                        app.QueueInfo(name="hardware_commands_in", inst="hardware_commands", dir="input"),
+                    ]),
+
+        mspec("tmc0", "TimingMasterController", [
+                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                    ]),
+
+        mspec("tpc0", "TimingPartitionController", [
+                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                    ]),
 
         mspec("tec0", "TimingEndpointController", [
                         app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
                     ]),
         ]
 
-    init_specs = app.Init(queues=queue_specs, modules=mod_specs)
+    if ENDPOINT_DEVICE_NAME == "":
+        init_specs = app.Init(queues=queue_specs, modules=mod_specs)
+    else:
+        init_specs = app.Init(queues=queue_specs, modules=mod_specs_with_ept)
 
     jstr = json.dumps(init_specs.pod(), indent=4, sort_keys=True)
     print(jstr)
@@ -78,8 +95,7 @@ def generate(
         data=init_specs
     )
 
-
-    confcmd = mrccmd("conf", "INITIAL", "CONFIGURED",[
+    mods = [
                 ("thi", thi.ConfParams(
                         connections_file="${PDT_TESTS}/etc/connections.xml",
                         gather_interval=GATHER_INTERVAL,
@@ -95,11 +111,34 @@ def generate(
                         device=MASTER_DEVICE_NAME,
                         partition_id=0,
                         )),
-                ("tec0", tec.ConfParams(
-                        device=ENDPOINT_DEVICE_NAME,
-                        )),
-            ])
-    
+            ]
+
+    mods_with_tec = [
+                        ("thi", thi.ConfParams(
+                                connections_file="${PDT_TESTS}/etc/connections.xml",
+                                gather_interval=GATHER_INTERVAL,
+                                gather_interval_debug=GATHER_INTERVAL_DEBUG,
+                                monitored_device_name_master=MASTER_DEVICE_NAME,
+                                monitored_device_name_endpoint=ENDPOINT_DEVICE_NAME,
+                                uhal_log_level=UHAL_LOG_LEVEL
+                                )),
+                        ("tmc0", tmc.ConfParams(
+                                device=MASTER_DEVICE_NAME,
+                                )),
+                        ("tpc0", tpc.ConfParams(
+                                device=MASTER_DEVICE_NAME,
+                                partition_id=0,
+                                )),
+                        ("tec0", tec.ConfParams(
+                                device=ENDPOINT_DEVICE_NAME,
+                                )),
+                    ]
+
+    if ENDPOINT_DEVICE_NAME == "":
+        confcmd = mrccmd("conf", "INITIAL", "CONFIGURED", mods)
+    else:
+        confcmd = mrccmd("conf", "INITIAL", "CONFIGURED", mods_with_tec)
+
     jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
     print(jstr)
 

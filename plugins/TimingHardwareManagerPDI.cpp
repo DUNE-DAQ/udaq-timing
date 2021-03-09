@@ -180,13 +180,34 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timing
     // monitoring data recepticle
     timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData mon_data;
 
+    int successful_infos_gathered = 2;
+
     // collect the data from the hardware
     auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master);    
-    master_design.get_io_node().get_info(mon_data.hardware_data);
-    master_design.get_master_node().get_info(mon_data.firmware_data);
+    
+    try
+    {
+      master_design.get_io_node().get_info(mon_data.hardware_data);
+    }
+    catch (const std::exception& excpt)
+    {
+      --successful_infos_gathered;
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_master, excpt));
+    }
+    
+    try
+    {
+      master_design.get_master_node().get_info(mon_data.firmware_data);  
+    }
+    catch (const std::exception& excpt)
+    {
+      --successful_infos_gathered;
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.firmware_data.class_name, m_cfg.monitored_device_name_master, excpt));
+    }
+    
 
     // when did we actually collect the data
-    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
     gatherer.update_monitoring_data(mon_data);
@@ -203,14 +224,34 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<timing::timi
   {
     // monitoring data recepticle
     timing::timingfirmwareinfo::TimingEndpointFMCMonitorData mon_data;
+    
+    int successful_infos_gathered = 2;
 
     // collect the data from the hardware
     auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
-    endpoint_design.get_io_node().get_info(mon_data.hardware_data);
-    endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);
+    try
+    {
+      endpoint_design.get_io_node().get_info(mon_data.hardware_data);  
+    }
+    catch(const std::exception& excpt)
+    {
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
+      --successful_infos_gathered;
+    }
+    
+    try
+    {
+      endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);  
+    }
+    catch(const std::exception& excpt)
+    {
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.firmware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
+      --successful_infos_gathered;
+    }
+    
 
     // when did we actually collect the data
-    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
     gatherer.update_monitoring_data(mon_data);
@@ -228,12 +269,23 @@ TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<timing::
     // monitoring data recepticle
     timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug mon_data;
 
+    int successful_infos_gathered = 1;
+
     // collect the data from the hardware
     auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master);    
-    master_design.get_io_node().get_info(mon_data.hardware_data);
+    
+    try
+    {
+      master_design.get_io_node().get_info(mon_data.hardware_data);  
+    }
+    catch(const std::exception& excpt)
+    {
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_master, excpt));
+      --successful_infos_gathered;
+    }
 
     // when did we actually collect the data
-    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
     gatherer.update_monitoring_data(mon_data);
@@ -251,12 +303,22 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<timing
     // monitoring data recepticle
     timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug mon_data;
 
+    int successful_infos_gathered = 1;
+
     // collect the data from the hardware
     auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
-    endpoint_design.get_io_node().get_info(mon_data.hardware_data);
+    try
+    {
+      endpoint_design.get_io_node().get_info(mon_data.hardware_data);
+    }
+    catch(const std::exception& excpt)
+    {
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
+      --successful_infos_gathered;
+    }
 
     // when did we actually collect the data
-    mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+    if (successful_infos_gathered > 0) mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
 
     // store the monitor data for retrieveal by get_info at a later time
     gatherer.update_monitoring_data(mon_data);

@@ -33,7 +33,7 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ((std::string)name),
                        ((std::string)queueType))
 
-ERS_DECLARE_ISSUE(timinglibs,                             ///< Namespace
+ERS_DECLARE_ISSUE(timinglibs,                         ///< Namespace
                   UHALIssue,                          ///< Issue class name
                   " UHAL related issue: " << message, ///< Message
                   ((std::string)message)              ///< Message parameters
@@ -62,6 +62,12 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ((std::string)message),
                        ERS_EMPTY
 )
+
+ERS_DECLARE_ISSUE(timinglibs,
+                  FailedToCollectOpMonInfo,
+                  " Failed to collect op mon info class: " << info_class << " from device: " << device_name,
+                  ((std::string)info_class)((std::string)device_name)
+                  )
 } // namespace dunedaq
 
 #endif // TIMINGLIBS_SRC_TIMINGISSUES_HPP_
