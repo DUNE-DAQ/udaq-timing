@@ -67,10 +67,6 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_work(std::atomic<bool>& running_f
       {
         std::invoke(cmd->second, timing_hw_cmd);
       }
-      catch (const UHALDeviceNameIssue& device_name_issue)
-      {
-        ers::error(device_name_issue);
-      }
       catch (const std::exception& exception)
       {
         ers::error(FailedToExecuteHardwareCommand(ERS_HERE, timing_hw_cmd.id, exception));

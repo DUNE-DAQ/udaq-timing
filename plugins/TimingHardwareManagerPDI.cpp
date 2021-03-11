@@ -194,10 +194,9 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timing
     int successful_infos_gathered = 2;
 
     // collect the data from the hardware
-    auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master);    
-    
     try
     {
+      auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
       master_design.get_io_node().get_info(mon_data.hardware_data);
     }
     catch (const std::exception& excpt)
@@ -208,6 +207,7 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timing
     
     try
     {
+      auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
       master_design.get_master_node().get_info(mon_data.firmware_data);  
     }
     catch (const std::exception& excpt)
@@ -215,7 +215,7 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timing
       --successful_infos_gathered;
       ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.firmware_data.class_name, m_cfg.monitored_device_name_master, excpt));
     }
-    
+
     // did we actually manage to gather any new data?
     if (successful_infos_gathered > 0)
     {
@@ -241,10 +241,10 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<timing::timi
     
     int successful_infos_gathered = 2;
 
-    // collect the data from the hardware
-    auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
+    // collect the data from the hardware    
     try
     {
+      auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);
       endpoint_design.get_io_node().get_info(mon_data.hardware_data);  
     }
     catch(const std::exception& excpt)
@@ -252,9 +252,10 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<timing::timi
       ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
       --successful_infos_gathered;
     }
-    
+
     try
     {
+      auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);
       endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);  
     }
     catch(const std::exception& excpt)
@@ -262,7 +263,6 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<timing::timi
       ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.firmware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
       --successful_infos_gathered;
     }
-    
 
     // did we actually manage to gather any new data?
     if (successful_infos_gathered > 0)
@@ -290,10 +290,9 @@ TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<timing::
     int successful_infos_gathered = 1;
 
     // collect the data from the hardware
-    auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master);    
-    
     try
     {
+      auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
       master_design.get_io_node().get_info(mon_data.hardware_data);  
     }
     catch(const std::exception& excpt)
@@ -327,10 +326,10 @@ TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<timing
 
     int successful_infos_gathered = 1;
 
-    // collect the data from the hardware
-    auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);    
+    // collect the data from the hardware   
     try
     {
+      auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint); 
       endpoint_design.get_io_node().get_info(mon_data.hardware_data);
     }
     catch(const std::exception& excpt)
