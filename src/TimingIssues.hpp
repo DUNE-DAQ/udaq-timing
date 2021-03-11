@@ -68,6 +68,28 @@ ERS_DECLARE_ISSUE(timinglibs,
                   " Failed to collect op mon info class: " << info_class << " from device: " << device_name,
                   ((std::string)info_class)((std::string)device_name)
                   )
+
+ERS_DECLARE_ISSUE(timinglibs,
+                  HardwareCommandIssue,
+                  " Issue wih hw cmd id: " << hw_cmd_id,
+                  ((std::string)hw_cmd_id)
+                  )
+
+ERS_DECLARE_ISSUE_BASE(timinglibs,
+                       InvalidHardwareCommandID,
+                       timinglibs::HardwareCommandIssue,
+                       " Hardware command ID: " << hw_cmd_id << " invalid",
+                       ((std::string)hw_cmd_id),
+                       ERS_EMPTY
+)
+
+ERS_DECLARE_ISSUE_BASE(timinglibs,
+                       FailedToExecuteHardwareCommand,
+                       timinglibs::HardwareCommandIssue,
+                       " Failed to execute hardware command with ID: " << hw_cmd_id,
+                       ((std::string)hw_cmd_id),
+                       ERS_EMPTY
+)
 } // namespace dunedaq
 
 #endif // TIMINGLIBS_SRC_TIMINGISSUES_HPP_

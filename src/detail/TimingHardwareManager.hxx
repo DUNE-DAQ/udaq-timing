@@ -60,11 +60,23 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_work(std::atomic<bool>& running_f
     TLOG_DEBUG(0) << get_name() << ": Received hardware command #" << m_received_hw_commands_counter.load() << ", it is of type: " << timing_hw_cmd.id;
 
     if (auto cmd = m_timing_hw_cmd_map_.find(timing_hw_cmd.id); cmd != m_timing_hw_cmd_map_.end()) {
-      std::invoke(cmd->second, timing_hw_cmd);
+      
       ++m_accepted_hw_commands_counter;
+
+      try
+      {
+        std::invoke(cmd->second, timing_hw_cmd);
+      }
+      catch (const UHALDeviceNameIssue& device_name_issue)
+      {
+        ers::error(device_name_issue);
+      }
+      catch (const std::exception& exception)
+      {
+        ers::error(FailedToExecuteHardwareCommand(ERS_HERE, timing_hw_cmd.id, exception));
+      }
     } else {
-      // TODO should ers warning
-      TLOG() << get_name() << ": Invalid hw cmd: " << timing_hw_cmd.id;
+      ers::error(InvalidHardwareCommandID(ERS_HERE, timing_hw_cmd.id));
       ++m_rejected_hw_commands_counter;
     }
   }
