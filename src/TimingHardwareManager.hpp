@@ -126,6 +126,9 @@ protected:
   std::atomic<uint64_t> m_accepted_hw_commands_counter;
   std::atomic<uint64_t> m_rejected_hw_commands_counter;
 
+  virtual void start_hw_mon_gathering() = 0;
+  virtual void stop_hw_mon_gathering() = 0;
+
 };
 
 void resolve_environment_variables(std::string& input_string) {

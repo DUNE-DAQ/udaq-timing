@@ -85,6 +85,10 @@ private:
   void do_start(const nlohmann::json&) override;
   void do_stop(const nlohmann::json&)  override;
 
+  // start / stop op mon hw info gathering
+  void start_hw_mon_gathering() override;
+  void stop_hw_mon_gathering() override;
+
   // monitoring
   InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData> m_master_monitor_data_gatherer;
   virtual void gather_master_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData>& gatherer);
@@ -97,7 +101,6 @@ private:
 
   InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug> m_endpoint_monitor_data_gatherer_debug;
   virtual void gather_endpoint_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug>& gatherer);
-
 
   void get_info(opmonlib::InfoCollector & ci, int level) override;
 };

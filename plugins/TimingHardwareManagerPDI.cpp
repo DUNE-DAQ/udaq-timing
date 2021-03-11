@@ -133,6 +133,27 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
 void
 TimingHardwareManagerPDI::do_start(const nlohmann::json&)
 { 
+  m_received_hw_commands_counter = 0;
+  m_accepted_hw_commands_counter = 0;
+  m_rejected_hw_commands_counter = 0;
+  
+  start_hw_mon_gathering();
+
+  thread_.start_working_thread();
+  TLOG() << get_name() << " successfully started";
+}
+
+void
+TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
+{
+  stop_hw_mon_gathering();
+  thread_.stop_working_thread();
+  TLOG() << get_name() << " successfully stopped";
+}
+
+void
+TimingHardwareManagerPDI::start_hw_mon_gathering()
+{
   // only start monitor threads if we have been given the name of the device to monitor
   if (m_cfg.monitored_device_name_master.compare(""))
   {
@@ -144,17 +165,10 @@ TimingHardwareManagerPDI::do_start(const nlohmann::json&)
     m_endpoint_monitor_data_gatherer.start_gathering_thread();
     m_endpoint_monitor_data_gatherer_debug.start_gathering_thread();
   } 
-
-  m_received_hw_commands_counter = 0;
-  m_accepted_hw_commands_counter = 0;
-  m_rejected_hw_commands_counter = 0;
-  
-  thread_.start_working_thread();
-  TLOG() << get_name() << " successfully started";
 }
 
 void
-TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
+TimingHardwareManagerPDI::stop_hw_mon_gathering()
 {
   // do not attempt to stop monitor threads if we have not been given the name of the device to monitor
   if (m_cfg.monitored_device_name_master.compare(""))
@@ -167,9 +181,6 @@ TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
     m_endpoint_monitor_data_gatherer.stop_gathering_thread();
     m_endpoint_monitor_data_gatherer_debug.stop_gathering_thread();
   }
-
-  thread_.stop_working_thread();
-  TLOG() << get_name() << " successfully stopped";
 }
 
 void

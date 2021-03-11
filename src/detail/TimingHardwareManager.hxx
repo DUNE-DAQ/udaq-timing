@@ -128,9 +128,11 @@ template<class MSTR_DSGN, class EPT_DSGN>
 void
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::master_io_reset(const timingcmd::TimingHwCmd& hw_cmd)
 {
+  //stop_hw_mon_gathering();
   auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " reset";
   master_design.reset();
+  //start_hw_mon_gathering();
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>
