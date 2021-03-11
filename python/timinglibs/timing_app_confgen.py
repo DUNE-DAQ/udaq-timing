@@ -49,41 +49,31 @@ def generate(
     queue_specs = app.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
 
     mod_specs = [
-        mspec("thi", "TimingHardwareManagerPDI", [
-                        app.QueueInfo(name="hardware_commands_in", inst="hardware_commands", dir="input"),
-                    ]),
+                    mspec("thi", "TimingHardwareManagerPDI", [
+                                    app.QueueInfo(name="hardware_commands_in", inst="hardware_commands", dir="input"),
+                                ]),
+                ]
 
-        mspec("tmc0", "TimingMasterController", [
-                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
-                    ]),
+    if MASTER_DEVICE_NAME != "":
+        mod_specs.extend( [
+                            mspec("tmc0", "TimingMasterController", [
+                                            app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                                        ]),
+                            
+                            mspec("tpc0", "TimingPartitionController", [
+                                            app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                                        ]),
+                        ] ) 
 
-        mspec("tpc0", "TimingPartitionController", [
-                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
-                    ]),
-        ]
+    if ENDPOINT_DEVICE_NAME != "":
+        mod_specs.extend( [
+                            mspec("tec0", "TimingEndpointController", [
+                                            app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                                        ]),
+                          ] )
 
-    mod_specs_with_ept = [
-        mspec("thi", "TimingHardwareManagerPDI", [
-                        app.QueueInfo(name="hardware_commands_in", inst="hardware_commands", dir="input"),
-                    ]),
-
-        mspec("tmc0", "TimingMasterController", [
-                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
-                    ]),
-
-        mspec("tpc0", "TimingPartitionController", [
-                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
-                    ]),
-
-        mspec("tec0", "TimingEndpointController", [
-                        app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
-                    ]),
-        ]
-
-    if ENDPOINT_DEVICE_NAME == "":
-        init_specs = app.Init(queues=queue_specs, modules=mod_specs)
-    else:
-        init_specs = app.Init(queues=queue_specs, modules=mod_specs_with_ept)
+    init_specs = app.Init(queues=queue_specs, modules=mod_specs)
+    
 
     jstr = json.dumps(init_specs.pod(), indent=4, sort_keys=True)
     print(jstr)
@@ -104,24 +94,10 @@ def generate(
                         monitored_device_name_endpoint=ENDPOINT_DEVICE_NAME,
                         uhal_log_level=UHAL_LOG_LEVEL
                         )),
-                ("tmc0", tmc.ConfParams(
-                        device=MASTER_DEVICE_NAME,
-                        )),
-                ("tpc0", tpc.ConfParams(
-                        device=MASTER_DEVICE_NAME,
-                        partition_id=0,
-                        )),
             ]
 
-    mods_with_tec = [
-                        ("thi", thi.ConfParams(
-                                connections_file="${PDT_TESTS}/etc/connections.xml",
-                                gather_interval=GATHER_INTERVAL,
-                                gather_interval_debug=GATHER_INTERVAL_DEBUG,
-                                monitored_device_name_master=MASTER_DEVICE_NAME,
-                                monitored_device_name_endpoint=ENDPOINT_DEVICE_NAME,
-                                uhal_log_level=UHAL_LOG_LEVEL
-                                )),
+    if MASTER_DEVICE_NAME != "":
+        mods.extend( [
                         ("tmc0", tmc.ConfParams(
                                 device=MASTER_DEVICE_NAME,
                                 )),
@@ -129,15 +105,16 @@ def generate(
                                 device=MASTER_DEVICE_NAME,
                                 partition_id=0,
                                 )),
+                     ] )
+
+    if ENDPOINT_DEVICE_NAME != "":
+        mods.extend( [
                         ("tec0", tec.ConfParams(
                                 device=ENDPOINT_DEVICE_NAME,
                                 )),
-                    ]
+                     ] )
 
-    if ENDPOINT_DEVICE_NAME == "":
-        confcmd = mrccmd("conf", "INITIAL", "CONFIGURED", mods)
-    else:
-        confcmd = mrccmd("conf", "INITIAL", "CONFIGURED", mods_with_tec)
+    confcmd = mrccmd("conf", "INITIAL", "CONFIGURED", mods)
 
     jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
     print(jstr)
@@ -169,13 +146,6 @@ def generate(
 
     jstr = json.dumps(scrapcmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nScrap\n\n", jstr)
-
-    get_info_cmd = mcmd("get_info", [
-            ("thi", None),
-            ("tmc.*", None),
-            ("tpc.*", None),
-            ("tec.*", None),
-        ])
 
     ## timing specific commands
 
@@ -265,18 +235,18 @@ def generate(
     print("="*80+"\nEndpoint IO reset\n\n", jstr)
 
 
-    endpoint_enable_triggers_cmd = mcmd("endpoint_enable", [
+    endpoint_enable_cmd = mcmd("endpoint_enable", [
             ("tec.*", None),
         ])
-    jstr = json.dumps(endpoint_enable_triggers_cmd.pod(), indent=4, sort_keys=True)
-    print("="*80+"\nPartition enable triggers\n\n", jstr)
+    jstr = json.dumps(endpoint_enable_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nEndpoint enable\n\n", jstr)
 
 
-    endpoint_disable_triggers_cmd = mcmd("endpoint_disable", [
+    endpoint_disable_cmd = mcmd("endpoint_disable", [
             ("tec.*", None),
         ])
-    jstr = json.dumps(endpoint_disable_triggers_cmd.pod(), indent=4, sort_keys=True)
-    print("="*80+"\nPartition disable triggers\n\n", jstr)
+    jstr = json.dumps(endpoint_disable_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nEndpoint disable\n\n", jstr)
 
 
     endpoint_reset_cmd = mcmd("endpoint_reset", [
@@ -294,11 +264,23 @@ def generate(
 
 
     # Create a list of commands
-    cmd_seq = [initcmd, confcmd, startcmd, stopcmd, get_info_cmd,
-            master_io_reset_cmd, master_set_timestamp_cmd, master_print_status_cmd,
-            partition_configure_cmd, partition_enable_cmd, partition_disable_cmd, partition_start_cmd, partition_stop_cmd, partition_enable_triggers_cmd, partition_disable_triggers_cmd, partition_print_status_cmd,
-            endpoint_io_reset_cmd, endpoint_enable_triggers_cmd, endpoint_disable_triggers_cmd, endpoint_reset_cmd, endpoint_print_status_cmd
-        ]
+    cmd_seq = [initcmd, confcmd, startcmd, stopcmd]
+
+    if MASTER_DEVICE_NAME != "":
+        cmd_seq.extend( [
+                        master_io_reset_cmd, master_set_timestamp_cmd, master_print_status_cmd,
+                        partition_configure_cmd, partition_enable_cmd, partition_disable_cmd, 
+                        partition_start_cmd, partition_stop_cmd, 
+                        partition_enable_triggers_cmd, partition_disable_triggers_cmd, 
+                        partition_print_status_cmd
+                        ] )
+    
+    if ENDPOINT_DEVICE_NAME != "":
+        cmd_seq.extend( [
+                        endpoint_io_reset_cmd, 
+                        endpoint_enable_cmd, endpoint_disable_cmd, 
+                        endpoint_reset_cmd, endpoint_print_status_cmd
+                        ] )
 
     # Print them as json (to be improved/moved out)
     jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
