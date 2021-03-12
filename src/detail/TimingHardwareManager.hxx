@@ -91,8 +91,7 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::register_timing_hw_command(const std
 
   bool done = m_timing_hw_cmd_map_.emplace(name, std::bind(f, dynamic_cast<Child*>(this), _1)).second;
   if (!done) {
-  	// TODO throw specific error
-  	throw dunedaq::appfwk::CommandRegistrationFailed(ERS_HERE, get_name(), name);
+  	throw TimingHardwareCommandRegistrationFailed(ERS_HERE, name, get_name());
   }
 }
 

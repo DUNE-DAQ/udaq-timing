@@ -90,6 +90,15 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ((std::string)hw_cmd_id),
                        ERS_EMPTY
 )
+
+ERS_DECLARE_ISSUE_BASE(timinglibs,
+                       TimingHardwareCommandRegistrationFailed,
+                       appfwk::CommandRegistrationFailed,
+                       " Failed to register timing hardware command with ID: " << cmd,
+                       ((std::string)cmd)((std::string)name),
+                       ERS_EMPTY
+)
+
 } // namespace dunedaq
 
 #endif // TIMINGLIBS_SRC_TIMINGISSUES_HPP_
