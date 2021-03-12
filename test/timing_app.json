@@ -40,19 +40,6 @@
                     },
                     "inst": "tpc0",
                     "plugin": "TimingPartitionController"
-                },
-                {
-                    "data": {
-                        "qinfos": [
-                            {
-                                "dir": "output",
-                                "inst": "hardware_commands",
-                                "name": "hardware_commands_out"
-                            }
-                        ]
-                    },
-                    "inst": "tec0",
-                    "plugin": "TimingEndpointController"
                 }
             ],
             "queues": [
@@ -72,7 +59,7 @@
             "modules": [
                 {
                     "data": {
-                        "connections_file": "${PDT_TESTS}/etc/connections.xml",
+                        "connections_file": "${TIMING_SHARE}/config/etc/connections.xml",
                         "gather_interval": 1000000,
                         "gather_interval_debug": 10000000,
                         "monitored_device_name_endpoint": "",
@@ -93,12 +80,6 @@
                         "partition_id": 0
                     },
                     "match": "tpc0"
-                },
-                {
-                    "data": {
-                        "device": ""
-                    },
-                    "match": "tec0"
                 }
             ]
         },
@@ -147,25 +128,6 @@
         "entry_state": "RUNNING",
         "exit_state": "CONFIGURED",
         "id": "stop"
-    },
-    {
-        "data": {
-            "modules": [
-                {
-                    "match": "thi"
-                },
-                {
-                    "match": "tmc.*"
-                },
-                {
-                    "match": "tpc.*"
-                },
-                {
-                    "match": "tec.*"
-                }
-            ]
-        },
-        "id": "get_info"
     },
     {
         "data": {
@@ -276,55 +238,5 @@
             ]
         },
         "id": "partition_print_status"
-    },
-    {
-        "data": {
-            "modules": [
-                {
-                    "match": "tec.*"
-                }
-            ]
-        },
-        "id": "endpoint_io_reset"
-    },
-    {
-        "data": {
-            "modules": [
-                {
-                    "match": "tec.*"
-                }
-            ]
-        },
-        "id": "endpoint_enable"
-    },
-    {
-        "data": {
-            "modules": [
-                {
-                    "match": "tec.*"
-                }
-            ]
-        },
-        "id": "endpoint_disable"
-    },
-    {
-        "data": {
-            "modules": [
-                {
-                    "match": "tec.*"
-                }
-            ]
-        },
-        "id": "endpoint_reset"
-    },
-    {
-        "data": {
-            "modules": [
-                {
-                    "match": "tec.*"
-                }
-            ]
-        },
-        "id": "endpoint_print_status"
     }
 ]

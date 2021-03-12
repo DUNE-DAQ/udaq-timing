@@ -87,7 +87,7 @@ def generate(
 
     mods = [
                 ("thi", thi.ConfParams(
-                        connections_file="${PDT_TESTS}/etc/connections.xml",
+                        connections_file="${TIMING_SHARE}/config/etc/connections.xml",
                         gather_interval=GATHER_INTERVAL,
                         gather_interval_debug=GATHER_INTERVAL_DEBUG,
                         monitored_device_name_master=MASTER_DEVICE_NAME,

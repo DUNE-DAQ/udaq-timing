@@ -125,7 +125,7 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   catch (const uhal::exception::FileNotFound& excpt)
   {
     std::stringstream message;
-    message << m_connections_file << " not found. Have you set PDT_TESTS?";
+    message << m_connections_file << " not found. Has TIMING_SHARE been set?";
     throw UHALConnectionsFileIssue(ERS_HERE, message.str(), excpt);
   }
 }
