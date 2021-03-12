@@ -3,7 +3,7 @@ namespace dunedaq::timinglibs {
 template<class MSTR_DSGN, class EPT_DSGN>
 TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::TimingHardwareManager(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
-  , thread_(std::bind(&TimingHardwareManager::do_work, this, std::placeholders::_1))
+  , thread_(std::bind(&TimingHardwareManager::process_hardware_commands, this, std::placeholders::_1))
   , m_hw_command_in_queue(nullptr)
   , m_queue_timeout(100)
   , m_connection_manager(nullptr)
@@ -37,8 +37,12 @@ void TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::init(const nlohmann::json& init
 
 template<class MSTR_DSGN, class EPT_DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_work(std::atomic<bool>& running_flag)
+TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::process_hardware_commands(std::atomic<bool>& running_flag)
 {
+
+  std::ostringstream starting_stream;
+  starting_stream << ": Starting process_hardware_commands() method.";
+  TLOG_DEBUG(0) << get_name() << starting_stream.str();
 
   while (running_flag.load()) 
   {
@@ -77,9 +81,9 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::do_work(std::atomic<bool>& running_f
     }
   }
 
-  std::ostringstream oss_summ;
-  oss_summ << ": Exiting do_work() method, received " << m_received_hw_commands_counter.load() << " commands";
-  ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
+  std::ostringstream exiting_stream;
+  exiting_stream << ": Exiting process_hardware_commands() method. Received " << m_received_hw_commands_counter.load() << " commands";
+  TLOG_DEBUG(0) << get_name() << exiting_stream.str();
 }
 
 template<class MSTR_DSGN, class EPT_DSGN>

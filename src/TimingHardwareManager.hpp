@@ -77,7 +77,7 @@ protected:
 
   // Threading
   dunedaq::appfwk::ThreadHelper thread_;
-  virtual void do_work(std::atomic<bool>&);
+  virtual void process_hardware_commands(std::atomic<bool>&);
 
   // Configuration
   using source_t = dunedaq::appfwk::DAQSource<timingcmd::TimingHwCmd>;
