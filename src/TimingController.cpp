@@ -36,6 +36,10 @@ TimingController::TimingController(const std::string& name, uint number_hw_comma
   , m_number_hw_commands(number_hw_commands)
   , m_sent_hw_command_counters(m_number_hw_commands)
 {
+  for (auto it=m_sent_hw_command_counters.begin(); it!=m_sent_hw_command_counters.end(); ++it)
+  {
+    it->atomic.store(0);
+  }
 }
 
 void
@@ -60,6 +64,12 @@ TimingController::init( const nlohmann::json& init_data)
 void
 TimingController::do_start(const nlohmann::json&)
 {
+  // Timing commands are processed even before a start command. Counters may therefore lose counts after a start.
+  // reset counters
+  for (auto it=m_sent_hw_command_counters.begin(); it!=m_sent_hw_command_counters.end(); ++it)
+  {
+    it->atomic.store(0);
+  }
 }
 
 void
