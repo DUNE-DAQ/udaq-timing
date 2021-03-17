@@ -27,7 +27,7 @@ set(TIMINGLIBS_DEPENDENCIES
 daq_add_library(TimingController.cpp LINK_LIBRARIES ${TIMINGLIBS_DEPENDENCIES})
 
 ##############################################################################
-daq_add_plugin(TimingHardwareManagerPDI duneDAQModule LINK_LIBRARIES timing timinglibs)
+daq_add_plugin(TimingHardwareManagerPDI duneDAQModule LINK_LIBRARIES timing::timing timinglibs)
 daq_add_plugin(TimingMasterController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingPartitionController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingEndpointController duneDAQModule LINK_LIBRARIES timinglibs)
