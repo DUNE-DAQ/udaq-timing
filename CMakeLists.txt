@@ -10,6 +10,7 @@ find_package(logging REQUIRED)
 find_package(appfwk REQUIRED)
 find_package(timing REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(dfmessages REQUIRED)
 
 daq_codegen(*.jsonnet TEMPLATES Structs.hpp.j2 Nljs.hpp.j2 )
 
@@ -21,20 +22,25 @@ set(TIMINGLIBS_DEPENDENCIES
   logging::logging
   opmonlib::opmonlib
   nlohmann_json::nlohmann_json
+  dfmessages::dfmessages
 )
 
 ##############################################################################
-daq_add_library(TimingController.cpp LINK_LIBRARIES ${TIMINGLIBS_DEPENDENCIES})
+daq_add_library(TimestampEstimatorBase.cpp TimestampEstimator.cpp TimestampEstimatorSystem.cpp TimingController.cpp LINK_LIBRARIES ${TIMINGLIBS_DEPENDENCIES})
 
 ##############################################################################
 daq_add_plugin(TimingHardwareManagerPDI duneDAQModule LINK_LIBRARIES timing::timing timinglibs)
 daq_add_plugin(TimingMasterController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingPartitionController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingEndpointController duneDAQModule LINK_LIBRARIES timinglibs)
-
+daq_add_plugin(FakeHSIEventGenerator duneDAQModule LINK_LIBRARIES timinglibs)
 
 ##############################################################################
 target_include_directories(${PROJECT_NAME}_TimingHardwareManagerPDI_duneDAQModule PUBLIC $ENV{UHAL_INC} $ENV{PUGIXML_INC})
+
+##############################################################################
+daq_add_unit_test(TimestampEstimatorSystem_test  LINK_LIBRARIES timinglibs)
+daq_add_unit_test(TimestampEstimator_test        LINK_LIBRARIES timinglibs)
 
 ##############################################################################
 daq_install()

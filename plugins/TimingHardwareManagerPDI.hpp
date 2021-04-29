@@ -24,7 +24,7 @@
 #include "TimingHardwareManager.hpp"
 #include "InfoGatherer.hpp"
 
-#include "TimingIssues.hpp"
+#include "timinglibs/TimingIssues.hpp"
 
 // in timing-board-software at the moment
 #include "timing/timingfirmwareinfo/Structs.hpp"
