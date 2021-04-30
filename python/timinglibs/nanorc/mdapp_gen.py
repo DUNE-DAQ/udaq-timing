@@ -48,7 +48,7 @@ def generate_boot( tremu_spec: dict, rudf_spec: dict, hsi_spec: dict) -> dict:
                 "DUNEDAQ_SHARE_PATH": "getenv",
                 "LD_LIBRARY_PATH": "getenv",
                 "PATH": "getenv",
-                "DUNEDAQ_ERS_DEBUG_LEVEL": 0
+                "DUNEDAQ_ERS_DEBUG_LEVEL": "getenv"
             },
             "cmd": [
                 "CMD_FAC=rest://localhost:${APP_PORT}",
@@ -61,8 +61,8 @@ def generate_boot( tremu_spec: dict, rudf_spec: dict, hsi_spec: dict) -> dict:
 
     boot = {
         "env": {
-            "DUNEDAQ_ERS_VERBOSITY_LEVEL": 1,
-            "DUNEDAQ_ERS_DEBUG_LEVEL": 0
+            "DUNEDAQ_ERS_VERBOSITY_LEVEL": "getenv",
+            "DUNEDAQ_ERS_DEBUG_LEVEL": "getenv"
         },
         "apps": {
             rudf_spec['name']: {
@@ -110,7 +110,7 @@ import click
 @click.option('--disable-data-storage', is_flag=True)
 @click.option('-f', '--use-felix', is_flag=True)
 @click.option('--clock-frequency', default=50e6)
-@click.option('--hsi-event-period', default=20)
+@click.option('--hsi-event-period', default=1e9)
 @click.option('--hsi-device-id', default=0)
 @click.option('--mean-hsi-signal-multiplicity', default=1)
 @click.option('--hsi-signal-emulation-mode', default=0)
