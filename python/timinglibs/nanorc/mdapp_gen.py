@@ -151,6 +151,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
 
     cmd_data_trg = trigger_gen.generate(
         network_endpoints,
+        NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
         TRIGGER_RATE_HZ = trigger_rate_hz,
         OUTPUT_PATH = ".",
         TOKEN_COUNT = trigemu_token_count,

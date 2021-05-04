@@ -185,12 +185,12 @@ def generate(
 
 
     cmd_data['conf'] = acmd([
-    #            ("ntoq_trigdec", ntoq.Conf(msg_type="dunedaq::dfmessages::TriggerDecision",
-    #                                       msg_module_name="TriggerDecisionNQ",
-    #                                       receiver_config=nor.Conf(ipm_plugin_type="ZmqReceiver",
-    #                                                                address=NETWORK_ENDPOINTS["trigdec"])
-    #                                       )
-    #             ),
+                ("ntoq_trigdec", ntoq.Conf(msg_type="dunedaq::dfmessages::TriggerDecision",
+                                           msg_module_name="TriggerDecisionNQ",
+                                           receiver_config=nor.Conf(ipm_plugin_type="ZmqReceiver",
+                                                                    address=NETWORK_ENDPOINTS["trigdec"])
+                                           )
+                 ),
 
                 ("qton_token", qton.Conf(msg_type="dunedaq::dfmessages::TriggerDecisionToken",
                                            msg_module_name="TriggerDecisionTokenNQ",

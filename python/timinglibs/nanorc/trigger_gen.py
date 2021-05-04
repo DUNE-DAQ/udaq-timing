@@ -64,6 +64,7 @@ def acmd(mods: list) -> cmd.CmdObj:
 #===============================================================================
 def generate(
         NETWORK_ENDPOINTS: list,
+        NUMBER_OF_DATA_PRODUCERS: int = 2,
         TRIGGER_RATE_HZ: float = 1.0,
         OUTPUT_PATH: str = ".",
         TOKEN_COUNT: int = 10,
@@ -86,9 +87,8 @@ def generate(
     # Define modules and queues
     queue_bare_specs = [
         app.QueueSpec(inst="hsievent_from_netq", kind='FollyMPMCQueue', capacity=1000),
-
-        app.QueueSpec(inst="token_q", kind='FollySPSCQueue', capacity=2000),        
-        app.QueueSpec(inst="trigger_decision_q", kind='FollySPSCQueue', capacity=2000),
+        app.QueueSpec(inst="token_from_netq", kind='FollySPSCQueue', capacity=2000),        
+        app.QueueSpec(inst="trigger_decision_to_netq", kind='FollySPSCQueue', capacity=2000),
         app.QueueSpec(inst="trigger_candidate_q", kind='FollySPSCQueue', capacity=2000),
     ]
 
@@ -101,14 +101,17 @@ def generate(
                         app.QueueInfo(name="output", inst="hsievent_from_netq", dir="output")
                     ]),
 
-        mspec("fdf", "FakeDataFlow", [
-            app.QueueInfo(name="trigger_decision_source", inst="trigger_decision_q", dir="input"),
-            app.QueueInfo(name="trigger_complete_sink", inst="token_q", dir="output"),
-        ]),
-        
+        mspec("ntoq_token", "NetworkToQueue", [
+                        app.QueueInfo(name="output", inst="token_from_netq", dir="output")
+                    ]),
+
+        mspec("qton_trigdec", "QueueToNetwork", [
+                        app.QueueInfo(name="input", inst="trigger_decision_to_netq", dir="input")
+                    ]),
+
         mspec("mlt", "ModuleLevelTrigger", [
-            app.QueueInfo(name="token_source", inst="token_q", dir="input"),
-            app.QueueInfo(name="trigger_decision_sink", inst="trigger_decision_q", dir="output"),
+            app.QueueInfo(name="token_source", inst="token_from_netq", dir="input"),
+            app.QueueInfo(name="trigger_decision_sink", inst="trigger_decision_to_netq", dir="output"),
             app.QueueInfo(name="trigger_candidate_source", inst="trigger_candidate_q", dir="output"),
         ]),
 
@@ -123,16 +126,8 @@ def generate(
     cmd_data['init'] = app.Init(queues=queue_specs, modules=mod_specs)
 
     cmd_data['conf'] = acmd([
-        ("fdf", fdf.ConfParams(
-          hold_max_size = HOLD_MAX_SIZE,
-          hold_min_size = HOLD_MIN_SIZE,
-          hold_min_ms = HOLD_MIN_MS,
-          release_randomly_prob = RELEASE_RANDOMLY_PROB,
-          forget_decision_prob = FORGET_DECISION_PROB,
-          hold_decision_prob = HOLD_DECISION_PROB
-        )),
         ("mlt", mlt.ConfParams(
-            links=[idx for idx in range(3)],
+            links=[idx for idx in range(NUMBER_OF_DATA_PRODUCERS)],
             initial_token_count=TOKEN_COUNT                    
         )),
         
@@ -145,14 +140,27 @@ def generate(
                                                                     address=NETWORK_ENDPOINTS["hsievent"])
                                            )
                 ),
+        ("ntoq_token", ntoq.Conf(msg_type="dunedaq::dfmessages::TriggerDecisionToken",
+                                           msg_module_name="TriggerDecisionTokenNQ",
+                                           receiver_config=nor.Conf(ipm_plugin_type="ZmqReceiver",
+                                                                    address=NETWORK_ENDPOINTS["triginh"])
+                                           )
+                ),
+        ("qton_trigdec", qton.Conf(msg_type="dunedaq::dfmessages::TriggerDecision",
+                                           msg_module_name="TriggerDecisionNQ",
+                                           sender_config=nos.Conf(ipm_plugin_type="ZmqSender",
+                                                                    address=NETWORK_ENDPOINTS["trigdec"])
+                                           )
+                ),
     ])
 
     startpars = rccmd.StartParams(run=1, disable_data_storage=False)
     cmd_data['start'] = acmd([
-        ("fdf", startpars),
         ("mlt", startpars),
         ("ttcm", startpars),
         ("ntoq_hsievent", startpars),
+        ("ntoq_token", startpars),
+        ("qton_trigdec", startpars),
     ])
 
     cmd_data['stop'] = acmd([
@@ -160,6 +168,8 @@ def generate(
         ("mlt", None),
         ("ttcm", None),
         ("ntoq_hsievent", None),
+        ("ntoq_token", startpars),
+        ("qton_trigdec", startpars),
     ])
 
     cmd_data['pause'] = acmd([
