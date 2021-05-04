@@ -12,7 +12,8 @@
 #include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingcmd/Nljs.hpp"
 
-#include "appfwk/DAQModuleHelper.hpp"
+#include "timinglibs/TimingIssues.hpp"
+
 #include "appfwk/cmd/Nljs.hpp"
 
 #include "ers/Issue.hpp"

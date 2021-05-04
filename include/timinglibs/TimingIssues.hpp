@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef TIMINGLIBS_SRC_TIMINGISSUES_HPP_
-#define TIMINGLIBS_SRC_TIMINGISSUES_HPP_
+#ifndef TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_
+#define TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_
 
 #include "appfwk/DAQModule.hpp"
 #include "ers/Issue.hpp"
@@ -113,4 +113,4 @@ ERS_DECLARE_ISSUE(timinglibs,
 
 } // namespace dunedaq
 
-#endif // TIMINGLIBS_SRC_TIMINGISSUES_HPP_
+#endif // TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_

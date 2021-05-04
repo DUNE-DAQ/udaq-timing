@@ -23,10 +23,13 @@ set(TIMINGLIBS_DEPENDENCIES
   opmonlib::opmonlib
   nlohmann_json::nlohmann_json
   dfmessages::dfmessages
+  timing::timing
 )
 
 ##############################################################################
-daq_add_library(TimestampEstimatorBase.cpp TimestampEstimator.cpp TimestampEstimatorSystem.cpp TimingController.cpp LINK_LIBRARIES ${TIMINGLIBS_DEPENDENCIES})
+daq_add_library(TimingController.cpp HSIInterface.cpp TimestampEstimatorBase.cpp TimestampEstimator.cpp TimestampEstimatorSystem.cpp LINK_LIBRARIES ${TIMINGLIBS_DEPENDENCIES})
+target_include_directories(${PROJECT_NAME} PUBLIC $ENV{UHAL_INC} $ENV{PUGIXML_INC})
+
 
 ##############################################################################
 daq_add_plugin(TimingHardwareManagerPDI duneDAQModule LINK_LIBRARIES timing::timing timinglibs)
@@ -34,6 +37,7 @@ daq_add_plugin(TimingMasterController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingPartitionController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingEndpointController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(FakeHSIEventGenerator duneDAQModule LINK_LIBRARIES timinglibs)
+daq_add_plugin(HSIReadout duneDAQModule LINK_LIBRARIES timing::timing timinglibs)
 
 ##############################################################################
 target_include_directories(${PROJECT_NAME}_TimingHardwareManagerPDI_duneDAQModule PUBLIC $ENV{UHAL_INC} $ENV{PUGIXML_INC})
