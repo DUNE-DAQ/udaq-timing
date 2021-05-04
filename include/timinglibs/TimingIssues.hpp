@@ -17,6 +17,8 @@
 
 #include <string>
 
+#define TLVL_ENTER_EXIT_METHODS 10
+
 namespace dunedaq {
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
@@ -98,6 +100,16 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ((std::string)cmd)((std::string)name),
                        ERS_EMPTY
 )
+
+ERS_DECLARE_ISSUE(timinglibs,
+                  InvalidTimeSync, 
+                  "An invalid TimeSync message was received", 
+                  ERS_EMPTY)
+
+ERS_DECLARE_ISSUE(timinglibs,
+                  FailedToGetTimestampEstimate, 
+                  "Failed to get timestamp estimate (was interrupted)", 
+                  ERS_EMPTY)
 
 } // namespace dunedaq
 
