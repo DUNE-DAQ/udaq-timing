@@ -32,7 +32,7 @@
 
 #include "uhal/ConnectionManager.hpp"
 
-#include "timing/PDIMasterDesign.hpp"
+#include "timing/OverlordDesign.hpp"
 #include "timing/EndpointDesign.hpp"
 #include "timing/EndpointNode.hpp"
 

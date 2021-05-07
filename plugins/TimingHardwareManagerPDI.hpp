@@ -30,7 +30,7 @@
 #include "timing/timingfirmwareinfo/Structs.hpp"
 #include "timing/timingfirmwareinfo/Nljs.hpp"
 
-#include "timing/PDIMasterDesign.hpp"
+#include "timing/OverlordDesign.hpp"
 #include "timing/EndpointDesign.hpp"
 
 #include "appfwk/DAQModule.hpp"
@@ -60,7 +60,7 @@ namespace timinglibs {
 /**
  * @brief Hardware manager for PD-I hardware.
  */
-class TimingHardwareManagerPDI : public TimingHardwareManager<timing::PDIMasterDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>
+class TimingHardwareManagerPDI : public TimingHardwareManager<timing::OverlordDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>
 {
 public:
   /**

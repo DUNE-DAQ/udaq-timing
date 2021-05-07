@@ -65,6 +65,14 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ERS_EMPTY
 )
 
+ERS_DECLARE_ISSUE_BASE(timinglibs,
+                       UHALDeviceNodeIssue,
+                       timinglibs::UHALIssue,
+                       " UHAL node issue: " << message,
+                       ((std::string)message),
+                       ERS_EMPTY
+)
+
 ERS_DECLARE_ISSUE(timinglibs,
                   FailedToCollectOpMonInfo,
                   " Failed to collect op mon info class: " << info_class << " from device: " << device_name,
@@ -110,6 +118,11 @@ ERS_DECLARE_ISSUE(timinglibs,
                   FailedToGetTimestampEstimate, 
                   "Failed to get timestamp estimate (was interrupted)", 
                   ERS_EMPTY)
+
+ERS_DECLARE_ISSUE(timinglibs,
+                  HSIBufferIssue, 
+                  "HSI buffer in state: " << buffer_state, 
+                  ((std::string)buffer_state))
 
 } // namespace dunedaq
 

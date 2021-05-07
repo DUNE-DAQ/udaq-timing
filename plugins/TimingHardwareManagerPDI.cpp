@@ -34,7 +34,7 @@ namespace dunedaq {
 namespace timinglibs {
 
 TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
-  : TimingHardwareManager<timing::PDIMasterDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>(name)
+  : TimingHardwareManager<timing::OverlordDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>(name)
   
   // default gather interval of 1e6 us, may be overidden by config below
   , m_master_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_master_monitor_data, this, std::placeholders::_1), 1e6 )
@@ -196,7 +196,7 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timing
     // collect the data from the hardware
     try
     {
-      auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
+      auto master_design = get_timing_device<timing::OverlordDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
       master_design.get_io_node().get_info(mon_data.hardware_data);
     }
     catch (const std::exception& excpt)
@@ -207,7 +207,7 @@ TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timing
     
     try
     {
-      auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
+      auto master_design = get_timing_device<timing::OverlordDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
       master_design.get_master_node().get_info(mon_data.firmware_data);  
     }
     catch (const std::exception& excpt)
@@ -292,7 +292,7 @@ TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<timing::
     // collect the data from the hardware
     try
     {
-      auto master_design = get_timing_device<timing::PDIMasterDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
+      auto master_design = get_timing_device<timing::OverlordDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
       master_design.get_io_node().get_info(mon_data.hardware_data);  
     }
     catch(const std::exception& excpt)

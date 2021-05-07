@@ -8,6 +8,8 @@
 #define TIMINGLIBS_SRC_HSIREADOUT_HPP_
 
 #include "timinglibs/hsireadout/Structs.hpp"
+#include "timinglibs/hsireadout/Nljs.hpp"
+
 #include "timinglibs/TimingIssues.hpp"
 
 #include "HSIInterface.hpp"
@@ -61,11 +63,12 @@ public:
 
 private:
   // Commands
+  hsireadout::ConfParams m_cfg;
   void do_configure(const nlohmann::json& obj) override;
-
 
   void read_hsievents(std::atomic<bool>&);
   uint64_t m_readout_counter;
+  uint64_t m_sent_counter;
   
   // Configuration
   std::string m_hsi_device_name;

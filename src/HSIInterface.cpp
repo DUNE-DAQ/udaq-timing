@@ -80,11 +80,11 @@ HSIInterface::do_scrap(const nlohmann::json& /*args*/)
 void
 HSIInterface::send_hsi_event(dfmessages::HSIEvent& event)
 {
-  //TLOG_DEBUG(1) << get_name() << ": Sending HSIEvent: " << event.header << ", " << std::bitset<32>(event.signal_map) << ", " << event.timestamp << ", " << event.sequence_counter <<"\n";
+  TLOG_DEBUG(3) << get_name() << ": Sending HSIEvent: " << event.header << ", " << std::bitset<32>(event.signal_map) << ", " << event.timestamp << ", " << event.sequence_counter <<"\n";
 
   std::string thisQueueName = m_hsievent_sink->get_name();
 
-  //TLOG_DEBUG(2) << get_name() << ": Pushing the generated HSIEvent onto queue " << thisQueueName;
+  TLOG_DEBUG(3) << get_name() << ": Pushing the generated HSIEvent onto queue " << thisQueueName;
   try
   {
     m_hsievent_sink->push(event, m_queue_timeout);
@@ -96,6 +96,7 @@ HSIInterface::send_hsi_event(dfmessages::HSIEvent& event)
     oss_warn << "push to output queue \"" << thisQueueName << "\"";
     ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(), m_queue_timeout.count()));
   }
+  if (m_sent_counter > 0 && m_sent_counter % 10000 == 0) TLOG_DEBUG(0) << "Have sent out " << m_sent_counter << " HSI events";
 }
 
 } // namespace timinglibs 
