@@ -124,22 +124,23 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
   while (running_flag.load())
   {
 
-    uint64_t local_read_counter=0;
     // we are assuming hsi already configured
     try
     {
       auto hsi_node = m_hsi_device->getNode<timing::HSINode>("endpoint0");
 
-      if (hsi_node.read_buffer_error()) {
+      uint32_t buffer_state = hsi_node.read_buffer_state();
+
+      if (buffer_state & 0x1) {
         ers::error(HSIBufferIssue(ERS_HERE, "ERROR"));
         continue;
       }
 
-      if (hsi_node.read_buffer_warning()) {
+      if (buffer_state & 0x2) {
         ers::warning(HSIBufferIssue(ERS_HERE, "WARNING"));
       }
 
-      uint n_hsi_words = hsi_node.read_buffer_count();
+      uint16_t n_hsi_words = buffer_state >> 0x10;
     
       // this is bad
       if (n_hsi_words > 1024) {
@@ -157,7 +158,6 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
         TLOG_DEBUG(2) << get_name() << ": Have readout " << n_hsi_events << " HSIEvent(s) ";
 
         m_readout_counter = m_readout_counter + n_hsi_events;
-        local_read_counter = local_read_counter + n_hsi_events;
         for (uint i=0; i < n_hsi_events; ++i) {
 
           uint32_t header  = hsi_words.at(0+(i*timing::g_hsi_event_size));
