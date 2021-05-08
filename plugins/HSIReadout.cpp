@@ -129,29 +129,30 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
     {
       auto hsi_node = m_hsi_device->getNode<timing::HSINode>("endpoint0");
 
-      uint32_t buffer_state = hsi_node.read_buffer_state();
+  //    uint32_t buffer_state = hsi_node.read_buffer_state();
 
-      if (buffer_state & 0x1) {
-        ers::error(HSIBufferIssue(ERS_HERE, "ERROR"));
-        continue;
-      }
+//      if (buffer_state & 0x1) {
+//        ers::error(HSIBufferIssue(ERS_HERE, "ERROR"));
+//        continue;
+//      }
+//
+//      if (buffer_state & 0x2) {
+//        ers::warning(HSIBufferIssue(ERS_HERE, "WARNING"));
+//      }
+//
+//      uint16_t n_hsi_words = buffer_state >> 0x10;
+//    
+//      // this is bad
+//      if (n_hsi_words > 1024) {
+//        ers::error(HSIBufferIssue(ERS_HERE, "OVERFLOW"));
+//        continue;
+//      }
 
-      if (buffer_state & 0x2) {
-        ers::warning(HSIBufferIssue(ERS_HERE, "WARNING"));
-      }
+      //TLOG_DEBUG(3) << get_name() << ": Number of words in HSI buffer: " << n_hsi_words;
 
-      uint16_t n_hsi_words = buffer_state >> 0x10;
-    
-      // this is bad
-      if (n_hsi_words > 1024) {
-        ers::error(HSIBufferIssue(ERS_HERE, "OVERFLOW"));
-        continue;
-      }
-
-      TLOG_DEBUG(3) << get_name() << ": Number of words in HSI buffer: " << n_hsi_words;
-
-      if (n_hsi_words >= 5) {
-        auto hsi_words = hsi_node.read_data_buffer();
+      auto hsi_words = hsi_node.read_data_buffer();
+      if (hsi_words.size() >= 5) {
+        
 
         uint n_hsi_events = hsi_words.size() / timing::g_hsi_event_size; 
 
@@ -195,6 +196,8 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
       ers::error(UHALDeviceNameIssue(ERS_HERE, message.str()));
       continue;
     }
+    //std::this_thread::sleep_for(std::chrono::microseconds(100));
+
   }
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the read_hsievents() method, read out " << m_readout_counter
