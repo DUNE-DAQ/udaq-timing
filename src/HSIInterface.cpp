@@ -28,7 +28,7 @@ HSIInterface::HSIInterface(const std::string& name, std::function<void(std::atom
   : dunedaq::appfwk::DAQModule(name)
   , m_thread(do_work)
   , m_hsievent_sink(nullptr)
-  , m_queue_timeout(100)
+  , m_queue_timeout(1)
   , m_sent_counter(0)
 {
   //register_command("conf",  &HSIInterface::do_configure);
@@ -85,18 +85,23 @@ HSIInterface::send_hsi_event(dfmessages::HSIEvent& event)
   std::string thisQueueName = m_hsievent_sink->get_name();
 
   TLOG_DEBUG(3) << get_name() << ": Pushing the generated HSIEvent onto queue " << thisQueueName;
-  try
-  {
-    m_hsievent_sink->push(event, m_queue_timeout);
-    ++m_sent_counter;
+  bool successfullyWasSent = false;
+  while (!successfullyWasSent) {
+    try
+    {
+      m_hsievent_sink->push(event, m_queue_timeout);
+      ++m_sent_counter;
+      successfullyWasSent = true;
+
+    }
+    catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
+    {
+      std::ostringstream oss_warn;
+      oss_warn << "push to output queue \"" << thisQueueName << "\"";
+      ers::error(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(), m_queue_timeout.count()));
+    }
   }
-  catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-  {
-    std::ostringstream oss_warn;
-    oss_warn << "push to output queue \"" << thisQueueName << "\"";
-    ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(), m_queue_timeout.count()));
-  }
-  if (m_sent_counter > 0 && m_sent_counter % 10000 == 0) TLOG_DEBUG(0) << "Have sent out " << m_sent_counter << " HSI events";
+  if (m_sent_counter > 0 && m_sent_counter % 200000 == 0) TLOG_DEBUG(0) << "Have sent out " << m_sent_counter << " HSI events";
 }
 
 } // namespace timinglibs 

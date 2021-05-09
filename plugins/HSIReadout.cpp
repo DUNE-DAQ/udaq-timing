@@ -150,7 +150,7 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
 
       //TLOG_DEBUG(3) << get_name() << ": Number of words in HSI buffer: " << n_hsi_words;
 
-      auto hsi_words = hsi_node.read_data_buffer();
+      auto hsi_words = hsi_node.read_data_buffer(false,true);
       if (hsi_words.size() >= 5) {
         
 
@@ -175,7 +175,7 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
           // bits 15-0 contain the sequence counter
           uint32_t counter = header & 0x0000ffff;
 
-          if (counter > 0 && counter % 10000 == 0) TLOG_DEBUG(0) << "Sequence counter from firmware: " << counter;
+          if (counter > 0 && counter % 60000 == 0) TLOG_DEBUG(0) << "Sequence counter from firmware: " << counter;
 
           //TLOG_DEBUG(2) << get_name() << ": read out data: " << header << ", " << std::hex << ts << ", " << data << ", " << std::bitset<32>(trigger) << ", " << "\n";
 
@@ -196,7 +196,7 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
       ers::error(UHALDeviceNameIssue(ERS_HERE, message.str()));
       continue;
     }
-    //std::this_thread::sleep_for(std::chrono::microseconds(100));
+    std::this_thread::sleep_for(std::chrono::microseconds(700));
 
   }
   std::ostringstream oss_summ;

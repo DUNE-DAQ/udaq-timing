@@ -10,7 +10,7 @@ moo.otypes.load_types('appfwk/app.jsonnet')
 moo.otypes.load_types('cmdlib/cmd.jsonnet')
 moo.otypes.load_types('rcif/cmd.jsonnet')
 moo.otypes.load_types('timinglibs/hsireadout.jsonnet')
-
+moo.otypes.load_types('trigger/timingtriggercandidatemaker.jsonnet')
 
 # Import new types
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
@@ -19,6 +19,7 @@ import dunedaq.cmdlib.cmd as cmdlib # Command
 import dunedaq.rcif.cmd as rcif # rcif
 
 import dunedaq.timinglibs.hsireadout as hsi
+import dunedaq.trigger.timingtriggercandidatemaker as ttcm
 
 from appfwk.utils import mcmd, mspec, mrccmd
 
@@ -29,14 +30,16 @@ def generate(
         RUN_NUMBER = 333, 
         GATHER_INTERVAL = 1e6,
         GATHER_INTERVAL_DEBUG = 10e6,
-        HSI_DEVICE_NAME="HSI_0",
+        HSI_DEVICE_NAME="BOREAS_FMC",
         UHAL_LOG_LEVEL="notice",
         OUTPUT_PATH=".",
     ):
     
     # Define modules and queues
     queue_bare_specs = [
-            app.QueueSpec(inst="hsievent_q_to_net", kind='FollySPSCQueue', capacity=100e6),
+            app.QueueSpec(inst="hsievent_q", kind='FollySPSCQueue', capacity=2000),
+            app.QueueSpec(inst="trigger_candidate_q", kind='FollySPSCQueue', capacity=2000),
+
         ]
 
     # Only needed to reproduce the same order as when using jsonnet
@@ -44,7 +47,12 @@ def generate(
 
     mod_specs = [
                     mspec("hsi", "HSIReadout", [
-                                    app.QueueInfo(name="hsievent_sink", inst="hsievent_q_to_net", dir="output"),
+                                    app.QueueInfo(name="hsievent_sink", inst="hsievent_q", dir="output"),
+                                ]),
+
+                    mspec("ttcm", "TimingTriggerCandidateMaker", [
+                                    app.QueueInfo(name="input", inst="hsievent_q", dir="input"),
+                                    app.QueueInfo(name="output", inst="trigger_candidate_q", dir="output"),
                                 ]),
                 ]
 
@@ -69,6 +77,9 @@ def generate(
                         hsi_device_name=HSI_DEVICE_NAME,
                         uhal_log_level=UHAL_LOG_LEVEL
                         )),
+                
+                ("ttcm", ttcm.Conf(
+                        )),
             ]
 
     confcmd = mrccmd("conf", "INITIAL", "CONFIGURED", mods)
@@ -76,8 +87,11 @@ def generate(
     jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
     print(jstr)
 
+    startpars = rcif.StartParams(run=1, disable_data_storage=False)
+
     startcmd = mrccmd("start", "CONFIGURED", "RUNNING", [
             ("hsi", None),
+            ("ttcm", startpars),
         ])
 
     jstr = json.dumps(startcmd.pod(), indent=4, sort_keys=True)
@@ -85,6 +99,7 @@ def generate(
 
     stopcmd = mrccmd("stop", "RUNNING", "CONFIGURED", [
             ("hsi", None),
+            ("ttcm", None),
         ])
 
     jstr = json.dumps(stopcmd.pod(), indent=4, sort_keys=True)
@@ -115,10 +130,10 @@ if __name__ == '__main__':
     @click.option('-r', '--run-number', default=333)
     @click.option('-g', '--gather-interval', default=1e6)
     @click.option('-d', '--gather-interval-debug', default=10e6)
-    @click.option('-m', '--hsi-device-name', default="HSI_1")
+    @click.option('-m', '--hsi-device-name', default="BOREAS_FMC")
     @click.option('-u', '--uhal-log-level', default="notice")
     @click.option('-o', '--output-path', type=click.Path(), default='.')
-    @click.argument('json_file', type=click.Path(), default='timing_app.json')
+    @click.argument('json_file', type=click.Path(), default='hsi_readout_app.json')
     def cli(run_number, gather_interval, gather_interval_debug, hsi_device_name, uhal_log_level, output_path, json_file):
         """
           JSON_FILE: Input raw data file.
