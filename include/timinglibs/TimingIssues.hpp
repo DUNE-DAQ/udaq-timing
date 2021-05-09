@@ -88,7 +88,7 @@ ERS_DECLARE_ISSUE(timinglibs,
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        InvalidHardwareCommandID,
                        timinglibs::HardwareCommandIssue,
-                       " Hardware command ID: " << hw_cmd_id << " invalid",
+                       " Hardware command ID: " << hw_cmd_id << " invalid!",
                        ((std::string)hw_cmd_id),
                        ERS_EMPTY
 )
@@ -96,9 +96,9 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        FailedToExecuteHardwareCommand,
                        timinglibs::HardwareCommandIssue,
-                       " Failed to execute hardware command with ID: " << hw_cmd_id,
+                       " Failed to execute hardware command with ID: " << hw_cmd_id << " on device: " << device << ".",
                        ((std::string)hw_cmd_id),
-                       ERS_EMPTY
+                       ((std::string)device)
 )
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,

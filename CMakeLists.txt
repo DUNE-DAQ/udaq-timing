@@ -38,6 +38,7 @@ daq_add_plugin(TimingPartitionController duneDAQModule LINK_LIBRARIES timinglibs
 daq_add_plugin(TimingEndpointController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(FakeHSIEventGenerator duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(HSIReadout duneDAQModule LINK_LIBRARIES timing::timing timinglibs)
+daq_add_plugin(HSIController duneDAQModule LINK_LIBRARIES timing::timing timinglibs)
 
 ##############################################################################
 target_include_directories(${PROJECT_NAME}_TimingHardwareManagerPDI_duneDAQModule PUBLIC $ENV{UHAL_INC} $ENV{PUGIXML_INC})

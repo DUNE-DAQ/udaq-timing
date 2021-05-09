@@ -22,6 +22,8 @@
 #include "timinglibs/timinghardwaremanagerpdiinfo/Nljs.hpp"
 
 #include "TimingHardwareManager.hpp"
+
+#include "InfoGathererInterface.hpp"
 #include "InfoGatherer.hpp"
 
 #include "timinglibs/TimingIssues.hpp"
@@ -32,6 +34,10 @@
 
 #include "timing/OverlordDesign.hpp"
 #include "timing/EndpointDesign.hpp"
+#include "timing/HSINode.hpp"
+#include "timing/EndpointDesign.hpp"
+#include "timing/BoreasDesign.hpp"
+#include "timing/OuroborosDesign.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -60,7 +66,8 @@ namespace timinglibs {
 /**
  * @brief Hardware manager for PD-I hardware.
  */
-class TimingHardwareManagerPDI : public TimingHardwareManager<timing::OverlordDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>
+
+class TimingHardwareManagerPDI : public TimingHardwareManager
 {
 public:
   /**
@@ -78,31 +85,19 @@ public:
   TimingHardwareManagerPDI& operator=(TimingHardwareManagerPDI&&) =
     delete; ///< TimingHardwareManagerPDI is not move-assignable
 
+  void init(const nlohmann::json& init_data) override;
+  void get_info(opmonlib::InfoCollector & ci, int level) override;
+
   // configuration
 private:
   timinghardwaremanagerpdi::ConfParams m_cfg;
   void do_configure(const data_t& obj) override;
-  void do_start(const nlohmann::json&) override;
-  void do_stop(const nlohmann::json&)  override;
-
-  // start / stop op mon hw info gathering
-  void start_hw_mon_gathering() override;
-  void stop_hw_mon_gathering() override;
-
-  // monitoring
-  InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData> m_master_monitor_data_gatherer;
-  virtual void gather_master_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData>& gatherer);
-
-  InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorData> m_endpoint_monitor_data_gatherer;
-  virtual void gather_endpoint_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorData>& gatherer);
-
-  InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug> m_master_monitor_data_gatherer_debug;
-  virtual void gather_master_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug>& gatherer);
-
-  InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug> m_endpoint_monitor_data_gatherer_debug;
-  virtual void gather_endpoint_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug>& gatherer);
-
-  void get_info(opmonlib::InfoCollector & ci, int level) override;
+  
+  ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_common_hw_commands_for_design)
+  ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_master_hw_commands_for_design)
+  ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_endpoint_hw_commands_for_design)
+  ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_hsi_hw_commands_for_design)
+  
 };
 } // namespace timinglibs
 } // namespace dunedaq

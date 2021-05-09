@@ -25,6 +25,8 @@ local types = {
                 doc="Name of timing master device to be monitored"),
         s.field("monitored_device_name_endpoint", self.str, "",
                 doc="Name of timing endpoint device to be monitored"),
+        s.field("monitored_device_name_hsi", self.str, "",
+                doc="Name of hsi device to be monitored"),
         s.field("uhal_log_level", self.uhal_log_level, "notice",
                 doc="Log level for uhal. Possible values are: fatal, error, warning, notice, info, debug."),
     ], doc="TimingHardwareManager configuration"),

@@ -53,7 +53,7 @@ TimingEndpointController::do_configure(const nlohmann::json& obj)
 {
   timingendpointcontroller::from_json(obj,m_cfg);
   
-  TLOG() << get_name() << " conf: managed endpoint, device: " << m_cfg.device;
+  TLOG_DEBUG(0) << get_name() << " conf: managed endpoint, device: " << m_cfg.device;
 }
 
 void
@@ -66,7 +66,7 @@ void
 TimingEndpointController::do_endpoint_io_reset(const nlohmann::json&)
 {
   timingcmd::TimingHwCmd hw_cmd;
-  construct_endpoint_hw_cmd(hw_cmd, "endpoint_io_reset");
+  construct_endpoint_hw_cmd(hw_cmd, "io_reset");
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(0).atomic;
 }
@@ -111,7 +111,7 @@ void
 TimingEndpointController::do_endpoint_print_status(const nlohmann::json&)
 {
   timingcmd::TimingHwCmd hw_cmd;
-  construct_endpoint_hw_cmd(hw_cmd, "endpoint_print_status");
+  construct_endpoint_hw_cmd(hw_cmd, "print_status");
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(5).atomic;
 }

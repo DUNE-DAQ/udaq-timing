@@ -34,42 +34,90 @@ namespace dunedaq {
 namespace timinglibs {
 
 TimingHardwareManagerPDI::TimingHardwareManagerPDI(const std::string& name)
-  : TimingHardwareManager<timing::OverlordDesign<timing::TLUIONode>,timing::EndpointDesign<timing::FMCIONode>>(name)
-  
-  // default gather interval of 1e6 us, may be overidden by config below
-  , m_master_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_master_monitor_data, this, std::placeholders::_1), 1e6 )
-  , m_endpoint_monitor_data_gatherer ( std::bind(&TimingHardwareManagerPDI::gather_endpoint_monitor_data, this, std::placeholders::_1), 1e6 )
-  
-  // default gather interval of 10e6 us, may be overidden by config below
-  , m_master_monitor_data_gatherer_debug ( std::bind(&TimingHardwareManagerPDI::gather_master_monitor_data_debug, this, std::placeholders::_1), 10e6 )
-  , m_endpoint_monitor_data_gatherer_debug ( std::bind(&TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug, this, std::placeholders::_1), 10e6 )
-
+  : TimingHardwareManager(name)
 { 
   register_command("conf", &TimingHardwareManagerPDI::do_configure);
+}
 
-  // register only the commands which are needed for this hardware manager
+void TimingHardwareManagerPDI::init(const nlohmann::json& init_data)
+{
+  TimingHardwareManager::init(init_data);
   
-  // commands for master device
-  register_timing_hw_command("master_io_reset", &TimingHardwareManagerPDI::master_io_reset);
-  register_timing_hw_command("master_set_timestamp", &TimingHardwareManagerPDI::master_set_timestamp);
-  register_timing_hw_command("master_print_status", &TimingHardwareManagerPDI::master_print_status);
+  // register only the commands which are needed for this hardware manager and each design
+  
+  // common
+  register_common_hw_commands_for_design< timing::OverlordDesign<timing::TLUIONode>, 
+                                          timing::OverlordDesign<timing::FMCIONode>,
 
-  // commands for timing partitions
-  register_timing_hw_command("partition_configure", &TimingHardwareManagerPDI::partition_configure);
-  register_timing_hw_command("partition_enable", &TimingHardwareManagerPDI::partition_enable);
-  register_timing_hw_command("partition_disable", &TimingHardwareManagerPDI::partition_disable);
-  register_timing_hw_command("partition_start", &TimingHardwareManagerPDI::partition_start);
-  register_timing_hw_command("partition_stop", &TimingHardwareManagerPDI::partition_stop);
-  register_timing_hw_command("partition_enable_triggers", &TimingHardwareManagerPDI::partition_enable_triggers);
-  register_timing_hw_command("partition_disable_triggers", &TimingHardwareManagerPDI::partition_disable_triggers);
-  register_timing_hw_command("partition_print_status", &TimingHardwareManagerPDI::partition_print_status);
+                                          timing::OuroborosDesign<timing::TLUIONode>,
+                                          timing::OuroborosDesign<timing::FMCIONode>,
+                                          
+                                          timing::BoreasDesign<timing::FMCIONode>,
+                                          timing::BoreasDesign<timing::TLUIONode>,
+
+                                          timing::EndpointDesign<timing::FMCIONode>
+                                                                                    >();
+  // master
+  register_master_hw_commands_for_design< timing::OverlordDesign<timing::TLUIONode>,
+                                          timing::OverlordDesign<timing::FMCIONode>,
+
+                                          timing::BoreasDesign<timing::TLUIONode>,                                          
+                                          timing::BoreasDesign<timing::FMCIONode>,
+
+                                          timing::OuroborosDesign<timing::TLUIONode>,
+                                          timing::OuroborosDesign<timing::FMCIONode> 
+                                                                                    >();
   
-  // commands endpoint device
-  register_timing_hw_command("endpoint_io_reset", &TimingHardwareManagerPDI::endpoint_io_reset);
-  register_timing_hw_command("endpoint_enable", &TimingHardwareManagerPDI::endpoint_enable);
-  register_timing_hw_command("endpoint_disable", &TimingHardwareManagerPDI::endpoint_disable);
-  register_timing_hw_command("endpoint_reset", &TimingHardwareManagerPDI::endpoint_reset);
-  register_timing_hw_command("endpoint_print_status", &TimingHardwareManagerPDI::endpoint_print_status);
+  // endpoint
+  register_endpoint_hw_commands_for_design<
+                                          timing::OuroborosDesign<timing::TLUIONode>,
+                                          timing::OuroborosDesign<timing::FMCIONode>,
+
+                                          timing::BoreasDesign<timing::FMCIONode>,
+                                          timing::BoreasDesign<timing::TLUIONode>,
+
+                                          timing::EndpointDesign<timing::FMCIONode>
+                                                                                    >();
+  // endpoint
+  register_hsi_hw_commands_for_design<
+                                          timing::BoreasDesign<timing::FMCIONode>,
+                                          timing::BoreasDesign<timing::TLUIONode>
+                                                                                    >();
+}
+
+template <class DSGN>
+void TimingHardwareManagerPDI::register_common_hw_commands_for_design() {
+    register_timing_hw_command("io_reset",     typeid(DSGN).name(), &TimingHardwareManagerPDI::io_reset<DSGN>);
+    register_timing_hw_command("print_status", typeid(DSGN).name(), &TimingHardwareManagerPDI::print_status<DSGN>);
+}
+
+template <class DSGN>
+void TimingHardwareManagerPDI::register_master_hw_commands_for_design() {
+  register_timing_hw_command("set_timestamp",              typeid(DSGN).name(), &TimingHardwareManagerPDI::set_timestamp<DSGN>);
+  register_timing_hw_command("partition_configure",        typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_configure<DSGN>);
+  register_timing_hw_command("partition_enable",           typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_enable<DSGN>);
+  register_timing_hw_command("partition_disable",          typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_disable<DSGN>);
+  register_timing_hw_command("partition_start",            typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_start<DSGN>);
+  register_timing_hw_command("partition_stop",             typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_stop<DSGN>);
+  register_timing_hw_command("partition_enable_triggers",  typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_enable_triggers<DSGN>);
+  register_timing_hw_command("partition_disable_triggers", typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_disable_triggers<DSGN>);
+  register_timing_hw_command("partition_print_status",     typeid(DSGN).name(), &TimingHardwareManagerPDI::partition_print_status<DSGN>);
+}
+
+template <class DSGN>
+void TimingHardwareManagerPDI::register_endpoint_hw_commands_for_design() {
+  register_timing_hw_command("endpoint_enable",  typeid(DSGN).name(), &TimingHardwareManagerPDI::endpoint_enable<DSGN>);
+  register_timing_hw_command("endpoint_disable", typeid(DSGN).name(), &TimingHardwareManagerPDI::endpoint_disable<DSGN>);
+  register_timing_hw_command("endpoint_reset",   typeid(DSGN).name(), &TimingHardwareManagerPDI::endpoint_reset<DSGN>);
+}
+
+template <class DSGN>
+void TimingHardwareManagerPDI::register_hsi_hw_commands_for_design() {
+  register_timing_hw_command("hsi_reset",        typeid(DSGN).name(), &TimingHardwareManagerPDI::hsi_reset<DSGN>);
+  register_timing_hw_command("hsi_configure",    typeid(DSGN).name(), &TimingHardwareManagerPDI::hsi_configure<DSGN>);
+  register_timing_hw_command("hsi_start",        typeid(DSGN).name(), &TimingHardwareManagerPDI::hsi_start<DSGN>);
+  register_timing_hw_command("hsi_stop",         typeid(DSGN).name(), &TimingHardwareManagerPDI::hsi_stop<DSGN>);
+  register_timing_hw_command("hsi_print_status", typeid(DSGN).name(), &TimingHardwareManagerPDI::hsi_print_status<DSGN>);
 }
 
 void
@@ -78,12 +126,6 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   timinghardwaremanagerpdi::from_json(obj, m_cfg);
   
   m_connections_file = m_cfg.connections_file;
-
-  m_master_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
-  m_endpoint_monitor_data_gatherer.update_gather_interval(m_cfg.gather_interval);
-
-  m_master_monitor_data_gatherer_debug.update_gather_interval(m_cfg.gather_interval_debug);
-  m_endpoint_monitor_data_gatherer_debug.update_gather_interval(m_cfg.gather_interval_debug);
 
   TLOG() << get_name() << "conf: con. file before env var expansion: " << m_connections_file;
   resolve_environment_variables(m_connections_file);
@@ -128,230 +170,20 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
     message << m_connections_file << " not found. Has TIMING_SHARE been set?";
     throw UHALConnectionsFileIssue(ERS_HERE, message.str(), excpt);
   }
-}
 
-void
-TimingHardwareManagerPDI::do_start(const nlohmann::json&)
-{ 
-  m_received_hw_commands_counter = 0;
-  m_accepted_hw_commands_counter = 0;
-  m_rejected_hw_commands_counter = 0;
-  
+  // monitoring
+  // only register monitor threads if we have been given the name of the device to monitor
+  if (m_cfg.monitored_device_name_master.compare(""))
+  {
+    register_info_gatherer< timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData, timing::OverlordDesign<timing::TLUIONode> > (m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    register_info_gatherer< timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug, timing::OverlordDesign<timing::TLUIONode> > (m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
+  } 
+  if (m_cfg.monitored_device_name_endpoint.compare(""))
+  {
+    register_info_gatherer< timing::timingfirmwareinfo::TimingEndpointFMCMonitorData, timing::EndpointDesign<timing::FMCIONode> > (m_cfg.gather_interval, m_cfg.monitored_device_name_endpoint, 1);
+    register_info_gatherer< timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug, timing::EndpointDesign<timing::FMCIONode> > (m_cfg.gather_interval_debug, m_cfg.monitored_device_name_endpoint, 2);
+  }
   start_hw_mon_gathering();
-
-  thread_.start_working_thread();
-  TLOG() << get_name() << " successfully started";
-}
-
-void
-TimingHardwareManagerPDI::do_stop(const nlohmann::json&)
-{
-  stop_hw_mon_gathering();
-  thread_.stop_working_thread();
-  TLOG() << get_name() << " successfully stopped";
-}
-
-void
-TimingHardwareManagerPDI::start_hw_mon_gathering()
-{
-  // only start monitor threads if we have been given the name of the device to monitor
-  if (m_cfg.monitored_device_name_master.compare(""))
-  {
-    m_master_monitor_data_gatherer.start_gathering_thread();
-    m_master_monitor_data_gatherer_debug.start_gathering_thread();
-  } 
-  if (m_cfg.monitored_device_name_endpoint.compare(""))
-  {
-    m_endpoint_monitor_data_gatherer.start_gathering_thread();
-    m_endpoint_monitor_data_gatherer_debug.start_gathering_thread();
-  } 
-}
-
-void
-TimingHardwareManagerPDI::stop_hw_mon_gathering()
-{
-  // do not attempt to stop monitor threads if we have not been given the name of the device to monitor
-  if (m_cfg.monitored_device_name_master.compare(""))
-  {
-   m_master_monitor_data_gatherer.stop_gathering_thread();
-   m_master_monitor_data_gatherer_debug.stop_gathering_thread();
-  } 
-  if (m_cfg.monitored_device_name_endpoint.compare(""))
-  {
-    m_endpoint_monitor_data_gatherer.stop_gathering_thread();
-    m_endpoint_monitor_data_gatherer_debug.stop_gathering_thread();
-  }
-}
-
-void
-TimingHardwareManagerPDI::gather_master_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData>& gatherer)
-{
-  while (gatherer.run_gathering())
-  {
-    // monitoring data recepticle
-    timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData mon_data;
-
-    int successful_infos_gathered = 2;
-
-    // collect the data from the hardware
-    try
-    {
-      auto master_design = get_timing_device<timing::OverlordDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
-      master_design.get_io_node().get_info(mon_data.hardware_data);
-    }
-    catch (const std::exception& excpt)
-    {
-      --successful_infos_gathered;
-      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_master, excpt));
-    }
-    
-    try
-    {
-      auto master_design = get_timing_device<timing::OverlordDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
-      master_design.get_master_node().get_info(mon_data.firmware_data);  
-    }
-    catch (const std::exception& excpt)
-    {
-      --successful_infos_gathered;
-      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.firmware_data.class_name, m_cfg.monitored_device_name_master, excpt));
-    }
-
-    // did we actually manage to gather any new data?
-    if (successful_infos_gathered > 0)
-    {
-      // when did we actually collect the data
-      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
-
-      // store the monitor data for retrieveal by get_info at a later time
-      gatherer.update_monitoring_data(mon_data);
-    } 
-    
-    // sleep for a bit
-    usleep(gatherer.get_gather_interval());
-  }
-}
-
-void
-TimingHardwareManagerPDI::gather_endpoint_monitor_data(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorData>& gatherer)
-{
-  while (gatherer.run_gathering())
-  {
-    // monitoring data recepticle
-    timing::timingfirmwareinfo::TimingEndpointFMCMonitorData mon_data;
-    
-    int successful_infos_gathered = 2;
-
-    // collect the data from the hardware    
-    try
-    {
-      auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);
-      endpoint_design.get_io_node().get_info(mon_data.hardware_data);  
-    }
-    catch(const std::exception& excpt)
-    {
-      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
-      --successful_infos_gathered;
-    }
-
-    try
-    {
-      auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint);
-      endpoint_design.get_endpoint_node(0).get_info(mon_data.firmware_data);  
-    }
-    catch(const std::exception& excpt)
-    {
-      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.firmware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
-      --successful_infos_gathered;
-    }
-
-    // did we actually manage to gather any new data?
-    if (successful_infos_gathered > 0)
-    {
-      // when did we actually collect the data
-      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
-
-      // store the monitor data for retrieveal by get_info at a later time
-      gatherer.update_monitoring_data(mon_data);
-    }
-
-    // sleep for a bit
-    usleep(gatherer.get_gather_interval());
-  }
-}
-
-void
-TimingHardwareManagerPDI::gather_master_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug>& gatherer)
-{
-  while (gatherer.run_gathering())
-  {
-    // monitoring data recepticle
-    timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug mon_data;
-
-    int successful_infos_gathered = 1;
-
-    // collect the data from the hardware
-    try
-    {
-      auto master_design = get_timing_device<timing::OverlordDesign<timing::TLUIONode>>(m_cfg.monitored_device_name_master); 
-      master_design.get_io_node().get_info(mon_data.hardware_data);  
-    }
-    catch(const std::exception& excpt)
-    {
-      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_master, excpt));
-      --successful_infos_gathered;
-    }
-
-    // did we actually manage to gather any new data?
-    if (successful_infos_gathered > 0) {
-      // when did we actually collect the data
-      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
-
-      // store the monitor data for retrieveal by get_info at a later time
-      gatherer.update_monitoring_data(mon_data);
-    }
-    
-
-    // sleep for a bit
-    usleep(gatherer.get_gather_interval());
-  }
-}
-
-void
-TimingHardwareManagerPDI::gather_endpoint_monitor_data_debug(InfoGatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug>& gatherer)
-{
-  while (gatherer.run_gathering())
-  {
-    // monitoring data recepticle
-    timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug mon_data;
-
-    int successful_infos_gathered = 1;
-
-    // collect the data from the hardware   
-    try
-    {
-      auto endpoint_design = get_timing_device<timing::EndpointDesign<timing::FMCIONode>>(m_cfg.monitored_device_name_endpoint); 
-      endpoint_design.get_io_node().get_info(mon_data.hardware_data);
-    }
-    catch(const std::exception& excpt)
-    {
-      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.hardware_data.class_name, m_cfg.monitored_device_name_endpoint, excpt));
-      --successful_infos_gathered;
-    }
-
-    // did we actually manage to gather any new data?
-    if (successful_infos_gathered > 0) 
-    { 
-      // when did we actually gather the data
-      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
-      
-      // store the monitor data for retrieveal by get_info at a later time
-      gatherer.update_monitoring_data(mon_data);
-    }
-    
-
-    // sleep for a bit
-    usleep(gatherer.get_gather_interval());
-  }
 }
 
 void
@@ -363,23 +195,24 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector & ci, int level)
   module_info.received_hw_commands_counter = m_received_hw_commands_counter.load();
   module_info.accepted_hw_commands_counter = m_accepted_hw_commands_counter.load();
   module_info.rejected_hw_commands_counter = m_rejected_hw_commands_counter.load();
+  module_info.failed_hw_commands_counter =   m_failed_hw_commands_counter.load();
+
   ci.add(module_info);
 
   // retrieve and send hardware info
-  auto master_mon_data = m_master_monitor_data_gatherer.get_monitoring_data();
-  auto endpoint_mon_data = m_endpoint_monitor_data_gatherer.get_monitoring_data();
+  timing::timinghardwareinfo::TimingDevicesData devices_data;
+  std::stringstream collector_stream;
+  collector_stream << typeid(this).name() << "_" << get_name();
+  devices_data.collector = collector_stream.str();
 
-  auto master_mon_data_debug = m_master_monitor_data_gatherer_debug.get_monitoring_data();
-  auto endpoint_mon_data_debug = m_endpoint_monitor_data_gatherer_debug.get_monitoring_data();
-  
-  // only send data if we it has been gathered at least once
-  if (master_mon_data.time_gathered != 0) ci.add(master_mon_data);
-  if (endpoint_mon_data.time_gathered != 0) ci.add(endpoint_mon_data);
+  // TODO check
+  devices_data.device_data.clear();
 
-  if (level > 1) {
-    if (master_mon_data_debug.time_gathered != 0) ci.add(master_mon_data_debug);
-    if (endpoint_mon_data_debug.time_gathered != 0) ci.add(endpoint_mon_data_debug);
+  for (auto it = m_info_gatherers.begin(); it != m_info_gatherers.end(); ++it) {
+    if (it->get()->get_last_gathered_time() != 0 && it->get()->get_op_mon_level() <= level) devices_data.device_data.push_back(it->get()->get_monitoring_data());
   }
+
+  if (devices_data.device_data.size()) ci.add(devices_data);
 
   // maybe we should keep track of when we last send data, and only send if we have had an update since
 

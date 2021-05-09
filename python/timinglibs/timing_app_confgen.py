@@ -13,6 +13,7 @@ moo.otypes.load_types('timinglibs/timinghardwaremanagerpdi.jsonnet')
 moo.otypes.load_types('timinglibs/timingmastercontroller.jsonnet')
 moo.otypes.load_types('timinglibs/timingpartitioncontroller.jsonnet')
 moo.otypes.load_types('timinglibs/timingendpointcontroller.jsonnet')
+moo.otypes.load_types('timinglibs/hsicontroller.jsonnet')
 
 # Import new types
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
@@ -24,6 +25,7 @@ import dunedaq.timinglibs.timinghardwaremanagerpdi as thi
 import dunedaq.timinglibs.timingmastercontroller as tmc
 import dunedaq.timinglibs.timingpartitioncontroller as tpc
 import dunedaq.timinglibs.timingendpointcontroller as tec
+import dunedaq.timinglibs.timingendpointcontroller as hsi
 
 from appfwk.utils import mcmd, mspec, mrccmd
 
@@ -36,6 +38,7 @@ def generate(
         GATHER_INTERVAL_DEBUG = 10e6,
         MASTER_DEVICE_NAME="PROD_MASTER",
         ENDPOINT_DEVICE_NAME="",
+        HSI_DEVICE_NAME="",
         UHAL_LOG_LEVEL="notice",
         OUTPUT_PATH=".",
     ):
@@ -72,6 +75,13 @@ def generate(
                                         ]),
                           ] )
 
+    if HSI_DEVICE_NAME != "":
+        mod_specs.extend( [
+                            mspec("hsi0", "HSIController", [
+                                            app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                                        ]),
+                          ] )
+
     init_specs = app.Init(queues=queue_specs, modules=mod_specs)
     
 
@@ -92,6 +102,7 @@ def generate(
                         gather_interval_debug=GATHER_INTERVAL_DEBUG,
                         monitored_device_name_master=MASTER_DEVICE_NAME,
                         monitored_device_name_endpoint=ENDPOINT_DEVICE_NAME,
+                        monitored_device_name_hsi=HSI_DEVICE_NAME,
                         uhal_log_level=UHAL_LOG_LEVEL
                         )),
             ]
@@ -114,6 +125,13 @@ def generate(
                                 )),
                      ] )
 
+    if HSI_DEVICE_NAME != "":
+        mods.extend( [
+                        ("hsi0", hsi.ConfParams(
+                                device=HSI_DEVICE_NAME,
+                                )),
+                     ] )
+
     confcmd = mrccmd("conf", "INITIAL", "CONFIGURED", mods)
 
     jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
@@ -124,6 +142,7 @@ def generate(
             ("tmc.*", None),
             ("tpc.*", None),
             ("tec.*", None),
+            ("hsi.*", None),
         ])
 
     jstr = json.dumps(startcmd.pod(), indent=4, sort_keys=True)
@@ -134,6 +153,7 @@ def generate(
             ("tmc.*", None),
             ("tpc.*", None),
             ("tec.*", None),
+            ("hsi.*", None),
         ])
 
     jstr = json.dumps(stopcmd.pod(), indent=4, sort_keys=True)
@@ -141,7 +161,11 @@ def generate(
 
 
     scrapcmd = mcmd("scrap", [
-            ("", None)
+            ("thi", None),
+            ("tmc.*", None),
+            ("tpc.*", None),
+            ("tec.*", None),
+            ("hsi.*", None),
         ])
 
     jstr = json.dumps(scrapcmd.pod(), indent=4, sort_keys=True)
@@ -227,6 +251,69 @@ def generate(
     jstr = json.dumps(partition_print_status_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nPartition print status\n\n", jstr)
 
+    # hsi commands
+    hsi_io_reset_cmd = mcmd("hsi_io_reset", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_io_reset_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI IO reset\n\n", jstr)
+
+
+    hsi_endpoint_enable_cmd = mcmd("hsi_endpoint_enable", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_endpoint_enable_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI endpoint enable\n\n", jstr)
+
+
+    hsi_endpoint_disable_cmd = mcmd("hsi_endpoint_disable", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_endpoint_disable_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI endpoint disable\n\n", jstr)
+
+
+    hsi_endpoint_reset_cmd = mcmd("hsi_endpoint_reset", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_endpoint_reset_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI endpoint reset\n\n", jstr)
+
+
+    hsi_reset_cmd = mcmd("hsi_reset", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_reset_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI reset\n\n", jstr)
+
+
+    hsi_configure_cmd = mcmd("hsi_configure", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_configure_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI configure\n\n", jstr)
+
+    hsi_start_cmd = mcmd("hsi_start", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_start_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI start\n\n", jstr)
+
+    hsi_stop_cmd = mcmd("hsi_stop", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_stop_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI stop\n\n", jstr)
+
+
+    hsi_print_status_cmd = mcmd("hsi_print_status", [
+            ("hsi.*", None),
+        ])
+    jstr = json.dumps(hsi_print_status_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nHSI print status\n\n", jstr)
+
+
+
     # endpoint commands
     endpoint_io_reset_cmd = mcmd("endpoint_io_reset", [
             ("tec.*", None),
@@ -261,7 +348,7 @@ def generate(
         ])
     jstr = json.dumps(endpoint_print_status_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nEndpoint print status\n\n", jstr)
-
+    #####
 
     # Create a list of commands
     cmd_seq = [initcmd, confcmd, startcmd, stopcmd]
@@ -282,6 +369,19 @@ def generate(
                         endpoint_reset_cmd, endpoint_print_status_cmd
                         ] )
 
+    if HSI_DEVICE_NAME != "":
+        cmd_seq.extend( [
+                        hsi_io_reset_cmd,
+                        hsi_endpoint_enable_cmd,
+                        hsi_endpoint_disable_cmd,
+                        hsi_endpoint_reset_cmd,
+                        hsi_reset_cmd,
+                        hsi_configure_cmd,
+                        hsi_start_cmd,
+                        hsi_stop_cmd,
+                        hsi_print_status_cmd,
+                        ] )
+
     # Print them as json (to be improved/moved out)
     jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
     return jstr
@@ -298,10 +398,11 @@ if __name__ == '__main__':
     @click.option('-d', '--gather-interval-debug', default=10e6)
     @click.option('-m', '--master-device-name', default="PROD_MASTER")
     @click.option('-e', '--endpoint-device-name', default="")
+    @click.option('-h', '--hsi-device-name', default="")
     @click.option('-u', '--uhal-log-level', default="notice")
     @click.option('-o', '--output-path', type=click.Path(), default='.')
     @click.argument('json_file', type=click.Path(), default='timing_app.json')
-    def cli(run_number, gather_interval, gather_interval_debug, master_device_name, endpoint_device_name, uhal_log_level, output_path, json_file):
+    def cli(run_number, gather_interval, gather_interval_debug, master_device_name, endpoint_device_name, hsi_device_name, uhal_log_level, output_path, json_file):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
@@ -314,6 +415,7 @@ if __name__ == '__main__':
                     GATHER_INTERVAL_DEBUG = gather_interval_debug,
                     MASTER_DEVICE_NAME = master_device_name,
                     ENDPOINT_DEVICE_NAME = endpoint_device_name,
+                    HSI_DEVICE_NAME = hsi_device_name,
                     UHAL_LOG_LEVEL = uhal_log_level,
                     OUTPUT_PATH = output_path,
                 ))

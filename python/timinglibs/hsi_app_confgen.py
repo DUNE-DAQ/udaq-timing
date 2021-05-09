@@ -29,7 +29,7 @@ def generate(
         RUN_NUMBER = 333, 
         GATHER_INTERVAL = 1e6,
         GATHER_INTERVAL_DEBUG = 10e6,
-        HSI_DEVICE_NAME="HSI_1",
+        HSI_DEVICE_NAME="HSI_0",
         UHAL_LOG_LEVEL="notice",
         OUTPUT_PATH=".",
     ):

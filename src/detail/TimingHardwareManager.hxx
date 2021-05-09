@@ -1,7 +1,6 @@
 namespace dunedaq::timinglibs {
 
-template<class MSTR_DSGN, class EPT_DSGN>
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::TimingHardwareManager(const std::string& name)
+TimingHardwareManager::TimingHardwareManager(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
   , thread_(std::bind(&TimingHardwareManager::process_hardware_commands, this, std::placeholders::_1))
   , m_hw_command_in_queue(nullptr)
@@ -10,14 +9,16 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::TimingHardwareManager(const std::str
   , m_received_hw_commands_counter{0}
   , m_accepted_hw_commands_counter{0}
   , m_rejected_hw_commands_counter{0}
+  , m_failed_hw_commands_counter{0}
 {
   // all hardware manager variants will need these commands
   register_command("start", &TimingHardwareManager::do_start);
   register_command("stop",  &TimingHardwareManager::do_stop);
+  register_command("scrap",  &TimingHardwareManager::do_scrap);
+
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
-void TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::init(const nlohmann::json& init_data)
+void TimingHardwareManager::init(const nlohmann::json& init_data)
 {
   // set up queues
   auto ini = init_data.get<appfwk::app::ModInit>();
@@ -35,9 +36,103 @@ void TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::init(const nlohmann::json& init
   }
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::process_hardware_commands(std::atomic<bool>& running_flag)
+TimingHardwareManager::do_start(const nlohmann::json&)
+{ 
+  m_received_hw_commands_counter = 0;
+  m_accepted_hw_commands_counter = 0;
+  m_rejected_hw_commands_counter = 0;
+  m_failed_hw_commands_counter = 0;
+  
+  thread_.start_working_thread();
+  TLOG() << get_name() << " successfully started";
+}
+
+void
+TimingHardwareManager::do_stop(const nlohmann::json&)
+{
+  thread_.stop_working_thread();
+  TLOG() << get_name() << " successfully stopped";
+}
+
+void
+TimingHardwareManager::do_scrap(const nlohmann::json&)
+{
+  // TODO other scraping stuff
+  stop_hw_mon_gathering();
+  m_received_hw_commands_counter = 0;
+  m_accepted_hw_commands_counter = 0;
+  m_rejected_hw_commands_counter = 0;
+  m_failed_hw_commands_counter = 0;
+}
+
+template<class INFO, class DSGN>
+void
+TimingHardwareManager::register_info_gatherer(uint gather_interval, const std::string& device_name, uint op_mon_level) {
+
+  std::unique_ptr<InfoGathererInterface> gatherer = std::make_unique<InfoGatherer<INFO>> (std::bind(&TimingHardwareManager::gather_monitor_data<INFO, DSGN>, this, std::placeholders::_1), gather_interval, device_name, op_mon_level);
+  m_info_gatherers.push_back (std::move(gatherer));
+}
+
+
+template<class INFO, class DSGN>
+void
+TimingHardwareManager::gather_monitor_data(InfoGatherer<INFO>& gatherer)
+{
+  auto device_name = gatherer.get_device_name();
+
+  while (gatherer.run_gathering())
+  {
+    // monitoring data recepticle
+    INFO mon_data;
+
+    // collect the data from the hardware
+    try
+    {
+      auto design = get_timing_device<DSGN>(device_name); 
+      design.get_info(mon_data);
+      
+      // when did we actually collect the data
+      mon_data.time_gathered = static_cast<int64_t>(std::time(nullptr));
+      
+      gatherer.update_last_gathered_time(mon_data.time_gathered);
+
+      // store the monitor data for retrieveal by get_info at a later time
+      gatherer.update_monitoring_data(mon_data); 
+      
+      // sleep for a bit
+      usleep(gatherer.get_gather_interval());
+    }
+    catch (const std::exception& excpt)
+    {
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.class_name, device_name, excpt));
+    }
+  }
+}
+
+void
+TimingHardwareManager::start_hw_mon_gathering()
+{
+  for (auto it = m_info_gatherers.begin(); it != m_info_gatherers.end(); ++it) it->get()->start_gathering_thread();
+}
+
+void
+TimingHardwareManager::stop_hw_mon_gathering()
+{
+  for (auto it = m_info_gatherers.begin(); it != m_info_gatherers.end(); ++it) it->get()->stop_gathering_thread();
+}
+
+// cmd stuff
+
+void
+TimingHardwareManager::construct_hw_cmd_name(const timingcmd::TimingHwCmd& hw_cmd, std::string& hw_cmd_name)
+{
+  hw_cmd_name = hw_cmd.id + "_" + typeid(m_connection_manager->getDevice(hw_cmd.device).getNode()).name();
+  TLOG_DEBUG(0) << get_name() << ": constructed hw cmd name: " << hw_cmd_name;
+}
+
+void
+TimingHardwareManager::process_hardware_commands(std::atomic<bool>& running_flag)
 {
 
   std::ostringstream starting_stream;
@@ -61,22 +156,39 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::process_hardware_commands(std::atomi
     
     ++m_received_hw_commands_counter;
 
-    TLOG_DEBUG(0) << get_name() << ": Received hardware command #" << m_received_hw_commands_counter.load() << ", it is of type: " << timing_hw_cmd.id;
+    TLOG_DEBUG(0) << get_name() << ": Received hardware command #" << m_received_hw_commands_counter.load() 
+                                  << ", it is of type: " << timing_hw_cmd.id
+                                    << ", targeting device: " << timing_hw_cmd.device;
 
-    if (auto cmd = m_timing_hw_cmd_map_.find(timing_hw_cmd.id); cmd != m_timing_hw_cmd_map_.end()) {
+    std::string hw_cmd_name;
+    try
+    {
+     construct_hw_cmd_name(timing_hw_cmd, hw_cmd_name); 
+    }
+    catch (const uhal::exception::ConnectionUIDDoesNotExist& exception)
+    { 
+      std::stringstream message;
+      message << "UHAL device name not " << timing_hw_cmd.device << " in connections file";
+      throw UHALDeviceNameIssue(ERS_HERE, message.str(), exception);
+    }
+
+
+    if (auto cmd = m_timing_hw_cmd_map_.find(hw_cmd_name); cmd != m_timing_hw_cmd_map_.end()) {
       
       ++m_accepted_hw_commands_counter;
 
+      TLOG_DEBUG(0) << "Found hw cmd: " << hw_cmd_name;
       try
       {
         std::invoke(cmd->second, timing_hw_cmd);
       }
       catch (const std::exception& exception)
       {
-        ers::error(FailedToExecuteHardwareCommand(ERS_HERE, timing_hw_cmd.id, exception));
+        ers::error(FailedToExecuteHardwareCommand(ERS_HERE, hw_cmd_name, timing_hw_cmd.device, exception));
+        ++m_failed_hw_commands_counter;
       }
     } else {
-      ers::error(InvalidHardwareCommandID(ERS_HERE, timing_hw_cmd.id));
+      ers::error(InvalidHardwareCommandID(ERS_HERE, hw_cmd_name));
       ++m_rejected_hw_commands_counter;
     }
   }
@@ -86,23 +198,24 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::process_hardware_commands(std::atomi
   TLOG_DEBUG(0) << get_name() << exiting_stream.str();
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
-template<typename Child>
+template <class Child>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::register_timing_hw_command(const std::string& name, void (Child::*f)(const timingcmd::TimingHwCmd&))
+TimingHardwareManager::register_timing_hw_command(const std::string& hw_cmd_id, const std::string design_type, void (Child::*f)(const timingcmd::TimingHwCmd&))
 {
   using namespace std::placeholders;
 
-  bool done = m_timing_hw_cmd_map_.emplace(name, std::bind(f, dynamic_cast<Child*>(this), _1)).second;
+  std::string hw_cmd_name = hw_cmd_id + "_" + design_type;
+  TLOG_DEBUG(0) << "Registering timing hw command id: " << hw_cmd_name << " called with " << typeid(f).name() << std::endl;
+
+  bool done = m_timing_hw_cmd_map_.emplace(hw_cmd_name, std::bind(f, dynamic_cast<Child*>(this), _1)).second;
   if (!done) {
-  	throw TimingHardwareCommandRegistrationFailed(ERS_HERE, name, get_name());
+  	throw TimingHardwareCommandRegistrationFailed(ERS_HERE, hw_cmd_name, get_name());
   }
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
 template<class TIMING_DEV>
 const TIMING_DEV&
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::get_timing_device(const std::string& device_name) {
+TimingHardwareManager::get_timing_device(const std::string& device_name) {
 	
   if (!device_name.compare("")) {
     std::stringstream message;
@@ -134,46 +247,47 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::get_timing_device(const std::string&
     }
 }
 
-// master commands
-template<class MSTR_DSGN, class EPT_DSGN>
-void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::master_io_reset(const timingcmd::TimingHwCmd& hw_cmd)
+// common commands
+template <class DSGN>
+void TimingHardwareManager::io_reset(const timingcmd::TimingHwCmd& hw_cmd)
 {
   //stop_hw_mon_gathering();
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " reset";
-  master_design.reset();
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " io reset";
+  design.get_io_node().reset();
   //start_hw_mon_gathering();
+  
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::master_set_timestamp(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::print_status(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " set timestamp";
-  master_design.get_master_node().sync_timestamp();
-}
-
-template<class MSTR_DSGN, class EPT_DSGN>
-void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::master_print_status(const timingcmd::TimingHwCmd& hw_cmd)
-{
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " print status";
-  TLOG() << std::endl << master_design.get_status();
+  TLOG() << std::endl << design.get_status();
+}
+
+// master commands
+template<class DSGN>
+void
+TimingHardwareManager::set_timestamp(const timingcmd::TimingHwCmd& hw_cmd)
+{
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " set timestamp";
+  design.get_master_node().sync_timestamp();
 }
 
 // partition commands
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_configure(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_configure(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
   
   uint32_t fake_mask = (0x1 << cmd_payload.partition_id);
   uint32_t trig_mask = (0xf << 4) | fake_mask;
@@ -187,143 +301,170 @@ TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_configure(const timingcmd:
   partition.configure(trig_mask, spill_gate_enabled, event_rate_control);
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_enable(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_enable(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
 
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition " <<  cmd_payload.partition_id << " enable";
   partition.enable(true);
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_disable(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_disable(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition 0 disable";
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition " << cmd_payload.partition_id << " disable";
   partition.enable(false);
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_start(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_start(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition " << cmd_payload.partition_id << " start";
   partition.start();
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_stop(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_stop(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition " << cmd_payload.partition_id << " stop";
   partition.stop();
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_enable_triggers(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_enable_triggers(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition " << cmd_payload.partition_id << " start triggers";
   partition.enable_triggers(true);
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_disable_triggers(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_disable_triggers(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition " << cmd_payload.partition_id << " stop triggers";
   partition.enable_triggers(false);
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::partition_print_status(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::partition_print_status(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::TimingPartitionCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
-  auto master_design = get_timing_device<MSTR_DSGN>(hw_cmd.device);
-  auto partition = master_design.get_master_node().get_partition_node(cmd_payload.partition_id);
+  auto design = get_timing_device<DSGN>(hw_cmd.device);
+  auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
   
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " print partition " << cmd_payload.partition_id << " status";
   TLOG() << std::endl << partition.get_status();
 }
 
 // endpoint commands
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_io_reset(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::endpoint_enable(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  auto endpoint_design = get_timing_device<EPT_DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " print status";
-  endpoint_design.get_io_node().reset();
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " ept enable";
+  desgin.get_endpoint_node(0).enable();
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_enable(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::endpoint_disable(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  auto endpoint_design = get_timing_device<EPT_DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " enable";
-  endpoint_design.get_endpoint_node(0).enable();
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " ept disable";
+  desgin.get_endpoint_node(0).disable();
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_disable(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::endpoint_reset(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  auto endpoint_design = get_timing_device<EPT_DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " disable";
-  endpoint_design.get_endpoint_node(0).disable();
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " ept reset";
+  desgin.get_endpoint_node(0).reset();
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_reset(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::hsi_reset(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  auto endpoint_design = get_timing_device<EPT_DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " reset";
-  endpoint_design.get_endpoint_node(0).reset();
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " hsi reset";
+  desgin.get_hsi_node().reset_hsi();
 }
 
-template<class MSTR_DSGN, class EPT_DSGN>
+template<class DSGN>
 void
-TimingHardwareManager<MSTR_DSGN, EPT_DSGN>::endpoint_print_status(const timingcmd::TimingHwCmd& hw_cmd)
+TimingHardwareManager::hsi_configure(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  auto endpoint_design = get_timing_device<EPT_DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " print status";
-  TLOG() << std::endl << endpoint_design.get_endpoint_node(0).get_status();
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " hsi configure";
+  desgin.get_hsi_node().configure_hsi(0,0,0,0);
+}
+
+template<class DSGN>
+void
+TimingHardwareManager::hsi_start(const timingcmd::TimingHwCmd& hw_cmd)
+{
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " hsi start";
+  desgin.get_hsi_node().start_hsi();
+}
+
+template<class DSGN>
+void
+TimingHardwareManager::hsi_stop(const timingcmd::TimingHwCmd& hw_cmd)
+{
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " hsi stop";
+  desgin.get_hsi_node().stop_hsi();
+}
+
+template<class DSGN>
+void
+TimingHardwareManager::hsi_print_status(const timingcmd::TimingHwCmd& hw_cmd)
+{
+  auto desgin = get_timing_device<DSGN>(hw_cmd.device);
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " hsi print status";
+  desgin.get_hsi_node().get_status();
 }
 
 } // namespace dunedaq::timinglibs
