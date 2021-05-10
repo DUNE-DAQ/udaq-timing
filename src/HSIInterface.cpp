@@ -30,6 +30,8 @@ HSIInterface::HSIInterface(const std::string& name, std::function<void(std::atom
   , m_hsievent_sink(nullptr)
   , m_queue_timeout(1)
   , m_sent_counter(0)
+  , m_failed_to_send_counter(0)
+  , m_last_sent_timestamp(0)
 {
   //register_command("conf",  &HSIInterface::do_configure);
   //register_command("start", &HSIInterface::do_start);
@@ -85,23 +87,24 @@ HSIInterface::send_hsi_event(dfmessages::HSIEvent& event)
   std::string thisQueueName = m_hsievent_sink->get_name();
 
   TLOG_DEBUG(3) << get_name() << ": Pushing the generated HSIEvent onto queue " << thisQueueName;
-  bool successfullyWasSent = false;
-  while (!successfullyWasSent) {
+  bool was_successfully_sent = false;
+  while (!was_successfully_sent) {
     try
     {
       m_hsievent_sink->push(event, m_queue_timeout);
       ++m_sent_counter;
-      successfullyWasSent = true;
-
+      m_last_sent_timestamp.store(event.timestamp);
+      was_successfully_sent = true;
     }
     catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
     {
       std::ostringstream oss_warn;
       oss_warn << "push to output queue \"" << thisQueueName << "\"";
       ers::error(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(), m_queue_timeout.count()));
+      ++m_failed_to_send_counter;  
     }
   }
-  if (m_sent_counter > 0 && m_sent_counter % 200000 == 0) TLOG_DEBUG(0) << "Have sent out " << m_sent_counter << " HSI events";
+  if (m_sent_counter > 0 && m_sent_counter % 200000 == 0) TLOG_DEBUG(3) << "Have sent out " << m_sent_counter << " HSI events";
 }
 
 } // namespace timinglibs 

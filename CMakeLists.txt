@@ -27,7 +27,7 @@ set(TIMINGLIBS_DEPENDENCIES
 )
 
 ##############################################################################
-daq_add_library(TimingController.cpp HSIInterface.cpp TimestampEstimatorBase.cpp TimestampEstimator.cpp TimestampEstimatorSystem.cpp LINK_LIBRARIES ${TIMINGLIBS_DEPENDENCIES})
+daq_add_library(TimingController.cpp TimestampEstimatorBase.cpp TimestampEstimator.cpp TimestampEstimatorSystem.cpp LINK_LIBRARIES ${TIMINGLIBS_DEPENDENCIES})
 target_include_directories(${PROJECT_NAME} PUBLIC $ENV{UHAL_INC} $ENV{PUGIXML_INC})
 
 

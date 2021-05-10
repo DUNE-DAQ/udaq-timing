@@ -28,8 +28,7 @@ import math
 
 def generate(
         RUN_NUMBER = 333, 
-        GATHER_INTERVAL = 1e6,
-        GATHER_INTERVAL_DEBUG = 10e6,
+        READOUT_PERIOD = 1e3,
         HSI_DEVICE_NAME="BOREAS_FMC",
         UHAL_LOG_LEVEL="notice",
         OUTPUT_PATH=".",
@@ -72,8 +71,7 @@ def generate(
     mods = [
                 ("hsi", hsi.ConfParams(
                         connections_file="${TIMING_SHARE}/config/etc/connections.xml",
-                        gather_interval=GATHER_INTERVAL,
-                        gather_interval_debug=GATHER_INTERVAL_DEBUG,
+                        readout_period=READOUT_PERIOD,
                         hsi_device_name=HSI_DEVICE_NAME,
                         uhal_log_level=UHAL_LOG_LEVEL
                         )),
@@ -128,13 +126,12 @@ if __name__ == '__main__':
 
     @click.command(context_settings=CONTEXT_SETTINGS)
     @click.option('-r', '--run-number', default=333)
-    @click.option('-g', '--gather-interval', default=1e6)
-    @click.option('-d', '--gather-interval-debug', default=10e6)
+    @click.option('-p', '--readout-period', default=1e3)
     @click.option('-h', '--hsi-device-name', default="BOREAS_FMC")
     @click.option('-u', '--uhal-log-level', default="notice")
     @click.option('-o', '--output-path', type=click.Path(), default='.')
     @click.argument('json_file', type=click.Path(), default='hsi_readout_app.json')
-    def cli(run_number, gather_interval, gather_interval_debug, hsi_device_name, uhal_log_level, output_path, json_file):
+    def cli(run_number, readout_period, hsi_device_name, uhal_log_level, output_path, json_file):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
@@ -143,8 +140,7 @@ if __name__ == '__main__':
         with open(json_file, 'w') as f:
             f.write(generate(
                     RUN_NUMBER = run_number, 
-                    GATHER_INTERVAL = gather_interval,
-                    GATHER_INTERVAL_DEBUG = gather_interval_debug,
+                    READOUT_PERIOD = readout_period,
                     HSI_DEVICE_NAME = hsi_device_name,
                     UHAL_LOG_LEVEL = uhal_log_level,
                     OUTPUT_PATH = output_path,

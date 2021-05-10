@@ -124,6 +124,18 @@ ERS_DECLARE_ISSUE(timinglibs,
                   "HSI buffer in state: " << buffer_state, 
                   ((std::string)buffer_state))
 
+ERS_DECLARE_ISSUE(timinglibs,
+                  HSIReadoutIssue, 
+                  "Failed to read HSI events.", 
+                  ERS_EMPTY)
+
+ERS_DECLARE_ISSUE_BASE(timinglibs,
+                  HSIReadoutNetworkIssue,
+                  timinglibs::HSIReadoutIssue,
+                  "Failed to read HSI events due to network issue.", 
+                  ERS_EMPTY,
+                  ERS_EMPTY)
+
 } // namespace dunedaq
 
 #endif // TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_

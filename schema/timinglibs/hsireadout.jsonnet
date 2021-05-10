@@ -17,10 +17,8 @@ local types = {
     conf: s.record("ConfParams", [
         s.field("connections_file", self.str, "",
                 doc="device connections file"),
-        s.field("gather_interval", self.uint_data, 1e6,
-                doc="Hardware device data gather interval [us]"),
-        s.field("gather_interval_debug", self.uint_data, 10e6,
-                doc="Hardware device data gather debug interval [us]"),
+        s.field("readout_period", self.uint_data, 1000,
+                doc="Hardware device poll period [us]"),
         s.field("hsi_device_name", self.str, "",
                 doc="Name of timing master device to be monitored"),
         s.field("uhal_log_level", self.uhal_log_level, "notice",

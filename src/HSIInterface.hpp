@@ -73,7 +73,10 @@ protected:
 
   // push events to HSIEvent output queue
   void send_hsi_event(dfmessages::HSIEvent& event);
-  uint64_t m_sent_counter;
+  std::atomic<uint64_t> m_sent_counter;
+  std::atomic<uint64_t> m_failed_to_send_counter;  
+  std::atomic<uint64_t> m_last_sent_timestamp;
+
 };
 } // namespace timinglibs
 } // namespace dunedaq

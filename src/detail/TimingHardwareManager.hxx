@@ -43,15 +43,12 @@ TimingHardwareManager::do_start(const nlohmann::json&)
   m_accepted_hw_commands_counter = 0;
   m_rejected_hw_commands_counter = 0;
   m_failed_hw_commands_counter = 0;
-  
-  thread_.start_working_thread();
   TLOG() << get_name() << " successfully started";
 }
 
 void
 TimingHardwareManager::do_stop(const nlohmann::json&)
 {
-  thread_.stop_working_thread();
   TLOG() << get_name() << " successfully stopped";
 }
 
@@ -59,6 +56,7 @@ void
 TimingHardwareManager::do_scrap(const nlohmann::json&)
 {
   // TODO other scraping stuff
+  thread_.stop_working_thread();
   stop_hw_mon_gathering();
   m_received_hw_commands_counter = 0;
   m_accepted_hw_commands_counter = 0;

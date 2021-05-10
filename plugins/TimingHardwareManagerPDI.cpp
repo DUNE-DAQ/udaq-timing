@@ -184,6 +184,7 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
     register_info_gatherer< timing::timingfirmwareinfo::TimingEndpointFMCMonitorDataDebug, timing::EndpointDesign<timing::FMCIONode> > (m_cfg.gather_interval_debug, m_cfg.monitored_device_name_endpoint, 2);
   }
   start_hw_mon_gathering();
+  thread_.start_working_thread();
 }
 
 void
