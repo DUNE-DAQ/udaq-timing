@@ -130,7 +130,7 @@ if __name__ == '__main__':
     @click.option('-r', '--run-number', default=333)
     @click.option('-g', '--gather-interval', default=1e6)
     @click.option('-d', '--gather-interval-debug', default=10e6)
-    @click.option('-m', '--hsi-device-name', default="BOREAS_FMC")
+    @click.option('-h', '--hsi-device-name', default="BOREAS_FMC")
     @click.option('-u', '--uhal-log-level', default="notice")
     @click.option('-o', '--output-path', type=click.Path(), default='.')
     @click.argument('json_file', type=click.Path(), default='hsi_readout_app.json')
