@@ -67,13 +67,13 @@ private:
   void construct_hsi_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
   
   // timinglibs endpoint commands
-  void do_hsi_io_reset(const nlohmann::json&);
-  void do_hsi_endpoint_enable(const nlohmann::json&);
+  void do_hsi_io_reset(const nlohmann::json& data);
+  void do_hsi_endpoint_enable(const nlohmann::json& data);
   void do_hsi_endpoint_disable(const nlohmann::json&);
-  void do_hsi_endpoint_reset(const nlohmann::json&);
+  void do_hsi_endpoint_reset(const nlohmann::json& data);
 
   void do_hsi_reset(const nlohmann::json&);
-  void do_hsi_configure(const nlohmann::json&);
+  void do_hsi_configure(const nlohmann::json& data);
   void do_hsi_start(const nlohmann::json&);
   void do_hsi_stop(const nlohmann::json&);
 

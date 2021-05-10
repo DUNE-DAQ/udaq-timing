@@ -249,10 +249,18 @@ TimingHardwareManager::get_timing_device(const std::string& device_name) {
 template <class DSGN>
 void TimingHardwareManager::io_reset(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  //stop_hw_mon_gathering();
+  timingcmd::IOResetCmdPayload cmd_payload;
+  timingcmd::from_json(hw_cmd.payload, cmd_payload);
+
   auto design = get_timing_device<DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " io reset";
-  design.get_io_node().reset();
+  
+  if (cmd_payload.soft) {
+    TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " soft io reset";
+    design.get_io_node().soft_reset();
+  } else {
+    TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " io reset, with supplied clk file: " << cmd_payload.clock_config;
+    design.get_io_node().reset(cmd_payload.clock_config);
+  }
   //start_hw_mon_gathering();
   
 }
@@ -281,22 +289,18 @@ template<class DSGN>
 void
 TimingHardwareManager::partition_configure(const timingcmd::TimingHwCmd& hw_cmd)
 {
-  timingcmd::TimingPartitionCmdPayload cmd_payload;
+  timingcmd::TimingPartitionConfigureCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
 
   auto design = get_timing_device<DSGN>(hw_cmd.device);
   auto partition = design.get_master_node().get_partition_node(cmd_payload.partition_id);
   
-  uint32_t fake_mask = (0x1 << cmd_payload.partition_id);
-  uint32_t trig_mask = (0xf << 4) | fake_mask;
-
-  bool spill_gate_enabled = true;
-  bool event_rate_control = true;
-
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " partition " << cmd_payload.partition_id << " configure";
 
   partition.reset(); 
-  partition.configure(trig_mask, spill_gate_enabled, event_rate_control);
+  partition.configure(cmd_payload.trigger_mask, 
+                      cmd_payload.spill_gate_enabled, 
+                      cmd_payload.rate_control_enabled);
 }
 
 template<class DSGN>
@@ -397,9 +401,12 @@ template<class DSGN>
 void
 TimingHardwareManager::endpoint_enable(const timingcmd::TimingHwCmd& hw_cmd)
 {
+  timingcmd::TimingEndpointConfigureCmdPayload cmd_payload;
+  timingcmd::from_json(hw_cmd.payload, cmd_payload);
+
   auto desgin = get_timing_device<DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " ept enable";
-  desgin.get_endpoint_node(0).enable();
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " ept enable, adr: " << cmd_payload.address << ", part: " << cmd_payload.partition;
+  desgin.get_endpoint_node(0).enable(cmd_payload.partition, cmd_payload.address);
 }
 
 template<class DSGN>
@@ -415,9 +422,12 @@ template<class DSGN>
 void
 TimingHardwareManager::endpoint_reset(const timingcmd::TimingHwCmd& hw_cmd)
 {
+  timingcmd::TimingEndpointConfigureCmdPayload cmd_payload;
+  timingcmd::from_json(hw_cmd.payload, cmd_payload);
+
   auto desgin = get_timing_device<DSGN>(hw_cmd.device);
-  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " ept reset";
-  desgin.get_endpoint_node(0).reset();
+  TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " ept reset, adr: " << cmd_payload.address << ", part: " << cmd_payload.partition;
+  desgin.get_endpoint_node(0).reset(cmd_payload.partition, cmd_payload.address);
 }
 
 template<class DSGN>
@@ -433,9 +443,16 @@ template<class DSGN>
 void
 TimingHardwareManager::hsi_configure(const timingcmd::TimingHwCmd& hw_cmd)
 {
+  timingcmd::HSIConfigureCmdPayload cmd_payload;
+  timingcmd::from_json(hw_cmd.payload, cmd_payload);
+
   auto desgin = get_timing_device<DSGN>(hw_cmd.device);
   TLOG_DEBUG(0) << get_name() << ": " << hw_cmd.device << " hsi configure";
-  desgin.get_hsi_node().configure_hsi(0,0,0,0);
+ 
+  desgin.get_hsi_node().configure_hsi(cmd_payload.data_source,
+                                      cmd_payload.rising_edge_mask,
+                                      cmd_payload.falling_edge_mask,
+                                      cmd_payload.invert_edge_mask);
 }
 
 template<class DSGN>

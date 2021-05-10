@@ -66,19 +66,23 @@ HSIController::construct_hsi_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::s
 }
 
 void
-HSIController::do_hsi_io_reset(const nlohmann::json&)
+HSIController::do_hsi_io_reset(const nlohmann::json& data)
 {
   timingcmd::TimingHwCmd hw_cmd;
   construct_hsi_hw_cmd(hw_cmd, "io_reset");
+  hw_cmd.payload = data;
+
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(0).atomic;
 }
 
 void
-HSIController::do_hsi_endpoint_enable(const nlohmann::json&)
+HSIController::do_hsi_endpoint_enable(const nlohmann::json& data)
 {
   timingcmd::TimingHwCmd hw_cmd;
   construct_hsi_hw_cmd(hw_cmd, "endpoint_enable");
+  hw_cmd.payload = data;
+
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(1).atomic;
 }
@@ -93,10 +97,12 @@ HSIController::do_hsi_endpoint_disable(const nlohmann::json&)
 }
 
 void
-HSIController::do_hsi_endpoint_reset(const nlohmann::json&)
+HSIController::do_hsi_endpoint_reset(const nlohmann::json& data)
 {
   timingcmd::TimingHwCmd hw_cmd;
   construct_hsi_hw_cmd(hw_cmd, "endpoint_reset");
+  hw_cmd.payload = data;
+
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(3).atomic;
 }
@@ -111,10 +117,12 @@ HSIController::do_hsi_reset(const nlohmann::json&)
 }
 
 void
-HSIController::do_hsi_configure(const nlohmann::json&)
+HSIController::do_hsi_configure(const nlohmann::json& data)
 {
   timingcmd::TimingHwCmd hw_cmd;
   construct_hsi_hw_cmd(hw_cmd, "hsi_configure");
+  hw_cmd.payload = data;
+
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(5).atomic;
 }

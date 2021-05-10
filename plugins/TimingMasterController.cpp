@@ -57,10 +57,12 @@ TimingMasterController::construct_master_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, 
 }
 
 void
-TimingMasterController::do_master_io_reset(const nlohmann::json&)
+TimingMasterController::do_master_io_reset(const nlohmann::json& data)
 {
   timingcmd::TimingHwCmd hw_cmd;
   construct_master_hw_cmd(hw_cmd, "io_reset");
+  hw_cmd.payload = data;
+
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(0).atomic;
 }

@@ -9,6 +9,7 @@ moo.otypes.load_types('appfwk/cmd.jsonnet')
 moo.otypes.load_types('appfwk/app.jsonnet')
 moo.otypes.load_types('cmdlib/cmd.jsonnet')
 moo.otypes.load_types('rcif/cmd.jsonnet')
+moo.otypes.load_types('timinglibs/timingcmd.jsonnet')
 moo.otypes.load_types('timinglibs/timinghardwaremanagerpdi.jsonnet')
 moo.otypes.load_types('timinglibs/timingmastercontroller.jsonnet')
 moo.otypes.load_types('timinglibs/timingpartitioncontroller.jsonnet')
@@ -21,6 +22,7 @@ import dunedaq.appfwk.app as app # Queue spec
 import dunedaq.cmdlib.cmd as cmdlib # Command
 import dunedaq.rcif.cmd as rcif # rcif
 
+import dunedaq.timinglibs.timingcmd as tcmd
 import dunedaq.timinglibs.timinghardwaremanagerpdi as thi
 import dunedaq.timinglibs.timingmastercontroller as tmc
 import dunedaq.timinglibs.timingpartitioncontroller as tpc
@@ -37,8 +39,22 @@ def generate(
         GATHER_INTERVAL = 1e6,
         GATHER_INTERVAL_DEBUG = 10e6,
         MASTER_DEVICE_NAME="PROD_MASTER",
+        MASTER_CLOCK_FILE="",
         ENDPOINT_DEVICE_NAME="",
+        ENDPOINT_CLOCK_FILE="",
+        ENDPOINT_ADDRESS=0,
+        ENDPOINT_PARTITION=0,
         HSI_DEVICE_NAME="",
+        HSI_ENDPOINT_ADDRESS=0,
+        HSI_ENDPOINT_PARTITION=0,
+        HSI_CLOCK_FILE="",
+        HSI_RE_MASK=0x0,
+        HSI_FE_MASK=0x0,
+        HSI_INV_MASK=0x0,
+        HSI_SOURCE=0x0,
+        PART_TRIGGER_MASK=0xff,
+        PART_SPILL_GATE_ENABLED=True,
+        PART_RATE_CONTROL_ENABLED=True,
         UHAL_LOG_LEVEL="notice",
         OUTPUT_PATH=".",
     ):
@@ -175,7 +191,10 @@ def generate(
 
     # master commands
     master_io_reset_cmd = mcmd("master_io_reset", [
-            ("tmc.*", None),
+            ("tmc.*", tcmd.IOResetCmdPayload(
+                      clock_config=MASTER_CLOCK_FILE,
+                      soft=False
+                      )),
         ])
     jstr = json.dumps(master_io_reset_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nMaster IO reset\n\n", jstr)
@@ -197,7 +216,11 @@ def generate(
 
     # partition commands
     partition_configure_cmd = mcmd("partition_configure", [
-            ("tpc.*", None),
+            ("tpc.*", tcmd.TimingPartitionConfigureCmdPayload(
+                      trigger_mask=PART_TRIGGER_MASK,
+                      spill_gate_enabled=PART_SPILL_GATE_ENABLED,
+                      rate_control_enabled=PART_RATE_CONTROL_ENABLED,
+                      )),
         ])
     jstr = json.dumps(partition_configure_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nPartition configure\n\n", jstr)
@@ -253,14 +276,20 @@ def generate(
 
     # hsi commands
     hsi_io_reset_cmd = mcmd("hsi_io_reset", [
-            ("hsi.*", None),
+            ("hsi.*", tcmd.IOResetCmdPayload(
+                      clock_config=HSI_CLOCK_FILE,
+                      soft=False
+                      )),
         ])
     jstr = json.dumps(hsi_io_reset_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nHSI IO reset\n\n", jstr)
 
 
     hsi_endpoint_enable_cmd = mcmd("hsi_endpoint_enable", [
-            ("hsi.*", None),
+            ("hsi.*", tcmd.TimingEndpointConfigureCmdPayload(
+                      address=HSI_ENDPOINT_ADDRESS,
+                      partition=HSI_ENDPOINT_PARTITION
+                      )),
         ])
     jstr = json.dumps(hsi_endpoint_enable_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nHSI endpoint enable\n\n", jstr)
@@ -274,7 +303,10 @@ def generate(
 
 
     hsi_endpoint_reset_cmd = mcmd("hsi_endpoint_reset", [
-            ("hsi.*", None),
+            ("hsi.*", tcmd.TimingEndpointConfigureCmdPayload(
+                      address=HSI_ENDPOINT_ADDRESS,
+                      partition=HSI_ENDPOINT_PARTITION
+                      )),
         ])
     jstr = json.dumps(hsi_endpoint_reset_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nHSI endpoint reset\n\n", jstr)
@@ -288,7 +320,12 @@ def generate(
 
 
     hsi_configure_cmd = mcmd("hsi_configure", [
-            ("hsi.*", None),
+            ("hsi.*", tcmd.HSIConfigureCmdPayload(
+                      rising_edge_mask=HSI_RE_MASK,                   
+                      falling_edge_mask=HSI_FE_MASK,
+                      invert_edge_mask=HSI_INV_MASK,
+                      data_source=HSI_SOURCE,
+                      )),
         ])
     jstr = json.dumps(hsi_configure_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nHSI configure\n\n", jstr)
@@ -316,14 +353,20 @@ def generate(
 
     # endpoint commands
     endpoint_io_reset_cmd = mcmd("endpoint_io_reset", [
-            ("tec.*", None),
+            ("tec.*", tcmd.IOResetCmdPayload(
+                      clock_config=ENDPOINT_CLOCK_FILE,
+                      soft=False
+                      )),
         ])
     jstr = json.dumps(endpoint_io_reset_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nEndpoint IO reset\n\n", jstr)
 
 
     endpoint_enable_cmd = mcmd("endpoint_enable", [
-            ("tec.*", None),
+            ("tec.*", tcmd.TimingEndpointConfigureCmdPayload(
+                      address=ENDPOINT_ADDRESS,
+                      partition=ENDPOINT_PARTITION
+                      )),
         ])
     jstr = json.dumps(endpoint_enable_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nEndpoint enable\n\n", jstr)
@@ -337,7 +380,10 @@ def generate(
 
 
     endpoint_reset_cmd = mcmd("endpoint_reset", [
-            ("tec.*", None),
+            ("tec.*", tcmd.TimingEndpointConfigureCmdPayload(
+                      address=ENDPOINT_ADDRESS,
+                      partition=ENDPOINT_PARTITION
+                      )),
         ])
     jstr = json.dumps(endpoint_reset_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nEndpoint reset\n\n", jstr)
@@ -396,13 +442,40 @@ if __name__ == '__main__':
     @click.option('-r', '--run-number', default=333)
     @click.option('-g', '--gather-interval', default=1e6)
     @click.option('-d', '--gather-interval-debug', default=10e6)
+
     @click.option('-m', '--master-device-name', default="PROD_MASTER")
+    @click.option('--master-clock-file', default="")
+
     @click.option('-e', '--endpoint-device-name', default="")
+    @click.option('--endpoint-clock-file', default="")
+    @click.option('--endpoint-address', default=0)
+    @click.option('--endpoint-partition', default=0)
+
     @click.option('-h', '--hsi-device-name', default="")
+    @click.option('--hsi-clock-file', default="")
+    @click.option('--hsi-endpoint-address', default=0)
+    @click.option('--hsi-endpoint-partition', default=0)
+
+    @click.option('--hsi-re-mask', default=0x0)
+    @click.option('--hsi-fe-mask', default=0x0)
+    @click.option('--hsi-inv-mask', default=0x0)
+    @click.option('--hsi-source', default=0x0)
+    
+    @click.option('--part-trig-mask', default=0xff)
+    @click.option('--part-spill-gate', type=bool, default=True)
+    @click.option('--part-rate-control', type=bool, default=True)
+
     @click.option('-u', '--uhal-log-level', default="notice")
     @click.option('-o', '--output-path', type=click.Path(), default='.')
     @click.argument('json_file', type=click.Path(), default='timing_app.json')
-    def cli(run_number, gather_interval, gather_interval_debug, master_device_name, endpoint_device_name, hsi_device_name, uhal_log_level, output_path, json_file):
+    def cli(run_number, gather_interval, gather_interval_debug, 
+
+        master_device_name, master_clock_file,
+
+        endpoint_device_name, endpoint_clock_file, endpoint_address, endpoint_partition,
+        hsi_device_name, hsi_clock_file, hsi_endpoint_address, hsi_endpoint_partition, hsi_re_mask, hsi_fe_mask, hsi_inv_mask, hsi_source,
+        part_trig_mask, part_spill_gate, part_rate_control,
+        uhal_log_level, output_path, json_file):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
@@ -414,8 +487,22 @@ if __name__ == '__main__':
                     GATHER_INTERVAL = gather_interval,
                     GATHER_INTERVAL_DEBUG = gather_interval_debug,
                     MASTER_DEVICE_NAME = master_device_name,
+                    MASTER_CLOCK_FILE = master_clock_file,
                     ENDPOINT_DEVICE_NAME = endpoint_device_name,
+                    ENDPOINT_CLOCK_FILE = endpoint_clock_file,
+                    ENDPOINT_ADDRESS = endpoint_address,
+                    ENDPOINT_PARTITION = endpoint_partition,
                     HSI_DEVICE_NAME = hsi_device_name,
+                    HSI_CLOCK_FILE = hsi_clock_file,
+                    HSI_ENDPOINT_ADDRESS = hsi_endpoint_address,
+                    HSI_ENDPOINT_PARTITION = hsi_endpoint_partition,
+                    HSI_RE_MASK=hsi_re_mask,
+                    HSI_FE_MASK=hsi_fe_mask,
+                    HSI_INV_MASK=hsi_inv_mask,
+                    HSI_SOURCE=hsi_source,
+                    PART_TRIGGER_MASK=part_trig_mask,
+                    PART_SPILL_GATE_ENABLED=part_spill_gate,
+                    PART_RATE_CONTROL_ENABLED=part_rate_control,
                     UHAL_LOG_LEVEL = uhal_log_level,
                     OUTPUT_PATH = output_path,
                 ))

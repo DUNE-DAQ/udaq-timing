@@ -44,7 +44,7 @@ def generate(
     # Only needed to reproduce the same order as when using jsonnet
     queue_specs = app.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
 
-    mod_specs = [
+    mod_specs = [   
                     mspec("hsi", "HSIReadout", [
                                     app.QueueInfo(name="hsievent_sink", inst="hsievent_q", dir="output"),
                                 ]),

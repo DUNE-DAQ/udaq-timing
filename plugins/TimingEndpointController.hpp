@@ -67,10 +67,10 @@ private:
   void construct_endpoint_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
   
   // timinglibs endpoint commands
-  void do_endpoint_io_reset(const nlohmann::json&);
-  void do_endpoint_enable(const nlohmann::json&);
+  void do_endpoint_io_reset(const nlohmann::json& data);
+  void do_endpoint_enable(const nlohmann::json& data);
   void do_endpoint_disable(const nlohmann::json&);
-  void do_endpoint_reset(const nlohmann::json&);
+  void do_endpoint_reset(const nlohmann::json& data);
   void do_endpoint_print_status(const nlohmann::json&);
   void do_endpoint_print_timestamp(const nlohmann::json&);
 
