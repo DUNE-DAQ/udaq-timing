@@ -13,9 +13,9 @@
 #include "timinglibs/hsireadoutinfo/Structs.hpp"
 #include "timinglibs/hsireadoutinfo/Nljs.hpp"
 
-#include "timinglibs/TimingIssues.hpp"
+#include "TimingHardwareManager.hpp"
 
-#include "HSIInterface.hpp"
+#include "timinglibs/TimingIssues.hpp"
 
 #include "timing/HSINode.hpp"
 
@@ -38,6 +38,7 @@
 #include <chrono>
 #include <random>
 #include <bitset>
+#include <shared_mutex>
 
 namespace dunedaq {
 namespace timinglibs {

@@ -66,7 +66,7 @@ TimingHardwareManager::do_scrap(const nlohmann::json&)
 
 template<class INFO, class DSGN>
 void
-TimingHardwareManager::register_info_gatherer(uint gather_interval, const std::string& device_name, uint op_mon_level) {
+TimingHardwareManager::register_info_gatherer(uint gather_interval, const std::string& device_name, int op_mon_level) {
 
   std::unique_ptr<InfoGathererInterface> gatherer = std::make_unique<InfoGatherer<INFO>> (std::bind(&TimingHardwareManager::gather_monitor_data<INFO, DSGN>, this, std::placeholders::_1), gather_interval, device_name, op_mon_level);
   m_info_gatherers.push_back (std::move(gatherer));

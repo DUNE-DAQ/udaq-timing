@@ -46,7 +46,7 @@ public:
    * @param gather_data function for data gathering 
    * @param gather_interval interval for data gathering in us
    */
-  explicit InfoGathererInterface(uint gather_interval, const std::string& device_name, uint op_mon_level)
+  explicit InfoGathererInterface(uint gather_interval, const std::string& device_name, int op_mon_level)
     : m_run_gathering(false)
     , m_gathering_thread(nullptr)
     , m_gather_interval(gather_interval)
@@ -110,7 +110,7 @@ public:
 
   virtual const nlohmann::json get_monitoring_data() const = 0;
 
-  uint get_op_mon_level() {return m_op_mon_level;}
+  int get_op_mon_level() {return m_op_mon_level;}
 protected:
   std::atomic<bool> m_run_gathering;
   std::unique_ptr<std::thread> m_gathering_thread;
@@ -118,7 +118,7 @@ protected:
   mutable std::shared_mutex m_mon_data_mutex;
   std::string m_device_name;
   std::atomic<int64_t> m_last_gathered_time;
-  uint m_op_mon_level;
+  int m_op_mon_level;
 };
 
 } // namespace timinglibs

@@ -179,7 +179,7 @@ protected:
   std::vector< std::unique_ptr<InfoGathererInterface> > m_info_gatherers;
 
   template<class INFO, class DSGN>
-  void register_info_gatherer(uint gather_interval, const std::string& device_name, uint op_mon_level);
+  void register_info_gatherer(uint gather_interval, const std::string& device_name, int op_mon_level);
 
   template<class INFO, class DSGN>
   void gather_monitor_data(InfoGatherer<INFO>& gatherer);

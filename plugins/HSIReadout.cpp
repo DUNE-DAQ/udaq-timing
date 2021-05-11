@@ -196,7 +196,7 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
           uint32_t trigger = hsi_words.at(4+(i*timing::g_hsi_event_size));
 
           // put together the timestamp
-          uint64_t ts = ts_low | static_cast<uint64_t>(ts_high << 32);
+          uint64_t ts = ts_low | (static_cast<uint64_t>(ts_high) << 32);
 
           // bits 31-16 contain the HSI device ID
           uint32_t hsi_device_id = header >> 16;

@@ -40,7 +40,7 @@ public:
    * @param gather_data function for data gathering 
    * @param gather_interval interval for data gathering in us
    */
-  explicit InfoGatherer(std::function<void(InfoGatherer<MON_DATA>&)> gather_data, uint gather_interval, const std::string& device_name, uint op_mon_level)
+  explicit InfoGatherer(std::function<void(InfoGatherer<MON_DATA>&)> gather_data, uint gather_interval, const std::string& device_name, int op_mon_level)
     : InfoGathererInterface(gather_interval, device_name, op_mon_level)
     , m_gather_data(gather_data)
   {}
