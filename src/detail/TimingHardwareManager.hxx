@@ -198,7 +198,7 @@ TimingHardwareManager::process_hardware_commands(std::atomic<bool>& running_flag
 
 template <class Child>
 void
-TimingHardwareManager::register_timing_hw_command(const std::string& hw_cmd_id, const std::string design_type, void (Child::*f)(const timingcmd::TimingHwCmd&))
+TimingHardwareManager::register_timing_hw_command(const std::string& hw_cmd_id, const std::string& design_type, void (Child::*f)(const timingcmd::TimingHwCmd&))
 {
   using namespace std::placeholders;
 

@@ -2,7 +2,7 @@
  * @file HSIController.hpp
  *
  * HSIController is a DAQModule implementation that
- * provides that provides a control interface for a timing endpoint.
+ * provides that provides a control interface for a HSI endpoint.
  *
  * This is part of the DUNE DAQ Software Suite, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
@@ -40,7 +40,7 @@ namespace timinglibs {
 
 /**
  * @brief HSIController is a DAQModule implementation that
- * provides that provides a control interface for a timing endpoint.
+ * provides that provides a control interface for a HSI endpoint.
  */
 class HSIController : public dunedaq::timinglibs::TimingController
 {
@@ -66,7 +66,7 @@ private:
 
   void construct_hsi_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
   
-  // timinglibs endpoint commands
+  // timinglibs hsi commands
   void do_hsi_io_reset(const nlohmann::json& data);
   void do_hsi_endpoint_enable(const nlohmann::json& data);
   void do_hsi_endpoint_disable(const nlohmann::json&);

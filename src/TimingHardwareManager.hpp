@@ -118,7 +118,7 @@ protected:
   std::map<timingcmd::TimingHwCmdId, std::function<void(const timingcmd::TimingHwCmd&)>> m_timing_hw_cmd_map_;
   
   template<typename Child>
-  void register_timing_hw_command(const std::string& hw_cmd_id, const std::string design_type, void (Child::*f)(const timingcmd::TimingHwCmd&));
+  void register_timing_hw_command(const std::string& hw_cmd_id, const std::string& design_type, void (Child::*f)(const timingcmd::TimingHwCmd&));
 
   // timing common commands
   template<class DSGN>

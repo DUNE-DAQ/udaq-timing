@@ -133,7 +133,7 @@ void
 HSIReadout::do_start(const nlohmann::json& /*args*/)
 {
   TLOG() << get_name() << ": Entering do_start() method";
-  m_thread.start_working_thread("fake-tsd-gen");
+  m_thread.start_working_thread("read-hsi-events");
   TLOG() << get_name() << " successfully started";
   TLOG() << get_name() << ": Exiting do_start() method";
 }
@@ -157,7 +157,7 @@ HSIReadout::do_scrap(const nlohmann::json& /*args*/)
 void
 HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
 {
-  TLOG_DEBUG(2) << get_name() << ": Entering read_hsievents() method";
+  TLOG_DEBUG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering read_hsievents() method";
 
   m_readout_counter = 0;
   m_sent_counter = 0;
@@ -178,7 +178,7 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
 
       update_buffer_counts(n_words_in_buffer);
       
-      TLOG_DEBUG(3) << get_name() << ": Number of words in HSI buffer: " << n_words_in_buffer;
+      TLOG_DEBUG(4) << get_name() << ": Number of words in HSI buffer: " << n_words_in_buffer;
       
       if (hsi_words.size() >= 5) {
 
@@ -195,12 +195,12 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
           uint32_t data    = hsi_words.at(3+(i*timing::g_hsi_event_size));
           uint32_t trigger = hsi_words.at(4+(i*timing::g_hsi_event_size));
 
-        // put together the timestamp
+          // put together the timestamp
           uint64_t ts = ts_low | static_cast<uint64_t>(ts_high << 32);
 
-        // bits 31-16 contain the HSI device ID
+          // bits 31-16 contain the HSI device ID
           uint32_t hsi_device_id = header >> 16;
-        // bits 15-0 contain the sequence counter
+          // bits 15-0 contain the sequence counter
           uint32_t counter = header & 0x0000ffff;
 
           if (counter > 0 && counter % 60000 == 0) TLOG_DEBUG(1) << "Sequence counter from firmware: " << counter;
@@ -238,8 +238,6 @@ HSIReadout::read_hsievents(std::atomic<bool>& running_flag)
       ers::error(UHALDeviceNameIssue(ERS_HERE, message.str(), excpt));
       return;
     }
-    // TODO catch the correct exceptions here
-    // node issue
     catch(const uhal::exception::UdpTimeout& excpt)
     {
       ers::error(HSIReadoutNetworkIssue(ERS_HERE, excpt));
