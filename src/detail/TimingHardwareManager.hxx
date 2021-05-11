@@ -67,6 +67,21 @@ TimingHardwareManager::do_scrap(const nlohmann::json&)
 template<class INFO, class DSGN>
 void
 TimingHardwareManager::register_info_gatherer(uint gather_interval, const std::string& device_name, int op_mon_level) {
+  
+  try
+  {
+    if (typeid(const DSGN &) != typeid(m_connection_manager->getDevice(device_name).getNode("")))
+    {
+      TLOG_DEBUG(0) << device_name << " is not of type " << typeid(DSGN).name() << ". I will not monitor the hw";
+      return;
+    }
+  }
+  catch (const uhal::exception::ConnectionUIDDoesNotExist& exception)
+  { 
+    std::stringstream message;
+    message << "UHAL device name not " << device_name << " in connections file";
+    throw UHALDeviceNameIssue(ERS_HERE, message.str(), exception);
+  }
 
   std::unique_ptr<InfoGathererInterface> gatherer = std::make_unique<InfoGatherer<INFO>> (std::bind(&TimingHardwareManager::gather_monitor_data<INFO, DSGN>, this, std::placeholders::_1), gather_interval, device_name, op_mon_level);
   m_info_gatherers.push_back (std::move(gatherer));

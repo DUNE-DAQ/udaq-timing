@@ -175,8 +175,15 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
   // only register monitor threads if we have been given the name of the device to monitor
   if (m_cfg.monitored_device_name_master.compare(""))
   {
-    //register_info_gatherer< timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorData, timing::OverlordDesign<timing::TLUIONode> > (m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
-    //register_info_gatherer< timing::timingfirmwareinfo::TimingPDIMasterTLUMonitorDataDebug, timing::OverlordDesign<timing::TLUIONode> > (m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
+    register_info_gatherer< timing::timingfirmwareinfo::OverlordTLUMonitorData, timing::OverlordDesign<timing::TLUIONode> > (m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    register_info_gatherer< timing::timingfirmwareinfo::OverlordTLUMonitorDataDebug, timing::OverlordDesign<timing::TLUIONode> > (m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
+
+    register_info_gatherer< timing::timingfirmwareinfo::BoreasTLUMonitorData, timing::BoreasDesign<timing::TLUIONode> > (m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    register_info_gatherer< timing::timingfirmwareinfo::BoreasTLUMonitorDataDebug, timing::BoreasDesign<timing::TLUIONode> > (m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
+
+    register_info_gatherer< timing::timingfirmwareinfo::BoreasFMCMonitorData, timing::BoreasDesign<timing::FMCIONode> > (m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    register_info_gatherer< timing::timingfirmwareinfo::BoreasFMCMonitorDataDebug, timing::BoreasDesign<timing::FMCIONode> > (m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
+    
   } 
   if (m_cfg.monitored_device_name_endpoint.compare(""))
   {
