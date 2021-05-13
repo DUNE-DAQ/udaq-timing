@@ -111,6 +111,7 @@ import click
 @click.option('-f', '--use-felix', is_flag=True)
 @click.option('--clock-frequency', default=50e6)
 @click.option('--hsi-event-period', default=1e9)
+@click.option('--hsi-timestamp-offset', default=1e9)
 @click.option('--hsi-device-id', default=0)
 @click.option('--mean-hsi-signal-multiplicity', default=1)
 @click.option('--hsi-signal-emulation-mode', default=0)
@@ -119,7 +120,8 @@ import click
 @click.option('--host-trgemu', default='localhost')
 @click.option('--host-hsi', default='localhost')
 @click.argument('json_dir', type=click.Path())
-def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, clock_frequency, hsi_event_period, hsi_device_id, mean_hsi_signal_multiplicity, hsi_signal_emulation_mode, enabled_hsi_signals, host_rudf, host_trgemu, host_hsi, json_dir):
+def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, clock_frequency, 
+        hsi_event_period, hsi_timestamp_offset, hsi_device_id, mean_hsi_signal_multiplicity, hsi_signal_emulation_mode, enabled_hsi_signals, host_rudf, host_trgemu, host_hsi, json_dir):
     """
       JSON_DIR: Json file output folder
     """
@@ -172,6 +174,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
         RUN_NUMBER = run_number,
         CLOCK_SPEED_HZ = clock_frequency,
         HSI_EVENT_PERIOD_NS = hsi_event_period,
+        HSI_TIMESTAMP_OFFSET = hsi_timestamp_offset,
         HSI_DEVICE_ID = hsi_device_id,
         MEAN_SIGNAL_MULTIPLICITY = mean_hsi_signal_multiplicity,
         SIGNAL_EMULATION_MODE = hsi_signal_emulation_mode,

@@ -38,6 +38,7 @@ FakeHSIEventGenerator::FakeHSIEventGenerator(const std::string& name)
   , m_uniform_distribution(0, UINT32_MAX)
   , m_clock_frequency(50e6)
   , m_event_period(20)
+  , m_timestamp_offset(0)
   , m_hsi_device_id(0)
   , m_signal_emulation_mode(0)
   , m_mean_signal_multiplicity(0)
@@ -76,6 +77,7 @@ FakeHSIEventGenerator::do_configure(const nlohmann::json& obj)
 
   m_clock_frequency = params.clock_frequency;
   m_event_period = params.event_period;
+  m_timestamp_offset = params.timestamp_offset;
   m_hsi_device_id = params.hsi_device_id;  
   m_signal_emulation_mode = params.signal_emulation_mode;
   m_mean_signal_multiplicity = params.mean_signal_multiplicity;
@@ -163,6 +165,8 @@ FakeHSIEventGenerator::generate_hsievents(std::atomic<bool>& running_flag)
     if (signal_map) {
       
       dfmessages::timestamp_t ts = m_timestamp_estimator->get_timestamp_estimate();
+      
+      ts += m_timestamp_offset;
       
       ++m_generated_counter;
 

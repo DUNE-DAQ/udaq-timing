@@ -9,10 +9,15 @@ local types = {
 
     u32: s.number("U32", dtype="u4"),
 
+    i64: s.number("I64", dtype="i8"),
+
     conf: s.record("Conf", [
 
       s.field("clock_frequency", self.u64, 50000000,
         doc="Assumed clock frequency in Hz (for current-timestamp estimation)"),
+
+      s.field("timestamp_offset", self.i64, 0,
+        doc="Offset for HSIEvent timestamps"),
 
       s.field("event_period", self.u32, 50000000,
         doc="Period between HSIEvent generation"),
