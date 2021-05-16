@@ -17,7 +17,7 @@ local types = {
         doc="Assumed clock frequency in Hz (for current-timestamp estimation)"),
 
       s.field("timestamp_offset", self.i64, 0,
-        doc="Offset for HSIEvent timestamps"),
+        doc="Offset for HSIEvent timestamps in units of clock ticks. Positive offset increases timestamp estimate."),
 
       s.field("event_period", self.u32, 50000000,
         doc="Period between HSIEvent generation"),

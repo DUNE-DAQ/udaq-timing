@@ -77,6 +77,7 @@ FakeHSIEventGenerator::do_configure(const nlohmann::json& obj)
 
   m_clock_frequency = params.clock_frequency;
   m_event_period = params.event_period;
+  // offset in units of clock ticks, positive offset increases timestamp
   m_timestamp_offset = params.timestamp_offset;
   m_hsi_device_id = params.hsi_device_id;  
   m_signal_emulation_mode = params.signal_emulation_mode;
