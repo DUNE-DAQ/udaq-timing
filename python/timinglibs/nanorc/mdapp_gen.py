@@ -111,7 +111,7 @@ import click
 @click.option('-f', '--use-felix', is_flag=True)
 @click.option('--clock-frequency', default=50e6)
 @click.option('--hsi-event-period', default=1e9)
-@click.option('--hsi-timestamp-offset', default=1e9, help='Offset for HSIEvent timestamps in units of clock ticks. Positive offset increases timestamp estimate.')
+@click.option('--hsi-timestamp-offset', default=0, help='Offset for HSIEvent timestamps in units of clock ticks. Positive offset increases timestamp estimate.')
 @click.option('--hsi-device-id', default=0)
 @click.option('--mean-hsi-signal-multiplicity', default=1)
 @click.option('--hsi-signal-emulation-mode', default=0)
