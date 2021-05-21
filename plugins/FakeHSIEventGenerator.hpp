@@ -89,6 +89,7 @@ private:
 
   uint64_t m_clock_frequency;
   uint64_t m_event_period;
+  int64_t m_timestamp_offset;
 
   uint32_t m_hsi_device_id;
   uint m_signal_emulation_mode;

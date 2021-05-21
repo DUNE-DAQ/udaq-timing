@@ -72,7 +72,8 @@ def generate(
         NETWORK_ENDPOINTS: list,
         RUN_NUMBER = 333,
         CLOCK_SPEED_HZ: int = 50000000,
-        HSI_EVENT_PERIOD_NS: int = 20,
+        HSI_EVENT_PERIOD_NS: int = 1e9,
+        HSI_TIMESTAMP_OFFSET: int = 0, # Offset for HSIEvent timestamps in units of clock ticks. Positive offset increases timestamp estimate.
         HSI_DEVICE_ID: int = 0,
         MEAN_SIGNAL_MULTIPLICITY: int = 0,
         SIGNAL_EMULATION_MODE: int = 0,
@@ -126,6 +127,7 @@ def generate(
                 ("fhsig", fhsig.Conf(
                         clock_frequency=CLOCK_SPEED_HZ,
                         event_period=HSI_EVENT_PERIOD_NS,
+                        timestamp_offset=HSI_TIMESTAMP_OFFSET,
                         mean_signal_multiplicity=MEAN_SIGNAL_MULTIPLICITY,
                         signal_emulation_mode=SIGNAL_EMULATION_MODE,
                         enabled_signals=ENABLED_SIGNALS,

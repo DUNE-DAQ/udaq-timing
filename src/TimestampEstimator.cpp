@@ -42,8 +42,6 @@ TimestampEstimator::estimator_thread_fn(std::unique_ptr<appfwk::DAQSource<dfmess
   dfmessages::TimeSync most_recent_timesync{ dfmessages::TypeDefaults::s_invalid_timestamp };
   m_current_timestamp_estimate.store(dfmessages::TypeDefaults::s_invalid_timestamp);
 
-  int i = 0;
-
   // time_sync_source_ is connected to an MPMC queue with multiple
   // writers. We read whatever we can off it, and the item with the
   // largest timestamp "wins"
@@ -74,10 +72,16 @@ TimestampEstimator::estimator_thread_fn(std::unique_ptr<appfwk::DAQSource<dfmess
         auto delta_time = time_now - most_recent_timesync.system_time;
         const dfmessages::timestamp_t new_timestamp =
           most_recent_timesync.daq_time + delta_time * m_clock_frequency_hz / 1000000;
-        if (i++ % 100 == 0) { // NOLINT
-          TLOG_DEBUG(1) << "Updating timestamp estimate to " << new_timestamp;
+        // Don't ever decrease the timestamp; just wait until enough
+        // time passes that we want to increase it
+        if (m_current_timestamp_estimate.load()==dfmessages::TypeDefaults::s_invalid_timestamp ||
+            new_timestamp >= m_current_timestamp_estimate.load()){
+          m_current_timestamp_estimate.store(new_timestamp);
         }
-        m_current_timestamp_estimate.store(new_timestamp);
+        else{
+          TLOG() << "Not updating timestamp estimate backwards from " << m_current_timestamp_estimate.load() << " to " << new_timestamp;
+        }
+
       }
     }
 
