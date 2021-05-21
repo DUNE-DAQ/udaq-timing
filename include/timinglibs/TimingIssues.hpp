@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef TIMINGLIBS_SRC_TIMINGISSUES_HPP_
-#define TIMINGLIBS_SRC_TIMINGISSUES_HPP_
+#ifndef TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_
+#define TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_
 
 #include "appfwk/DAQModule.hpp"
 #include "ers/Issue.hpp"
@@ -65,6 +65,14 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ERS_EMPTY
 )
 
+ERS_DECLARE_ISSUE_BASE(timinglibs,
+                       UHALDeviceNodeIssue,
+                       timinglibs::UHALIssue,
+                       " UHAL node issue: " << message,
+                       ((std::string)message),
+                       ERS_EMPTY
+)
+
 ERS_DECLARE_ISSUE(timinglibs,
                   FailedToCollectOpMonInfo,
                   " Failed to collect op mon info class: " << info_class << " from device: " << device_name,
@@ -80,7 +88,7 @@ ERS_DECLARE_ISSUE(timinglibs,
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        InvalidHardwareCommandID,
                        timinglibs::HardwareCommandIssue,
-                       " Hardware command ID: " << hw_cmd_id << " invalid",
+                       " Hardware command ID: " << hw_cmd_id << " invalid!",
                        ((std::string)hw_cmd_id),
                        ERS_EMPTY
 )
@@ -88,9 +96,9 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        FailedToExecuteHardwareCommand,
                        timinglibs::HardwareCommandIssue,
-                       " Failed to execute hardware command with ID: " << hw_cmd_id,
+                       " Failed to execute hardware command with ID: " << hw_cmd_id << " on device: " << device << ".",
                        ((std::string)hw_cmd_id),
-                       ERS_EMPTY
+                       ((std::string)device)
 )
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
@@ -111,6 +119,23 @@ ERS_DECLARE_ISSUE(timinglibs,
                   "Failed to get timestamp estimate (was interrupted)", 
                   ERS_EMPTY)
 
+ERS_DECLARE_ISSUE(timinglibs,
+                  HSIBufferIssue, 
+                  "HSI buffer in state: " << buffer_state, 
+                  ((std::string)buffer_state))
+
+ERS_DECLARE_ISSUE(timinglibs,
+                  HSIReadoutIssue, 
+                  "Failed to read HSI events.", 
+                  ERS_EMPTY)
+
+ERS_DECLARE_ISSUE_BASE(timinglibs,
+                  HSIReadoutNetworkIssue,
+                  timinglibs::HSIReadoutIssue,
+                  "Failed to read HSI events due to network issue.", 
+                  ERS_EMPTY,
+                  ERS_EMPTY)
+
 } // namespace dunedaq
 
-#endif // TIMINGLIBS_SRC_TIMINGISSUES_HPP_
+#endif // TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_

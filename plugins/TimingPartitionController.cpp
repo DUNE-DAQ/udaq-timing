@@ -68,10 +68,19 @@ TimingPartitionController::construct_partition_hw_cmd(timingcmd::TimingHwCmd& hw
   hw_cmd.device = m_cfg.device;
 }
 void
-TimingPartitionController::do_partition_configure(const nlohmann::json&)
+TimingPartitionController::do_partition_configure(const nlohmann::json& data)
 {
   timingcmd::TimingHwCmd hw_cmd;
-  construct_partition_hw_cmd(hw_cmd, "partition_configure");
+  hw_cmd.id = "partition_configure";
+  hw_cmd.device = m_cfg.device;
+
+  // make our configure payload with partition id of this controller
+  timingcmd::TimingPartitionConfigureCmdPayload cmd_payload;
+  timingcmd::from_json(data, cmd_payload);
+  cmd_payload.partition_id = m_cfg.partition_id;
+
+  timingcmd::to_json(hw_cmd.payload, cmd_payload);
+
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(0).atomic;
 }

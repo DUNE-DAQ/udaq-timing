@@ -45,6 +45,9 @@ FakeHSIEventGenerator::FakeHSIEventGenerator(const std::string& name)
   , m_enabled_signals(0)
   , m_generated_counter(0)
   , m_sent_counter(0)
+  , m_failed_to_send_counter(0)
+  , m_last_generated_timestamp(0)
+  , m_last_sent_timestamp(0)
 {
   register_command("conf",  &FakeHSIEventGenerator::do_configure);
   register_command("start", &FakeHSIEventGenerator::do_start);
@@ -64,8 +67,18 @@ FakeHSIEventGenerator::init(const nlohmann::json& init_data)
 }
 
 void
-FakeHSIEventGenerator::get_info(opmonlib::InfoCollector& /*ci*/, int /*level*/)
+FakeHSIEventGenerator::get_info(opmonlib::InfoCollector & ci, int /*level*/)
 {
+  // send counters internal to the module
+  fakehsieventgeneratorinfo::Info module_info;
+  
+  module_info.generated_hsi_events_counter = m_generated_counter.load();
+  module_info.sent_hsi_events_counter = m_sent_counter.load();
+  module_info.failed_to_send_hsi_events_counter = m_failed_to_send_counter.load();
+  module_info.last_generated_timestamp = m_last_generated_timestamp.load(); 
+  module_info.last_sent_timestamp = m_last_sent_timestamp.load();
+
+  ci.add(module_info);
 }
 
 void
@@ -152,15 +165,18 @@ FakeHSIEventGenerator::generate_hsievents(std::atomic<bool>& running_flag)
 
   m_generated_counter = 0;
   m_sent_counter = 0;
+  m_last_generated_timestamp = 0;
+  m_last_sent_timestamp = 0;
+  m_failed_to_send_counter = 0;
   
   while (running_flag.load()) 
   {
 
-    // emulate some signals
-    uint32_t signal_map = generate_signal_map();
-    
     // sleep for the configured event period
     std::this_thread::sleep_for(std::chrono::nanoseconds(m_event_period));
+
+    // emulate some signals
+    uint32_t signal_map = generate_signal_map();
 
     // if at least one active signal, send a HSIEvent
     if (signal_map) {
@@ -168,14 +184,16 @@ FakeHSIEventGenerator::generate_hsievents(std::atomic<bool>& running_flag)
       dfmessages::timestamp_t ts = m_timestamp_estimator->get_timestamp_estimate();
       
       ts += m_timestamp_offset;
-      
+
       ++m_generated_counter;
+
+      m_last_generated_timestamp.store(ts);
 
       dfmessages::HSIEvent event = dfmessages::HSIEvent(m_hsi_device_id, signal_map, ts, m_generated_counter);
       TLOG_DEBUG(1) << get_name() << ": Sending HSIEvent: " << event.header << ", " << std::bitset<32>(event.signal_map) << ", " << event.timestamp << ", " << event.sequence_counter <<"\n";
 
       std::string thisQueueName = m_hsievent_sink->get_name();
-      bool successfullyWasSent = false;
+      bool was_sent_successfully = false;
       // do...while instead of while... so that we always try at least
       // once to send everything we generate, even if running_flag is
       // changed to false between the top of the main loop and here
@@ -185,16 +203,20 @@ FakeHSIEventGenerator::generate_hsievents(std::atomic<bool>& running_flag)
         try
         {
           m_hsievent_sink->push(event, m_queue_timeout);
-          successfullyWasSent = true;
+          was_sent_successfully = true;
+          
           ++m_sent_counter;
+          m_last_sent_timestamp.store(ts);
+
         }
         catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
         {
           std::ostringstream oss_warn;
           oss_warn << "push to output queue \"" << thisQueueName << "\"";
           ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(), m_queue_timeout.count()));
+          ++m_failed_to_send_counter;
         }
-      } while (!successfullyWasSent && running_flag.load());
+      } while (!was_sent_successfully && running_flag.load());
     
     } else {
       continue;

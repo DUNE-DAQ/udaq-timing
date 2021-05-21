@@ -57,10 +57,12 @@ TimingMasterController::construct_master_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, 
 }
 
 void
-TimingMasterController::do_master_io_reset(const nlohmann::json&)
+TimingMasterController::do_master_io_reset(const nlohmann::json& data)
 {
   timingcmd::TimingHwCmd hw_cmd;
-  construct_master_hw_cmd(hw_cmd, "master_io_reset");
+  construct_master_hw_cmd(hw_cmd, "io_reset");
+  hw_cmd.payload = data;
+
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(0).atomic;
 }
@@ -69,7 +71,7 @@ void
 TimingMasterController::do_master_set_timestamp(const nlohmann::json&)
 {
   timingcmd::TimingHwCmd hw_cmd;
-  construct_master_hw_cmd(hw_cmd, "master_set_timestamp");
+  construct_master_hw_cmd(hw_cmd, "set_timestamp");
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(1).atomic;
 }
@@ -78,7 +80,7 @@ void
 TimingMasterController::do_master_print_status(const nlohmann::json&)
 {
   timingcmd::TimingHwCmd hw_cmd;
-  construct_master_hw_cmd(hw_cmd, "master_print_status");
+  construct_master_hw_cmd(hw_cmd, "print_status");
   send_hw_cmd(hw_cmd);
   ++m_sent_hw_command_counters.at(2).atomic;
 }

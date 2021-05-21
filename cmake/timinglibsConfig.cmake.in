@@ -8,6 +8,12 @@ find_dependency(timing)
 find_dependency(Boost COMPONENTS unit_test_framework program_options)
 find_dependency(TRACE)
 
+find_dependency(nlohmann_json)
+find_dependency(logging)
+find_dependency(appfwk)
+find_dependency(nlohmann_json)
+find_dependency(dfmessages)
+
 # Figure out whether or not this dependency is an installed package or
 # in repo form
 

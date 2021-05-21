@@ -1,5 +1,5 @@
 local moo = import "moo.jsonnet";
-local ns = "dunedaq.timinglibs.timinghardwaremanagerpdi";
+local ns = "dunedaq.timinglibs.hsireadout";
 local s = moo.oschema.schema(ns);
 
 local types = {
@@ -17,19 +17,13 @@ local types = {
     conf: s.record("ConfParams", [
         s.field("connections_file", self.str, "",
                 doc="device connections file"),
-        s.field("gather_interval", self.uint_data, 1e6,
-                doc="Hardware device data gather interval [us]"),
-        s.field("gather_interval_debug", self.uint_data, 10e6,
-                doc="Hardware device data gather debug interval [us]"),
-        s.field("monitored_device_name_master", self.str, "",
+        s.field("readout_period", self.uint_data, 1000,
+                doc="Hardware device poll period [us]"),
+        s.field("hsi_device_name", self.str, "",
                 doc="Name of timing master device to be monitored"),
-        s.field("monitored_device_name_endpoint", self.str, "",
-                doc="Name of timing endpoint device to be monitored"),
-        s.field("monitored_device_name_hsi", self.str, "",
-                doc="Name of hsi device to be monitored"),
         s.field("uhal_log_level", self.uhal_log_level, "notice",
                 doc="Log level for uhal. Possible values are: fatal, error, warning, notice, info, debug."),
-    ], doc="TimingHardwareManager configuration"),
+    ], doc="HSIReadout configuration"),
 
 };
 

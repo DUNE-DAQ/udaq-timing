@@ -8,6 +8,11 @@
 #define TIMINGLIBS_PLUGINS_FAKEHSIEVENTAGENERATOR_HPP_
 
 #include "timinglibs/fakehsieventgenerator/Structs.hpp"
+#include "timinglibs/fakehsieventgenerator/Nljs.hpp"
+
+#include "timinglibs/fakehsieventgeneratorinfo/Structs.hpp"
+#include "timinglibs/fakehsieventgeneratorinfo/Nljs.hpp"
+
 #include "timinglibs/TimingIssues.hpp"
 
 #include "timinglibs/TimestampEstimator.hpp"
@@ -91,8 +96,11 @@ private:
   uint64_t m_mean_signal_multiplicity;
 
   uint32_t m_enabled_signals;
-  uint64_t m_generated_counter;
-  uint64_t m_sent_counter;
+  std::atomic<uint64_t> m_generated_counter;
+  std::atomic<uint64_t> m_sent_counter;
+  std::atomic<uint64_t> m_failed_to_send_counter;  
+  std::atomic<uint64_t> m_last_generated_timestamp;
+  std::atomic<uint64_t> m_last_sent_timestamp;
 
 };
 } // namespace timinglibs

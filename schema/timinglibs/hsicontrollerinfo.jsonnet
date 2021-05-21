@@ -1,5 +1,5 @@
 local moo = import "moo.jsonnet";
-local s = moo.oschema.schema("dunedaq.timinglibs.timingendpointcontrollerinfo");
+local s = moo.oschema.schema("dunedaq.timinglibs.hsicontrollerinfo");
 
 local info = {
    cl : s.string("class_s", moo.re.ident,
@@ -11,9 +11,9 @@ local info = {
             doc="A vector hardware command counters"),
 
    info: s.record("Info", [
-       s.field("class_name", self.cl, "timingendpointcontrollerinfo", doc="Info class name"),
+       s.field("class_name", self.cl, "hsiicontrollerinfo", doc="Info class name"),
        s.field("sent_hw_command_counters", self.counter_vector, doc="Number of hw commands sent so far"), 
-   ], doc="TimingEndpointController information")
+   ], doc="HSIController information")
 };
 
 moo.oschema.sort_select(info)
