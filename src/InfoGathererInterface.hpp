@@ -19,18 +19,18 @@
 #include <future>
 #include <list>
 #include <memory>
-#include <string>
 #include <shared_mutex>
+#include <string>
 
 namespace dunedaq {
 
 /**
  * @brief An ERS Issue raised when a threading state error occurs
  */
-ERS_DECLARE_ISSUE(timinglibs,                                      // Namespace
+ERS_DECLARE_ISSUE(timinglibs,                                 // Namespace
                   GatherThreadingIssue,                       // Issue Class Name
                   "Gather Threading Issue detected: " << err, // Message
-                  ((std::string)err))                          // Message parameters
+                  ((std::string)err))                         // Message parameters
 
 namespace timinglibs {
 
@@ -43,7 +43,7 @@ class InfoGathererInterface
 public:
   /**
    * @brief InfoGathererInterface Constructor
-   * @param gather_data function for data gathering 
+   * @param gather_data function for data gathering
    * @param gather_interval interval for data gathering in us
    */
   explicit InfoGathererInterface(uint gather_interval, const std::string& device_name, int op_mon_level)
@@ -55,20 +55,17 @@ public:
     , m_op_mon_level(op_mon_level)
   {}
 
-  InfoGathererInterface(const InfoGathererInterface&) =
-    delete; ///< InfoGathererInterface is not copy-constructible
+  InfoGathererInterface(const InfoGathererInterface&) = delete; ///< InfoGathererInterface is not copy-constructible
   InfoGathererInterface& operator=(const InfoGathererInterface&) =
-    delete; ///< InfoGathererInterface is not copy-assignable
-  InfoGathererInterface(InfoGathererInterface&&) =
-    delete; ///< InfoGathererInterface is not move-constructible
-  InfoGathererInterface& operator=(InfoGathererInterface&&) =
-    delete; ///< InfoGathererInterface is not move-assignable
+    delete;                                                ///< InfoGathererInterface is not copy-assignable
+  InfoGathererInterface(InfoGathererInterface&&) = delete; ///< InfoGathererInterface is not move-constructible
+  InfoGathererInterface& operator=(InfoGathererInterface&&) = delete; ///< InfoGathererInterface is not move-assignable
 
   /**
    * @brief Start the monitoring thread (which executes the m_gather_data() function)
    * @throws MonitorThreadingIssue if the thread is already running
    */
-  virtual void start_gathering_thread(const std::string& name="noname") = 0;
+  virtual void start_gathering_thread(const std::string& name = "noname") = 0;
   /**
    * @brief Stop the gathering thread
    * @throws GatherThreadingIssue If the thread has not yet been started
@@ -79,8 +76,8 @@ public:
   {
     if (!run_gathering()) {
       throw GatherThreadingIssue(ERS_HERE,
-                           "Attempted to stop gathering thread "
-                           "when it is not supposed to be running!");
+                                 "Attempted to stop gathering thread "
+                                 "when it is not supposed to be running!");
     }
     m_run_gathering = false;
     if (m_gathering_thread->joinable()) {
@@ -106,11 +103,12 @@ public:
   void update_last_gathered_time(int64_t last_time) { m_last_gathered_time.store(last_time); }
   uint get_last_gathered_time() const { return m_last_gathered_time.load(); }
 
-  const std::string& get_device_name() {return m_device_name;}
+  const std::string& get_device_name() { return m_device_name; }
 
   virtual const nlohmann::json get_monitoring_data() const = 0;
 
-  int get_op_mon_level() {return m_op_mon_level;}
+  int get_op_mon_level() { return m_op_mon_level; }
+
 protected:
   std::atomic<bool> m_run_gathering;
   std::unique_ptr<std::thread> m_gathering_thread;

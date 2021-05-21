@@ -4,14 +4,14 @@
  * received with this code.
  */
 
-#ifndef TIMINGLIBS_PLUGINS_FAKEHSIEVENTAGENERATOR_HPP_
-#define TIMINGLIBS_PLUGINS_FAKEHSIEVENTAGENERATOR_HPP_
+#ifndef TIMINGLIBS_PLUGINS_FAKEHSIEVENTGENERATOR_HPP_
+#define TIMINGLIBS_PLUGINS_FAKEHSIEVENTGENERATOR_HPP_
 
-#include "timinglibs/fakehsieventgenerator/Structs.hpp"
 #include "timinglibs/fakehsieventgenerator/Nljs.hpp"
+#include "timinglibs/fakehsieventgenerator/Structs.hpp"
 
-#include "timinglibs/fakehsieventgeneratorinfo/Structs.hpp"
 #include "timinglibs/fakehsieventgeneratorinfo/Nljs.hpp"
+#include "timinglibs/fakehsieventgeneratorinfo/Structs.hpp"
 
 #include "timinglibs/TimingIssues.hpp"
 
@@ -25,12 +25,12 @@
 
 #include <ers/Issue.hpp>
 
+#include <bitset>
+#include <chrono>
 #include <memory>
+#include <random>
 #include <string>
 #include <vector>
-#include <chrono>
-#include <random>
-#include <bitset>
 
 namespace dunedaq {
 namespace timinglibs {
@@ -48,14 +48,11 @@ public:
    */
   explicit FakeHSIEventGenerator(const std::string& name);
 
-  FakeHSIEventGenerator(const FakeHSIEventGenerator&) =
-    delete; ///< FakeHSIEventGenerator is not copy-constructible
+  FakeHSIEventGenerator(const FakeHSIEventGenerator&) = delete; ///< FakeHSIEventGenerator is not copy-constructible
   FakeHSIEventGenerator& operator=(const FakeHSIEventGenerator&) =
-    delete; ///< FakeHSIEventGenerator is not copy-assignable
-  FakeHSIEventGenerator(FakeHSIEventGenerator&&) =
-    delete; ///< FakeHSIEventGenerator is not move-constructible
-  FakeHSIEventGenerator& operator=(FakeHSIEventGenerator&&) =
-    delete; ///< FakeHSIEventGenerator is not move-assignable
+    delete;                                                ///< FakeHSIEventGenerator is not copy-assignable
+  FakeHSIEventGenerator(FakeHSIEventGenerator&&) = delete; ///< FakeHSIEventGenerator is not move-constructible
+  FakeHSIEventGenerator& operator=(FakeHSIEventGenerator&&) = delete; ///< FakeHSIEventGenerator is not move-assignable
 
   void init(const nlohmann::json& obj) override;
   void get_info(opmonlib::InfoCollector& ci, int level) override;
@@ -79,34 +76,33 @@ private:
 
   // Interface to consume TimeSync messages
   std::unique_ptr<TimestampEstimator> m_timestamp_estimator;
-  
+
   // Random Generatior
   std::default_random_engine m_random_generator;
-  std::uniform_int_distribution<uint32_t> m_uniform_distribution;
-  std::poisson_distribution<uint64_t> m_poisson_distribution;
+  std::uniform_int_distribution<uint32_t> m_uniform_distribution; // NOLINT(build/unsigned)
+  std::poisson_distribution<uint64_t> m_poisson_distribution;     // NOLINT(build/unsigned)
 
-  uint32_t generate_signal_map();
+  uint32_t generate_signal_map(); // NOLINT(build/unsigned)
 
-  uint64_t m_clock_frequency;
-  uint64_t m_event_period;
+  uint64_t m_clock_frequency; // NOLINT(build/unsigned)
+  uint64_t m_event_period;    // NOLINT(build/unsigned)
   int64_t m_timestamp_offset;
 
-  uint32_t m_hsi_device_id;
-  uint m_signal_emulation_mode;
-  uint64_t m_mean_signal_multiplicity;
+  uint32_t m_hsi_device_id;            // NOLINT(build/unsigned)
+  uint m_signal_emulation_mode;        // NOLINT(build/unsigned)
+  uint64_t m_mean_signal_multiplicity; // NOLINT(build/unsigned)
 
-  uint32_t m_enabled_signals;
-  std::atomic<uint64_t> m_generated_counter;
-  std::atomic<uint64_t> m_sent_counter;
-  std::atomic<uint64_t> m_failed_to_send_counter;  
-  std::atomic<uint64_t> m_last_generated_timestamp;
-  std::atomic<uint64_t> m_last_sent_timestamp;
-
+  uint32_t m_enabled_signals;                       // NOLINT(build/unsigned)
+  std::atomic<uint64_t> m_generated_counter;        // NOLINT(build/unsigned)
+  std::atomic<uint64_t> m_sent_counter;             // NOLINT(build/unsigned)
+  std::atomic<uint64_t> m_failed_to_send_counter;   // NOLINT(build/unsigned)
+  std::atomic<uint64_t> m_last_generated_timestamp; // NOLINT(build/unsigned)
+  std::atomic<uint64_t> m_last_sent_timestamp;      // NOLINT(build/unsigned)
 };
 } // namespace timinglibs
 } // namespace dunedaq
 
-#endif // TRIGGER_TEST_PLUGINS_FAKEHSIEVENTAGENERATOR_HPP_
+#endif // TIMINGLIBS_PLUGINS_FAKEHSIEVENTGENERATOR_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

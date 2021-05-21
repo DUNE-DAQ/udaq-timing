@@ -22,12 +22,12 @@ namespace timinglibs {
 class TimestampEstimatorSystem : public TimestampEstimatorBase
 {
 public:
-  TimestampEstimatorSystem(uint64_t clock_frequency_hz);
+  explicit TimestampEstimatorSystem(uint64_t clock_frequency_hz); // NOLINT(build/unsigned)
 
   dfmessages::timestamp_t get_timestamp_estimate() const override;
 
 private:
-  uint64_t m_clock_frequency_hz; // NOLINT
+  uint64_t m_clock_frequency_hz; // NOLINT(build/unsigned)
 };
 
 } // namespace timinglibs

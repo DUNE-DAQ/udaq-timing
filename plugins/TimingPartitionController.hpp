@@ -14,14 +14,14 @@
 
 #include "TimingController.hpp"
 
-#include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
 
-#include "timinglibs/timingpartitioncontroller/Structs.hpp"
 #include "timinglibs/timingpartitioncontroller/Nljs.hpp"
+#include "timinglibs/timingpartitioncontroller/Structs.hpp"
 
-#include "timinglibs/timingpartitioncontrollerinfo/Structs.hpp"
 #include "timinglibs/timingpartitioncontrollerinfo/Nljs.hpp"
+#include "timinglibs/timingpartitioncontrollerinfo/Structs.hpp"
 
 #include "timinglibs/TimingIssues.hpp"
 
@@ -82,8 +82,7 @@ private:
   timingpartitioncontroller::ConfParams m_cfg;
 
   // pass op mon info
-  void get_info(opmonlib::InfoCollector & ci, int level) override;
-
+  void get_info(opmonlib::InfoCollector& ci, int level) override;
 };
 } // namespace timinglibs
 } // namespace dunedaq

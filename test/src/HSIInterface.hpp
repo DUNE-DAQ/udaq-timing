@@ -4,8 +4,8 @@
  * received with this code.
  */
 
-#ifndef TIMINGLIBS_SRC_HSIINTERFACE_HPP_
-#define TIMINGLIBS_SRC_HSIINTERFACE_HPP_
+#ifndef TIMINGLIBS_TEST_SRC_HSIINTERFACE_HPP_
+#define TIMINGLIBS_TEST_SRC_HSIINTERFACE_HPP_
 
 #include "timinglibs/TimingIssues.hpp"
 
@@ -14,19 +14,19 @@
 #include "dfmessages/HSIEvent.hpp"
 
 #include "appfwk/DAQModule.hpp"
+#include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/DAQSink.hpp"
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
-#include "appfwk/DAQModuleHelper.hpp"
 
 #include <ers/Issue.hpp>
 
+#include <bitset>
+#include <chrono>
 #include <memory>
+#include <random>
 #include <string>
 #include <vector>
-#include <chrono>
-#include <random>
-#include <bitset>
 
 namespace dunedaq {
 namespace timinglibs {
@@ -44,14 +44,10 @@ public:
    */
   explicit HSIInterface(const std::string& name, std::function<void(std::atomic<bool>&)> do_work);
 
-  HSIInterface(const HSIInterface&) =
-    delete; ///< HSIInterface is not copy-constructible
-  HSIInterface& operator=(const HSIInterface&) =
-    delete; ///< HSIInterface is not copy-assignable
-  HSIInterface(HSIInterface&&) =
-    delete; ///< HSIInterface is not move-constructible
-  HSIInterface& operator=(HSIInterface&&) =
-    delete; ///< HSIInterface is not move-assignable
+  HSIInterface(const HSIInterface&) = delete;            ///< HSIInterface is not copy-constructible
+  HSIInterface& operator=(const HSIInterface&) = delete; ///< HSIInterface is not copy-assignable
+  HSIInterface(HSIInterface&&) = delete;                 ///< HSIInterface is not move-constructible
+  HSIInterface& operator=(HSIInterface&&) = delete;      ///< HSIInterface is not move-assignable
 
   void init(const nlohmann::json& obj) override;
   void get_info(opmonlib::InfoCollector& ci, int level) override;
@@ -73,15 +69,14 @@ protected:
 
   // push events to HSIEvent output queue
   void send_hsi_event(dfmessages::HSIEvent& event);
-  std::atomic<uint64_t> m_sent_counter;
-  std::atomic<uint64_t> m_failed_to_send_counter;  
-  std::atomic<uint64_t> m_last_sent_timestamp;
-
+  std::atomic<uint64_t> m_sent_counter;           // NOLINT(build/unsigned)
+  std::atomic<uint64_t> m_failed_to_send_counter; // NOLINT(build/unsigned)
+  std::atomic<uint64_t> m_last_sent_timestamp;    // NOLINT(build/unsigned)
 };
 } // namespace timinglibs
 } // namespace dunedaq
 
-#endif // TIMINGLIBS_SRC_HSIINTERFACE_HPP_
+#endif // TIMINGLIBS_TEST_SRC_HSIINTERFACE_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

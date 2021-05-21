@@ -9,14 +9,15 @@
  * received with this code.
  */
 
-#ifndef TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_
-#define TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_
+#ifndef TIMINGLIBS_INCLUDE_TIMINGLIBS_TIMINGISSUES_HPP_
+#define TIMINGLIBS_INCLUDE_TIMINGLIBS_TIMINGISSUES_HPP_
 
 #include "appfwk/DAQModule.hpp"
 #include "ers/Issue.hpp"
 
 #include <string>
 
+// NOLINTNEXTLINE(build/define_used)
 #define TLVL_ENTER_EXIT_METHODS 10
 
 namespace dunedaq {
@@ -46,96 +47,75 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        timinglibs::UHALIssue,
                        " UHAL connections file issue: " << message,
                        ((std::string)message),
-                       ERS_EMPTY
-)
+                       ERS_EMPTY)
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        InvalidUHALLogLevel,
                        timinglibs::UHALIssue,
                        " Invalid UHAL log level supplied: " << log_level,
                        ((std::string)log_level),
-                       ERS_EMPTY
-)
+                       ERS_EMPTY)
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        UHALDeviceNameIssue,
                        timinglibs::UHALIssue,
                        " UHAL device name issue: " << message,
                        ((std::string)message),
-                       ERS_EMPTY
-)
+                       ERS_EMPTY)
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        UHALDeviceNodeIssue,
                        timinglibs::UHALIssue,
                        " UHAL node issue: " << message,
                        ((std::string)message),
-                       ERS_EMPTY
-)
+                       ERS_EMPTY)
 
 ERS_DECLARE_ISSUE(timinglibs,
                   FailedToCollectOpMonInfo,
                   " Failed to collect op mon info class: " << info_class << " from device: " << device_name,
-                  ((std::string)info_class)((std::string)device_name)
-                  )
+                  ((std::string)info_class)((std::string)device_name))
 
-ERS_DECLARE_ISSUE(timinglibs,
-                  HardwareCommandIssue,
-                  " Issue wih hw cmd id: " << hw_cmd_id,
-                  ((std::string)hw_cmd_id)
-                  )
+ERS_DECLARE_ISSUE(timinglibs, HardwareCommandIssue, " Issue wih hw cmd id: " << hw_cmd_id, ((std::string)hw_cmd_id))
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        InvalidHardwareCommandID,
                        timinglibs::HardwareCommandIssue,
                        " Hardware command ID: " << hw_cmd_id << " invalid!",
                        ((std::string)hw_cmd_id),
-                       ERS_EMPTY
-)
+                       ERS_EMPTY)
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        FailedToExecuteHardwareCommand,
                        timinglibs::HardwareCommandIssue,
                        " Failed to execute hardware command with ID: " << hw_cmd_id << " on device: " << device << ".",
                        ((std::string)hw_cmd_id),
-                       ((std::string)device)
-)
+                       ((std::string)device))
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
                        TimingHardwareCommandRegistrationFailed,
                        appfwk::CommandRegistrationFailed,
                        " Failed to register timing hardware command with ID: " << cmd,
                        ((std::string)cmd)((std::string)name),
-                       ERS_EMPTY
-)
+                       ERS_EMPTY)
+
+ERS_DECLARE_ISSUE(timinglibs, InvalidTimeSync, "An invalid TimeSync message was received", ERS_EMPTY)
 
 ERS_DECLARE_ISSUE(timinglibs,
-                  InvalidTimeSync, 
-                  "An invalid TimeSync message was received", 
+                  FailedToGetTimestampEstimate,
+                  "Failed to get timestamp estimate (was interrupted)",
                   ERS_EMPTY)
 
-ERS_DECLARE_ISSUE(timinglibs,
-                  FailedToGetTimestampEstimate, 
-                  "Failed to get timestamp estimate (was interrupted)", 
-                  ERS_EMPTY)
+ERS_DECLARE_ISSUE(timinglibs, HSIBufferIssue, "HSI buffer in state: " << buffer_state, ((std::string)buffer_state))
 
-ERS_DECLARE_ISSUE(timinglibs,
-                  HSIBufferIssue, 
-                  "HSI buffer in state: " << buffer_state, 
-                  ((std::string)buffer_state))
-
-ERS_DECLARE_ISSUE(timinglibs,
-                  HSIReadoutIssue, 
-                  "Failed to read HSI events.", 
-                  ERS_EMPTY)
+ERS_DECLARE_ISSUE(timinglibs, HSIReadoutIssue, "Failed to read HSI events.", ERS_EMPTY)
 
 ERS_DECLARE_ISSUE_BASE(timinglibs,
-                  HSIReadoutNetworkIssue,
-                  timinglibs::HSIReadoutIssue,
-                  "Failed to read HSI events due to network issue.", 
-                  ERS_EMPTY,
-                  ERS_EMPTY)
+                       HSIReadoutNetworkIssue,
+                       timinglibs::HSIReadoutIssue,
+                       "Failed to read HSI events due to network issue.",
+                       ERS_EMPTY,
+                       ERS_EMPTY)
 
 } // namespace dunedaq
 
-#endif // TIMINGLIBS_INCLUDE_TIMINGISSUES_HPP_
+#endif // TIMINGLIBS_INCLUDE_TIMINGLIBS_TIMINGISSUES_HPP_

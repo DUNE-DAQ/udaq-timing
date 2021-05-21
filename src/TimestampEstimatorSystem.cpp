@@ -1,3 +1,11 @@
+/**
+ * @file TimestampEstimatorSystem.cpp
+ *
+ * This is part of the DUNE DAQ Software Suite, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+
 #include "timinglibs/TimestampEstimatorSystem.hpp"
 
 #include "logging/Logging.hpp"
@@ -7,7 +15,7 @@
 namespace dunedaq {
 namespace timinglibs {
 
-TimestampEstimatorSystem::TimestampEstimatorSystem(uint64_t clock_frequency_hz)
+TimestampEstimatorSystem::TimestampEstimatorSystem(uint64_t clock_frequency_hz) // NOLINT(build/unsigned)
   : m_clock_frequency_hz(clock_frequency_hz)
 {
   TLOG_DEBUG(0) << "Clock frequency is " << m_clock_frequency_hz

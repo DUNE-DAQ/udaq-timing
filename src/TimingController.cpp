@@ -9,8 +9,8 @@
 
 #include "TimingController.hpp"
 
-#include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
 
 #include "timinglibs/TimingIssues.hpp"
 
@@ -21,8 +21,8 @@
 
 #include <chrono>
 #include <cstdlib>
-#include <thread>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace dunedaq {
@@ -35,25 +35,21 @@ TimingController::TimingController(const std::string& name, uint number_hw_comma
   , m_number_hw_commands(number_hw_commands)
   , m_sent_hw_command_counters(m_number_hw_commands)
 {
-  for (auto it=m_sent_hw_command_counters.begin(); it!=m_sent_hw_command_counters.end(); ++it)
-  {
+  for (auto it = m_sent_hw_command_counters.begin(); it != m_sent_hw_command_counters.end(); ++it) {
     it->atomic.store(0);
   }
 }
 
 void
-TimingController::init( const nlohmann::json& init_data)
+TimingController::init(const nlohmann::json& init_data)
 {
   // set up queues
   auto ini = init_data.get<appfwk::app::ModInit>();
   for (const auto& qi : ini.qinfos) {
     if (!qi.name.compare("hardware_commands_out")) {
-      try
-      {
+      try {
         m_hw_command_out_queue.reset(new sink_t(qi.inst));
-      }
-      catch (const ers::Issue& excpt)
-      {
+      } catch (const ers::Issue& excpt) {
         throw InvalidQueueFatalError(ERS_HERE, get_name(), qi.name, excpt);
       }
     }
@@ -65,35 +61,33 @@ TimingController::do_start(const nlohmann::json&)
 {
   // Timing commands are processed even before a start command. Counters may therefore lose counts after a start.
   // reset counters
-  for (auto it=m_sent_hw_command_counters.begin(); it!=m_sent_hw_command_counters.end(); ++it)
-  {
+  for (auto it = m_sent_hw_command_counters.begin(); it != m_sent_hw_command_counters.end(); ++it) {
     it->atomic.store(0);
   }
 }
 
 void
 TimingController::do_stop(const nlohmann::json&)
-{
-}
+{}
 
 void
 TimingController::send_hw_cmd(const timingcmd::TimingHwCmd& hw_cmd)
 {
   std::string thisQueueName = m_hw_command_out_queue->get_name();
-  try
-  {
+  try {
     m_hw_command_out_queue->push(hw_cmd, m_hw_cmd_out_queue_timeout);
-  }
-  catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-  {
+  } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
     std::ostringstream oss_warn;
     oss_warn << "push to output queue \"" << thisQueueName << "\"";
-    ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(),
+    ers::warning(dunedaq::appfwk::QueueTimeoutExpired(
+      ERS_HERE,
+      get_name(),
+      oss_warn.str(),
       std::chrono::duration_cast<std::chrono::milliseconds>(m_hw_cmd_out_queue_timeout).count()));
   }
 }
 
-} // namespace timinglibs 
+} // namespace timinglibs
 } // namespace dunedaq
 
 // Local Variables:

@@ -12,41 +12,40 @@
 #ifndef TIMINGLIBS_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
 #define TIMINGLIBS_PLUGINS_TIMINGHARDWAREMANAGERPDI_HPP_
 
-#include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
 
-#include "timinglibs/timinghardwaremanagerpdi/Structs.hpp"
 #include "timinglibs/timinghardwaremanagerpdi/Nljs.hpp"
+#include "timinglibs/timinghardwaremanagerpdi/Structs.hpp"
 
-#include "timinglibs/timinghardwaremanagerpdiinfo/Structs.hpp"
 #include "timinglibs/timinghardwaremanagerpdiinfo/Nljs.hpp"
+#include "timinglibs/timinghardwaremanagerpdiinfo/Structs.hpp"
 
 #include "TimingHardwareManager.hpp"
 
-#include "InfoGathererInterface.hpp"
 #include "InfoGatherer.hpp"
+#include "InfoGathererInterface.hpp"
 
 #include "timinglibs/TimingIssues.hpp"
 
 // in timing-board-software at the moment
-#include "timing/timingfirmwareinfo/Structs.hpp"
 #include "timing/timingfirmwareinfo/Nljs.hpp"
+#include "timing/timingfirmwareinfo/Structs.hpp"
 
-#include "timing/OverlordDesign.hpp"
+#include "timing/BoreasDesign.hpp"
 #include "timing/EndpointDesign.hpp"
 #include "timing/HSINode.hpp"
-#include "timing/EndpointDesign.hpp"
-#include "timing/BoreasDesign.hpp"
 #include "timing/OuroborosDesign.hpp"
+#include "timing/OverlordDesign.hpp"
 
 #include "appfwk/DAQModule.hpp"
+#include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/DAQSink.hpp"
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
-#include "appfwk/DAQModuleHelper.hpp"
 
-#include "appfwk/app/Structs.hpp"
 #include "appfwk/app/Nljs.hpp"
+#include "appfwk/app/Structs.hpp"
 
 #include "ers/Issue.hpp"
 #include "logging/Logging.hpp"
@@ -54,11 +53,11 @@
 #include "uhal/ConnectionManager.hpp"
 #include "uhal/utilities/files.hpp"
 
+#include <map>
 #include <memory>
+#include <regex>
 #include <string>
 #include <vector>
-#include <map>
-#include <regex>
 
 namespace dunedaq {
 namespace timinglibs {
@@ -79,25 +78,23 @@ public:
   TimingHardwareManagerPDI(const TimingHardwareManagerPDI&) =
     delete; ///< TimingHardwareManagerPDI is not copy-constructible
   TimingHardwareManagerPDI& operator=(const TimingHardwareManagerPDI&) =
-    delete; ///< TimingHardwareManagerPDI is not copy-assignable
-  TimingHardwareManagerPDI(TimingHardwareManagerPDI&&) =
-    delete; ///< TimingHardwareManagerPDI is not move-constructible
+    delete;                                                      ///< TimingHardwareManagerPDI is not copy-assignable
+  TimingHardwareManagerPDI(TimingHardwareManagerPDI&&) = delete; ///< TimingHardwareManagerPDI is not move-constructible
   TimingHardwareManagerPDI& operator=(TimingHardwareManagerPDI&&) =
     delete; ///< TimingHardwareManagerPDI is not move-assignable
 
   void init(const nlohmann::json& init_data) override;
-  void get_info(opmonlib::InfoCollector & ci, int level) override;
+  void get_info(opmonlib::InfoCollector& ci, int level) override;
 
   // configuration
 private:
   timinghardwaremanagerpdi::ConfParams m_cfg;
   void do_configure(const data_t& obj) override;
-  
+
   ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_common_hw_commands_for_design)
   ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_master_hw_commands_for_design)
   ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_endpoint_hw_commands_for_design)
   ADD_VARIADIC_TEMPLATE_PROCESSOR_DECLARATIONS(register_hsi_hw_commands_for_design)
-  
 };
 } // namespace timinglibs
 } // namespace dunedaq
