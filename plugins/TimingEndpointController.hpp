@@ -14,14 +14,14 @@
 
 #include "TimingController.hpp"
 
-#include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
 
-#include "timinglibs/timingendpointcontroller/Structs.hpp"
 #include "timinglibs/timingendpointcontroller/Nljs.hpp"
+#include "timinglibs/timingendpointcontroller/Structs.hpp"
 
-#include "timinglibs/timingendpointcontrollerinfo/Structs.hpp"
 #include "timinglibs/timingendpointcontrollerinfo/Nljs.hpp"
+#include "timinglibs/timingendpointcontrollerinfo/Structs.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -54,9 +54,8 @@ public:
   TimingEndpointController(const TimingEndpointController&) =
     delete; ///< TimingEndpointController is not copy-constructible
   TimingEndpointController& operator=(const TimingEndpointController&) =
-    delete; ///< TimingEndpointController is not copy-assignable
-  TimingEndpointController(TimingEndpointController&&) =
-    delete; ///< TimingEndpointController is not move-constructible
+    delete;                                                      ///< TimingEndpointController is not copy-assignable
+  TimingEndpointController(TimingEndpointController&&) = delete; ///< TimingEndpointController is not move-constructible
   TimingEndpointController& operator=(TimingEndpointController&&) =
     delete; ///< TimingEndpointController is not move-assignable
 
@@ -65,7 +64,7 @@ private:
   void do_configure(const nlohmann::json& obj) override;
 
   void construct_endpoint_hw_cmd(timingcmd::TimingHwCmd& hw_cmd, const std::string& cmd_id);
-  
+
   // timinglibs endpoint commands
   void do_endpoint_io_reset(const nlohmann::json& data);
   void do_endpoint_enable(const nlohmann::json& data);
@@ -78,8 +77,7 @@ private:
   timingendpointcontroller::ConfParams m_cfg;
 
   // pass op mon info
-  void get_info(opmonlib::InfoCollector & ci, int level) override;
-
+  void get_info(opmonlib::InfoCollector& ci, int level) override;
 };
 } // namespace timinglibs
 } // namespace dunedaq

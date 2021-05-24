@@ -12,14 +12,14 @@
 #ifndef TIMINGLIBS_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
 #define TIMINGLIBS_PLUGINS_TIMINGMASTERCONTROLLER_HPP_
 
-#include "timinglibs/timingcmd/Structs.hpp"
 #include "timinglibs/timingcmd/Nljs.hpp"
+#include "timinglibs/timingcmd/Structs.hpp"
 
-#include "timinglibs/timingmastercontroller/Structs.hpp"
 #include "timinglibs/timingmastercontroller/Nljs.hpp"
+#include "timinglibs/timingmastercontroller/Structs.hpp"
 
-#include "timinglibs/timingmastercontrollerinfo/Structs.hpp"
 #include "timinglibs/timingmastercontrollerinfo/Nljs.hpp"
+#include "timinglibs/timingmastercontrollerinfo/Structs.hpp"
 
 #include "TimingController.hpp"
 
@@ -51,12 +51,10 @@ public:
    */
   explicit TimingMasterController(const std::string& name);
 
-  TimingMasterController(const TimingMasterController&) =
-    delete; ///< TimingMasterController is not copy-constructible
+  TimingMasterController(const TimingMasterController&) = delete; ///< TimingMasterController is not copy-constructible
   TimingMasterController& operator=(const TimingMasterController&) =
-    delete; ///< TimingMasterController is not copy-assignable
-  TimingMasterController(TimingMasterController&&) =
-    delete; ///< TimingMasterController is not move-constructible
+    delete;                                                  ///< TimingMasterController is not copy-assignable
+  TimingMasterController(TimingMasterController&&) = delete; ///< TimingMasterController is not move-constructible
   TimingMasterController& operator=(TimingMasterController&&) =
     delete; ///< TimingMasterController is not move-assignable
 
@@ -75,7 +73,7 @@ private:
   timingmastercontroller::ConfParams m_cfg;
 
   // pass op mon info
-  void get_info(opmonlib::InfoCollector & ci, int level) override;
+  void get_info(opmonlib::InfoCollector& ci, int level) override;
 };
 } // namespace timinglibs
 } // namespace dunedaq

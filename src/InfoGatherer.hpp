@@ -21,8 +21,8 @@
 #include <future>
 #include <list>
 #include <memory>
-#include <string>
 #include <shared_mutex>
+#include <string>
 
 namespace dunedaq {
 namespace timinglibs {
@@ -37,56 +37,57 @@ class InfoGatherer : public InfoGathererInterface
 public:
   /**
    * @brief InfoGatherer Constructor
-   * @param gather_data function for data gathering 
+   * @param gather_data function for data gathering
    * @param gather_interval interval for data gathering in us
    */
-  explicit InfoGatherer(std::function<void(InfoGatherer<MON_DATA>&)> gather_data, uint gather_interval, const std::string& device_name, int op_mon_level)
+  explicit InfoGatherer(std::function<void(InfoGatherer<MON_DATA>&)> gather_data,
+                        uint gather_interval,
+                        const std::string& device_name,
+                        int op_mon_level)
     : InfoGathererInterface(gather_interval, device_name, op_mon_level)
     , m_gather_data(gather_data)
   {}
 
-  InfoGatherer(const InfoGatherer&) =
-    delete; ///< InfoGatherer is not copy-constructible
-  InfoGatherer& operator=(const InfoGatherer&) =
-    delete; ///< InfoGatherer is not copy-assignable
-  InfoGatherer(InfoGatherer&&) =
-    delete; ///< InfoGatherer is not move-constructible
-  InfoGatherer& operator=(InfoGatherer&&) =
-    delete; ///< InfoGatherer is not move-assignable
+  InfoGatherer(const InfoGatherer&) = delete;            ///< InfoGatherer is not copy-constructible
+  InfoGatherer& operator=(const InfoGatherer&) = delete; ///< InfoGatherer is not copy-assignable
+  InfoGatherer(InfoGatherer&&) = delete;                 ///< InfoGatherer is not move-constructible
+  InfoGatherer& operator=(InfoGatherer&&) = delete;      ///< InfoGatherer is not move-assignable
 
   /**
    * @brief Start the monitoring thread (which executes the m_gather_data() function)
    * @throws MonitorThreadingIssue if the thread is already running
    */
-  void start_gathering_thread(const std::string& name="noname") override
+  void start_gathering_thread(const std::string& name = "noname") override
   {
     if (run_gathering()) {
       throw GatherThreadingIssue(ERS_HERE,
-                           "Attempted to start gathering thread "
-                           "when it is already supposed to be running!");
+                                 "Attempted to start gathering thread "
+                                 "when it is already supposed to be running!");
     }
     m_run_gathering = true;
     m_gathering_thread.reset(new std::thread([&] { m_gather_data(*this); }));
     auto handle = m_gathering_thread->native_handle();
-    auto rc=pthread_setname_np(handle, name.c_str());
-    if(rc !=0) {
-       std::ostringstream s;
-       s << "The name " << name << " provided for the thread is too long.";
-       ers::warning(GatherThreadingIssue(ERS_HERE, s.str()));
+    auto rc = pthread_setname_np(handle, name.c_str());
+    if (rc != 0) {
+      std::ostringstream s;
+      s << "The name " << name << " provided for the thread is too long.";
+      ers::warning(GatherThreadingIssue(ERS_HERE, s.str()));
     }
   }
 
-  void update_monitoring_data(MON_DATA& new_data) {
+  void update_monitoring_data(MON_DATA& new_data)
+  {
     std::unique_lock mon_data_lock(m_mon_data_mutex);
     m_mon_data = new_data;
   }
 
-  //const MON_DATA get_monitoring_data() const { 
+  // const MON_DATA get_monitoring_data() const {
   //  std::shared_lock mon_data_lock(m_mon_data_mutex);
-  //  return m_mon_data; 
+  //  return m_mon_data;
   //}
 
-  const nlohmann::json get_monitoring_data() const override {
+  const nlohmann::json get_monitoring_data() const override
+  {
     std::shared_lock mon_data_lock(m_mon_data_mutex);
     return m_mon_data;
   }

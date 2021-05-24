@@ -21,8 +21,8 @@
 #include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 
-#include "appfwk/app/Structs.hpp"
 #include "appfwk/app/Nljs.hpp"
+#include "appfwk/app/Structs.hpp"
 
 #include "ers/Issue.hpp"
 #include "logging/Logging.hpp"
@@ -39,21 +39,34 @@ struct MobileAtomic
 {
   std::atomic<T> atomic;
 
-  MobileAtomic() : atomic(T()) {}
+  MobileAtomic()
+    : atomic(T())
+  {}
 
-  explicit MobileAtomic ( T const& v ) : atomic ( v ) {}
-  explicit MobileAtomic ( std::atomic<T> const& a ) : atomic ( a.load() ) {}
+  explicit MobileAtomic(T const& v)
+    : atomic(v)
+  {}
+  explicit MobileAtomic(std::atomic<T> const& a)
+    : atomic(a.load())
+  {}
 
-  MobileAtomic ( MobileAtomic const&other ) : atomic( other.atomic.load() ) {}
+  virtual ~MobileAtomic() = default;
 
-  MobileAtomic& operator=( MobileAtomic const &other )
+  MobileAtomic(MobileAtomic const& other)
+    : atomic(other.atomic.load())
+  {}
+
+  MobileAtomic& operator=(MobileAtomic const& other)
   {
-    atomic.store( other.atomic.load() );
+    atomic.store(other.atomic.load());
     return *this;
   }
+
+  MobileAtomic(MobileAtomic&&) = default;
+  MobileAtomic& operator=(MobileAtomic&&) = default;
 };
 
-typedef MobileAtomic<uint64_t> AtomicUInt64;
+typedef MobileAtomic<uint64_t> AtomicUInt64; // NOLINT(build/unsigned)
 
 /**
  * @brief TimingController is a DAQModule implementation that
@@ -68,16 +81,12 @@ public:
    */
   explicit TimingController(const std::string& name, uint number_hw_commands);
 
-  TimingController(const TimingController&) =
-    delete; ///< TimingController is not copy-constructible
-  TimingController& operator=(const TimingController&) =
-    delete; ///< TimingController is not copy-assignable
-  TimingController(TimingController&&) =
-    delete; ///< TimingController is not move-constructible
-  TimingController& operator=(TimingController&&) =
-    delete; ///< TimingController is not move-assignable
+  TimingController(const TimingController&) = delete;            ///< TimingController is not copy-constructible
+  TimingController& operator=(const TimingController&) = delete; ///< TimingController is not copy-assignable
+  TimingController(TimingController&&) = delete;                 ///< TimingController is not move-constructible
+  TimingController& operator=(TimingController&&) = delete;      ///< TimingController is not move-assignable
 
-  void init( const nlohmann::json& init_data) override;
+  void init(const nlohmann::json& init_data) override;
 
 protected:
   // Commands
@@ -95,7 +104,6 @@ protected:
   // opmon
   uint m_number_hw_commands;
   std::vector<AtomicUInt64> m_sent_hw_command_counters;
-
 };
 } // namespace timinglibs
 } // namespace dunedaq

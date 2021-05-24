@@ -1,14 +1,24 @@
+/**
+ * @file TimestampEstimator.cpp
+ *
+ * This is part of the DUNE DAQ Software Suite, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+
 #include "timinglibs/TimestampEstimator.hpp"
 //#include "trigger/Issues.hpp"
 
 #include "logging/Logging.hpp"
+
+#include <memory>
 
 #define TRACE_NAME "TimestampEstimator" // NOLINT
 
 namespace dunedaq {
 namespace timinglibs {
 TimestampEstimator::TimestampEstimator(std::unique_ptr<appfwk::DAQSource<dfmessages::TimeSync>>& time_sync_source,
-                                       uint64_t clock_frequency_hz)
+                                       uint64_t clock_frequency_hz) // NOLINT(build/unsigned)
   : m_running_flag(true)
   , m_clock_frequency_hz(clock_frequency_hz)
   , m_estimator_thread(&TimestampEstimator::estimator_thread_fn, this, std::ref(time_sync_source))
@@ -74,14 +84,13 @@ TimestampEstimator::estimator_thread_fn(std::unique_ptr<appfwk::DAQSource<dfmess
           most_recent_timesync.daq_time + delta_time * m_clock_frequency_hz / 1000000;
         // Don't ever decrease the timestamp; just wait until enough
         // time passes that we want to increase it
-        if (m_current_timestamp_estimate.load()==dfmessages::TypeDefaults::s_invalid_timestamp ||
-            new_timestamp >= m_current_timestamp_estimate.load()){
+        if (m_current_timestamp_estimate.load() == dfmessages::TypeDefaults::s_invalid_timestamp ||
+            new_timestamp >= m_current_timestamp_estimate.load()) {
           m_current_timestamp_estimate.store(new_timestamp);
+        } else {
+          TLOG() << "Not updating timestamp estimate backwards from " << m_current_timestamp_estimate.load() << " to "
+                 << new_timestamp;
         }
-        else{
-          TLOG() << "Not updating timestamp estimate backwards from " << m_current_timestamp_estimate.load() << " to " << new_timestamp;
-        }
-
       }
     }
 
