@@ -11,7 +11,6 @@ local info = {
             doc="A vector hardware command counters"),
 
    info: s.record("Info", [
-       s.field("class_name", self.cl, "timingendpointcontrollerinfo", doc="Info class name"),
        s.field("sent_hw_command_counters", self.counter_vector, doc="Number of hw commands sent so far"), 
    ], doc="TimingEndpointController information")
 };

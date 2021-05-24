@@ -18,8 +18,8 @@
 #include "timinglibs/timingmastercontroller/Nljs.hpp"
 #include "timinglibs/timingmastercontroller/Structs.hpp"
 
-#include "timinglibs/timingmastercontrollerinfo/Nljs.hpp"
-#include "timinglibs/timingmastercontrollerinfo/Structs.hpp"
+#include "timinglibs/timingmastercontrollerinfo/InfoNljs.hpp"
+#include "timinglibs/timingmastercontrollerinfo/InfoStructs.hpp"
 
 #include "TimingController.hpp"
 

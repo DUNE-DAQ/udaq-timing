@@ -18,8 +18,8 @@
 #include "timinglibs/timinghardwaremanagerpdi/Nljs.hpp"
 #include "timinglibs/timinghardwaremanagerpdi/Structs.hpp"
 
-#include "timinglibs/timinghardwaremanagerpdiinfo/Nljs.hpp"
-#include "timinglibs/timinghardwaremanagerpdiinfo/Structs.hpp"
+#include "timinglibs/timinghardwaremanagerpdiinfo/InfoNljs.hpp"
+#include "timinglibs/timinghardwaremanagerpdiinfo/InfoStructs.hpp"
 
 #include "TimingHardwareManager.hpp"
 
@@ -29,8 +29,8 @@
 #include "timinglibs/TimingIssues.hpp"
 
 // in timing-board-software at the moment
-#include "timing/timingfirmwareinfo/Nljs.hpp"
-#include "timing/timingfirmwareinfo/Structs.hpp"
+#include "timing/timingfirmwareinfo/InfoNljs.hpp"
+#include "timing/timingfirmwareinfo/InfoStructs.hpp"
 
 #include "timing/BoreasDesign.hpp"
 #include "timing/EndpointDesign.hpp"

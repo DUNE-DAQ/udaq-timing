@@ -214,7 +214,7 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector& ci, int level)
   ci.add(module_info);
 
   // retrieve and send hardware info
-  timing::timinghardwareinfo::TimingDevicesData devices_data;
+  timing::timingfirmwareinfo::TimingDevicesData devices_data;
   std::stringstream collector_stream;
   collector_stream << typeid(this).name() << "_" << get_name();
   devices_data.collector = collector_stream.str();

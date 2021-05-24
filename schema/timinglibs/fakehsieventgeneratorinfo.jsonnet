@@ -11,7 +11,6 @@ local info = {
             doc="A vector hardware command counters"),
 
    info: s.record("Info", [
-       s.field("class_name", self.cl, "fakehsieventgeneratorinfo", doc="Info class name"),
        s.field("generated_hsi_events_counter", self.uint8, doc="Number of generated HSIEvents so far"), 
        s.field("sent_hsi_events_counter", self.uint8, doc="Number of sent HSIEvents so far"), 
        s.field("failed_to_send_hsi_events_counter", self.uint8, doc="Number of failed send attempts so far"), 

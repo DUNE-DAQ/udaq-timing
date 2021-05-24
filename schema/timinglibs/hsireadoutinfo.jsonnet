@@ -16,7 +16,6 @@ local info = {
         doc="A double"),
     
    info: s.record("Info", [
-       s.field("class_name", self.cl, "hsireadoutinfo", doc="Info class name"),
        s.field("readout_hsi_events_counter", self.uint8, doc="Number of read HSIEvents so far"), 
        s.field("sent_hsi_events_counter", self.uint8, doc="Number of sent HSIEvents so far"), 
        s.field("failed_to_send_hsi_events_counter", self.uint8, doc="Number of failed send attempts so far"), 
