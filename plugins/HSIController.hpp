@@ -20,8 +20,8 @@
 #include "timinglibs/hsicontroller/Nljs.hpp"
 #include "timinglibs/hsicontroller/Structs.hpp"
 
-#include "timinglibs/hsicontrollerinfo/Nljs.hpp"
-#include "timinglibs/hsicontrollerinfo/Structs.hpp"
+#include "timinglibs/hsicontrollerinfo/InfoNljs.hpp"
+#include "timinglibs/hsicontrollerinfo/InfoStructs.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"

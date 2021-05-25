@@ -10,8 +10,8 @@
 #include "timinglibs/hsireadout/Nljs.hpp"
 #include "timinglibs/hsireadout/Structs.hpp"
 
-#include "timinglibs/hsireadoutinfo/Nljs.hpp"
-#include "timinglibs/hsireadoutinfo/Structs.hpp"
+#include "timinglibs/hsireadoutinfo/InfoNljs.hpp"
+#include "timinglibs/hsireadoutinfo/InfoStructs.hpp"
 
 #include "TimingHardwareManager.hpp"
 

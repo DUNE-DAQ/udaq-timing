@@ -8,7 +8,6 @@ local info = {
                      doc="An unsigned of 8 bytes"),
 
    info: s.record("Info", [
-       s.field("class_name", self.cl, "timinghardwaremanagerpdiinfo", doc="Info class name"),
        s.field("received_hw_commands_counter", self.uint8, 0, doc="Number of hw commands received so far"), 
        s.field("accepted_hw_commands_counter", self.uint8, 0, doc="Number of hw commands accepted so far"), 
        s.field("rejected_hw_commands_counter", self.uint8, 0, doc="Number of hw commands rejected so far"), 

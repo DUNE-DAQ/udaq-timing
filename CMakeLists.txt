@@ -11,8 +11,26 @@ find_package(appfwk REQUIRED)
 find_package(timing REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(dfmessages REQUIRED)
+find_package(opmonlib REQUIRED)
 
-daq_codegen(*.jsonnet TEMPLATES Structs.hpp.j2 Nljs.hpp.j2 )
+daq_codegen( fakehsieventgenerator.jsonnet
+			 hsicontroller.jsonnet
+			 hsireadout.jsonnet
+			 timingcmd.jsonnet
+			 timingendpointcontroller.jsonnet
+			 timinghardwaremanagerpdi.jsonnet
+			 timingmastercontroller.jsonnet
+			 timingpartitioncontroller.jsonnet 
+			 TEMPLATES Structs.hpp.j2 Nljs.hpp.j2 )
+
+daq_codegen( fakehsieventgeneratorinfo.jsonnet 
+			 hsicontrollerinfo.jsonnet 
+			 hsireadoutinfo.jsonnet 
+			 timingendpointcontrollerinfo.jsonnet 
+			 timinghardwaremanagerpdiinfo.jsonnet  
+			 timingmastercontrollerinfo.jsonnet 
+			 timingpartitioncontrollerinfo.jsonnet 
+			 DEP_PKGS opmonlib TEMPLATES opmonlib/InfoStructs.hpp.j2 opmonlib/InfoNljs.hpp.j2 )
 
 ##############################################################################
 # Dependency sets

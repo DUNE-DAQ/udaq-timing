@@ -20,8 +20,8 @@
 #include "timinglibs/timingpartitioncontroller/Nljs.hpp"
 #include "timinglibs/timingpartitioncontroller/Structs.hpp"
 
-#include "timinglibs/timingpartitioncontrollerinfo/Nljs.hpp"
-#include "timinglibs/timingpartitioncontrollerinfo/Structs.hpp"
+#include "timinglibs/timingpartitioncontrollerinfo/InfoNljs.hpp"
+#include "timinglibs/timingpartitioncontrollerinfo/InfoStructs.hpp"
 
 #include "timinglibs/TimingIssues.hpp"
 

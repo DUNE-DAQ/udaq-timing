@@ -20,8 +20,8 @@
 #include "timinglibs/timingendpointcontroller/Nljs.hpp"
 #include "timinglibs/timingendpointcontroller/Structs.hpp"
 
-#include "timinglibs/timingendpointcontrollerinfo/Nljs.hpp"
-#include "timinglibs/timingendpointcontrollerinfo/Structs.hpp"
+#include "timinglibs/timingendpointcontrollerinfo/InfoNljs.hpp"
+#include "timinglibs/timingendpointcontrollerinfo/InfoStructs.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"

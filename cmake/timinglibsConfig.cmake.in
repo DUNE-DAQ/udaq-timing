@@ -13,6 +13,7 @@ find_dependency(logging)
 find_dependency(appfwk)
 find_dependency(nlohmann_json)
 find_dependency(dfmessages)
+find_dependency(opmonlib)
 
 # Figure out whether or not this dependency is an installed package or
 # in repo form

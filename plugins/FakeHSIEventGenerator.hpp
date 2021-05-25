@@ -10,8 +10,8 @@
 #include "timinglibs/fakehsieventgenerator/Nljs.hpp"
 #include "timinglibs/fakehsieventgenerator/Structs.hpp"
 
-#include "timinglibs/fakehsieventgeneratorinfo/Nljs.hpp"
-#include "timinglibs/fakehsieventgeneratorinfo/Structs.hpp"
+#include "timinglibs/fakehsieventgeneratorinfo/InfoNljs.hpp"
+#include "timinglibs/fakehsieventgeneratorinfo/InfoStructs.hpp"
 
 #include "timinglibs/TimingIssues.hpp"
 
