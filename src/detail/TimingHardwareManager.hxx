@@ -254,7 +254,8 @@ TimingHardwareManager::io_reset(const timingcmd::TimingHwCmd& hw_cmd)
 {
   timingcmd::IOResetCmdPayload cmd_payload;
   timingcmd::from_json(hw_cmd.payload, cmd_payload);
-
+  
+  stop_hw_mon_gathering();
   auto design = get_timing_device<DSGN>(hw_cmd.device);
 
   if (cmd_payload.soft) {
@@ -265,7 +266,7 @@ TimingHardwareManager::io_reset(const timingcmd::TimingHwCmd& hw_cmd)
                   << " io reset, with supplied clk file: " << cmd_payload.clock_config;
     design.get_io_node().reset(cmd_payload.clock_config);
   }
-  // start_hw_mon_gathering();
+  start_hw_mon_gathering();
 }
 
 template<class DSGN>
