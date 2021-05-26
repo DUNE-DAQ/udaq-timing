@@ -12,7 +12,7 @@ Instructions on building and running the timing application can be found on the 
 
 The `timinglibs/python/timinglibs/timing_app_confgen.py` script generates a json configuration file containing the commands to be received by the "timing" DUNE DAQ modules.
 
-### Script arguments and options
+#### Script arguments and options
 
 The script takes in one argument which is the file name of the produced json file. The default file name is `timing_app.json`. The script is also able to accept the following command line options:
 
@@ -65,26 +65,24 @@ The `init` and `conf` commands generated with above script instantiate and confi
 
    This is an instance of a `TimingEndpointController` module, it receives timing endpoint commands from an external source, e.g. a timing system operator or run control, and translates those commands to timing hardware commands which are then sent to the `thi` module. The endpoint hardware commands issued by this module are addressed endpoint `0` on the device specified via the `--endpoint-device-name` option.
 
-   ## The timinglib functions: plugins
+## The timinglib functions: plugins
 
-   timinglibs contains several modular functions which are described below:
+timinglibs contains several modular functions which are described below:
 
 
-   ## The timinglib functions: plugins
+### TimingMasterController
 
-   ### TimingMasterController
+### TimingPartitionController
 
-   ### TimingPartitionController
+### TimingHardwareManager
 
-   ### TimingHardwareManager
+### TimingEndpointController
 
-   ### TimingEndpointController
+### HSIController
 
-   ### HSIController
+### HSIReadout
 
-   ### HSIReadout
-
-   ### FakeHSIEventGenerator
+### FakeHSIEventGenerator
 
 
 
