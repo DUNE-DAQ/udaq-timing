@@ -179,7 +179,7 @@ protected:
   std::atomic<uint64_t> m_failed_hw_commands_counter;   // NOLINT(build/unsigned)
 
   // monitoring
-  std::vector<std::unique_ptr<InfoGathererInterface>> m_info_gatherers;
+  std::map<std::string, std::unique_ptr<InfoGathererInterface>> m_info_gatherers;
 
   template<class INFO, class DSGN>
   void register_info_gatherer(uint gather_interval, const std::string& device_name, int op_mon_level);
@@ -187,8 +187,8 @@ protected:
   template<class INFO, class DSGN>
   void gather_monitor_data(InfoGatherer<INFO>& gatherer);
 
-  virtual void start_hw_mon_gathering();
-  virtual void stop_hw_mon_gathering();
+  virtual void start_hw_mon_gathering(const std::string& device_name="");
+  virtual void stop_hw_mon_gathering(const std::string& device_name="");
 };
 
 } // namespace timinglibs

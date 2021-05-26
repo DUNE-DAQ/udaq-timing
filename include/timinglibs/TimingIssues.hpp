@@ -116,6 +116,11 @@ ERS_DECLARE_ISSUE_BASE(timinglibs,
                        ERS_EMPTY,
                        ERS_EMPTY)
 
+ERS_DECLARE_ISSUE(timinglibs,
+                  AttemptedToControlNonExantInfoGatherer,
+                  " Attempted to " << action << " non extant InfoGatherer for device: " << device,
+                  ((std::string)action)((std::string)device)
+)
 } // namespace dunedaq
 
 #endif // TIMINGLIBS_INCLUDE_TIMINGLIBS_TIMINGISSUES_HPP_

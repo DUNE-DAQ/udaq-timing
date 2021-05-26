@@ -223,8 +223,8 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector& ci, int level)
   devices_data.device_data.clear();
 
   for (auto it = m_info_gatherers.begin(); it != m_info_gatherers.end(); ++it) {
-    if (it->get()->get_last_gathered_time() != 0 && it->get()->get_op_mon_level() <= level)
-      devices_data.device_data.push_back(it->get()->get_monitoring_data());
+    if (it->second.get()->get_last_gathered_time() != 0 && it->second.get()->get_op_mon_level() <= level)
+      devices_data.device_data.push_back(it->second.get()->get_monitoring_data());
   }
 
   if (devices_data.device_data.size())
