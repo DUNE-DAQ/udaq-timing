@@ -1,10 +1,10 @@
 
 # timinglibs:"The DUNE DAQ timing application"
 ## Overview
-### In a single sentence
+#### In a single sentence
 timinglibs is a repository containing a collection of timing DAQModules, which together form the timing DAQ application.
 
-### In a bit more detail:
+#### In a bit more detail:
 
 ## Running timinglibs
 
@@ -70,19 +70,19 @@ The `init` and `conf` commands generated with above script instantiate and confi
 timinglibs contains several modular functions which are described below:
 
 
-### TimingMasterController
+#### TimingMasterController
 
-### TimingPartitionController
+#### TimingPartitionController
 
-### TimingHardwareManager
+#### TimingHardwareManager
 
-### TimingEndpointController
+#### TimingEndpointController
 
-### HSIController
+#### HSIController
 
-### HSIReadout
+#### HSIReadout
 
-### FakeHSIEventGenerator
+#### FakeHSIEventGenerator
 
 
 
