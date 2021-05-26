@@ -1,7 +1,14 @@
-# timinglibs
-A repository containing a collection of "timing" DAQModules, which together form the "timing" DAQ "application".
 
-Instructions on building and running the "timing" "application" can be found on the repository wiki: https://github.com/DUNE-DAQ/timinglibs/wiki.
+# timinglibs:"The DUNE DAQ timing application"
+## Overview
+### In a single sentence
+timinglibs is a repository containing a collection of timing DAQModules, which together form the timing DAQ application.
+
+### In a bit more detail:
+
+### Running timinglibs
+
+Instructions on building and running the timing application can be found on the repository wiki: https://github.com/DUNE-DAQ/timinglibs/wiki.
 
 The `timinglibs/python/timinglibs/timing_app_confgen.py` script generates a json configuration file containing the commands to be received by the "timing" DUNE DAQ modules.
 
