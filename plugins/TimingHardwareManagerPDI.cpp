@@ -71,8 +71,11 @@ TimingHardwareManagerPDI::init(const nlohmann::json& init_data)
   register_endpoint_hw_commands_for_design<timing::OuroborosDesign<timing::TLUIONode>,
                                            timing::OuroborosDesign<timing::FMCIONode>,
 
+                                           timing::BoreasDesign<timing::FMCIONode>,
+                                           timing::BoreasDesign<timing::TLUIONode>,
+
                                            timing::EndpointDesign<timing::FMCIONode>>();
-  // endpoint
+  // hsi
   register_hsi_hw_commands_for_design<timing::BoreasDesign<timing::FMCIONode>,
                                       timing::BoreasDesign<timing::TLUIONode>>();
 }
