@@ -79,7 +79,12 @@ TimestampEstimator::estimator_thread_fn(std::unique_ptr<appfwk::DAQSource<dfmess
       if (time_now < most_recent_timesync.system_time) {
         ers::error(InvalidTimeSync(ERS_HERE));
       } else {
+        
         auto delta_time = time_now - most_recent_timesync.system_time;
+        
+        // Warn user if current system time is more than 1s ahead of TimeSync system
+        if (delta_time > 1000) ers::warning(LateTimeSync(ERS_HERE, delta_time));
+
         const dfmessages::timestamp_t new_timestamp =
           most_recent_timesync.daq_time + delta_time * m_clock_frequency_hz / 1000000;
         // Don't ever decrease the timestamp; just wait until enough
