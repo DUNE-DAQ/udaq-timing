@@ -30,6 +30,8 @@ def generate(
         RUN_NUMBER = 333, 
         READOUT_PERIOD = 1e3,
         HSI_DEVICE_NAME="BOREAS_FMC",
+        TTCM_S1: int = 1,
+        TTCM_S2: int = 2,
         UHAL_LOG_LEVEL="notice",
         OUTPUT_PATH=".",
     ):
@@ -77,6 +79,12 @@ def generate(
                         )),
                 
                 ("ttcm", ttcm.Conf(
+                        s1=ttcm.map_t(signal_type=TTCM_S1,
+                                      time_before=100000,
+                                      time_after=200000),
+                        s2=ttcm.map_t(signal_type=TTCM_S2,
+                                      time_before=100000,
+                                      time_after=200000)
                         )),
             ]
 
@@ -128,10 +136,12 @@ if __name__ == '__main__':
     @click.option('-r', '--run-number', default=333)
     @click.option('-p', '--readout-period', default=1e3)
     @click.option('-h', '--hsi-device-name', default="BOREAS_FMC")
+    @click.option('--ttcm-s1', default=1, help="Timing trigger candidate maker accepted HSI signal ID 1")
+    @click.option('--ttcm-s2', default=2, help="Timing trigger candidate maker accepted HSI signal ID 2")
     @click.option('-u', '--uhal-log-level', default="notice")
     @click.option('-o', '--output-path', type=click.Path(), default='.')
     @click.argument('json_file', type=click.Path(), default='hsi_readout_app.json')
-    def cli(run_number, readout_period, hsi_device_name, uhal_log_level, output_path, json_file):
+    def cli(run_number, readout_period, hsi_device_name, ttcm_s1, ttcm_s2, uhal_log_level, output_path, json_file):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
@@ -142,6 +152,8 @@ if __name__ == '__main__':
                     RUN_NUMBER = run_number, 
                     READOUT_PERIOD = readout_period,
                     HSI_DEVICE_NAME = hsi_device_name,
+                    TTCM_S1 = ttcm_s1,
+                    TTCM_S2 = ttcm_s2,
                     UHAL_LOG_LEVEL = uhal_log_level,
                     OUTPUT_PATH = output_path,
                 ))
