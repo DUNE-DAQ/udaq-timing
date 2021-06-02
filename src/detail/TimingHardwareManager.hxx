@@ -111,7 +111,7 @@ TimingHardwareManager::gather_monitor_data(InfoGatherer<INFO>& gatherer)
       // sleep for a bit
       usleep(gatherer.get_gather_interval());
     } catch (const std::exception& excpt) {
-      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.class_name, device_name, excpt));
+      ers::error(FailedToCollectOpMonInfo(ERS_HERE, mon_data.info_type, device_name, excpt));
     }
   }
 }
