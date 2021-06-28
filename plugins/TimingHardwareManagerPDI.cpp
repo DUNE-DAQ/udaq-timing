@@ -56,6 +56,9 @@ TimingHardwareManagerPDI::init(const nlohmann::json& init_data)
                                          timing::BoreasDesign<timing::FMCIONode>,
                                          timing::BoreasDesign<timing::TLUIONode>,
 
+                                         timing::OuroborosMuxDesign<timing::PC059IONode>,
+                                         timing::FanoutDesign<timing::PC059IONode, timing::PDIMasterNode>,
+
                                          timing::EndpointDesign<timing::FMCIONode>>();
   // master
   register_master_hw_commands_for_design<timing::OverlordDesign<timing::TLUIONode>,
@@ -65,7 +68,10 @@ TimingHardwareManagerPDI::init(const nlohmann::json& init_data)
                                          timing::BoreasDesign<timing::FMCIONode>,
 
                                          timing::OuroborosDesign<timing::TLUIONode>,
-                                         timing::OuroborosDesign<timing::FMCIONode>>();
+                                         timing::OuroborosDesign<timing::FMCIONode>,
+
+                                         timing::OuroborosMuxDesign<timing::PC059IONode>,
+                                         timing::FanoutDesign<timing::PC059IONode, timing::PDIMasterNode>>();
 
   // endpoint
   register_endpoint_hw_commands_for_design<timing::OuroborosDesign<timing::TLUIONode>,
@@ -73,6 +79,9 @@ TimingHardwareManagerPDI::init(const nlohmann::json& init_data)
 
                                            timing::BoreasDesign<timing::FMCIONode>,
                                            timing::BoreasDesign<timing::TLUIONode>,
+
+                                           timing::OuroborosMuxDesign<timing::PC059IONode>,
+                                           timing::FanoutDesign<timing::PC059IONode, timing::PDIMasterNode>,
 
                                            timing::EndpointDesign<timing::FMCIONode>>();
   // hsi
@@ -172,22 +181,53 @@ TimingHardwareManagerPDI::do_configure(const nlohmann::json& obj)
     register_info_gatherer<timing::timingfirmwareinfo::OverlordTLUMonitorData,
                            timing::OverlordDesign<timing::TLUIONode>>(
       m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    
     register_info_gatherer<timing::timingfirmwareinfo::OverlordTLUMonitorDataDebug,
                            timing::OverlordDesign<timing::TLUIONode>>(
       m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
 
     register_info_gatherer<timing::timingfirmwareinfo::BoreasTLUMonitorData, timing::BoreasDesign<timing::TLUIONode>>(
       m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    
     register_info_gatherer<timing::timingfirmwareinfo::BoreasTLUMonitorDataDebug,
                            timing::BoreasDesign<timing::TLUIONode>>(
       m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
 
     register_info_gatherer<timing::timingfirmwareinfo::BoreasFMCMonitorData, timing::BoreasDesign<timing::FMCIONode>>(
       m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    
     register_info_gatherer<timing::timingfirmwareinfo::BoreasFMCMonitorDataDebug,
                            timing::BoreasDesign<timing::FMCIONode>>(
       m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
+
+    register_info_gatherer<timing::timingfirmwareinfo::FanoutPC059MonitorData,
+                             timing::FanoutDesign<timing::PC059IONode, timing::PDIMasterNode>>(
+                                m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    
+    register_info_gatherer<timing::timingfirmwareinfo::FanoutPC059MonitorDataDebug,
+                            timing::FanoutDesign<timing::PC059IONode, timing::PDIMasterNode>>(
+                              m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
+
+    register_info_gatherer<timing::timingfirmwareinfo::OuroborosPC059MonitorData,
+                             timing::OuroborosMuxDesign<timing::PC059IONode>>(
+                                m_cfg.gather_interval, m_cfg.monitored_device_name_master, 1);
+    
+    register_info_gatherer<timing::timingfirmwareinfo::OuroborosPC059MonitorDataDebug,
+                            timing::OuroborosMuxDesign<timing::PC059IONode>>(
+                              m_cfg.gather_interval_debug, m_cfg.monitored_device_name_master, 2);
   }
+  
+  for (auto it = m_cfg.monitored_device_names_fanout.begin(); it != m_cfg.monitored_device_names_fanout.end(); ++it) {
+    if (it->compare("")) {
+      register_info_gatherer<timing::timingfirmwareinfo::FanoutPC059MonitorData,
+                             timing::FanoutDesign<timing::PC059IONode, timing::PDIMasterNode>>(
+                                m_cfg.gather_interval, *it, 1);
+      register_info_gatherer<timing::timingfirmwareinfo::FanoutPC059MonitorDataDebug,
+                            timing::FanoutDesign<timing::PC059IONode, timing::PDIMasterNode>>(
+                              m_cfg.gather_interval_debug, *it, 2);
+    }
+  }
+  
   if (m_cfg.monitored_device_name_endpoint.compare("")) {
     register_info_gatherer<timing::timingfirmwareinfo::TimingEndpointFMCMonitorData,
                            timing::EndpointDesign<timing::FMCIONode>>(
@@ -223,8 +263,13 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector& ci, int level)
   devices_data.device_data.clear();
 
   for (auto it = m_info_gatherers.begin(); it != m_info_gatherers.end(); ++it) {
-    if (it->second.get()->get_last_gathered_time() != 0 && it->second.get()->get_op_mon_level() <= level)
+    if (it->second.get()->get_last_gathered_time() != 0 && it->second.get()->get_op_mon_level() <= level) {
       devices_data.device_data.push_back(it->second.get()->get_monitoring_data());
+    } else {
+      TLOG_DEBUG(0) << "skipping gatherer: " << it->first << " with gathered time: " << it->second.get()->get_last_gathered_time() 
+      << ", gatherer level: " << it->second.get()->get_op_mon_level() << ", opmon level: " << level;
+    }
+       
   }
 
   if (devices_data.device_data.size())

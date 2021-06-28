@@ -12,6 +12,7 @@ moo.otypes.load_types('rcif/cmd.jsonnet')
 moo.otypes.load_types('timinglibs/timingcmd.jsonnet')
 moo.otypes.load_types('timinglibs/timinghardwaremanagerpdi.jsonnet')
 moo.otypes.load_types('timinglibs/timingmastercontroller.jsonnet')
+moo.otypes.load_types('timinglibs/timingfanoutcontroller.jsonnet')
 moo.otypes.load_types('timinglibs/timingpartitioncontroller.jsonnet')
 moo.otypes.load_types('timinglibs/timingendpointcontroller.jsonnet')
 moo.otypes.load_types('timinglibs/hsicontroller.jsonnet')
@@ -27,7 +28,8 @@ import dunedaq.timinglibs.timinghardwaremanagerpdi as thi
 import dunedaq.timinglibs.timingmastercontroller as tmc
 import dunedaq.timinglibs.timingpartitioncontroller as tpc
 import dunedaq.timinglibs.timingendpointcontroller as tec
-import dunedaq.timinglibs.timingendpointcontroller as hsi
+import dunedaq.timinglibs.hsicontroller as hsi
+import dunedaq.timinglibs.timingfanoutcontroller as tfc
 
 from appfwk.utils import mcmd, mspec, mrccmd
 
@@ -40,6 +42,8 @@ def generate(
         GATHER_INTERVAL_DEBUG = 10e6,
         MASTER_DEVICE_NAME="PROD_MASTER",
         MASTER_CLOCK_FILE="",
+        FANOUT_DEVICES_NAMES=[],
+        FANOUT_CLOCK_FILE="",
         ENDPOINT_DEVICE_NAME="",
         ENDPOINT_CLOCK_FILE="",
         ENDPOINT_ADDRESS=0,
@@ -82,7 +86,14 @@ def generate(
                             mspec("tpc0", "TimingPartitionController", [
                                             app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
                                         ]),
-                        ] ) 
+                        ] )
+
+    for i,fanout_device_name in enumerate(FANOUT_DEVICES_NAMES):
+        mod_specs.extend( [
+                            mspec("tfc{}".format(i), "TimingFanoutController", [
+                                            app.QueueInfo(name="hardware_commands_out", inst="hardware_commands", dir="output"),
+                                        ]),
+                          ] )
 
     if ENDPOINT_DEVICE_NAME != "":
         mod_specs.extend( [
@@ -117,6 +128,7 @@ def generate(
                         gather_interval=GATHER_INTERVAL,
                         gather_interval_debug=GATHER_INTERVAL_DEBUG,
                         monitored_device_name_master=MASTER_DEVICE_NAME,
+                        monitored_device_names_fanout=FANOUT_DEVICES_NAMES,
                         monitored_device_name_endpoint=ENDPOINT_DEVICE_NAME,
                         monitored_device_name_hsi=HSI_DEVICE_NAME,
                         uhal_log_level=UHAL_LOG_LEVEL
@@ -133,6 +145,14 @@ def generate(
                                 partition_id=0,
                                 )),
                      ] )
+
+    for i,fanout_device_name in enumerate(FANOUT_DEVICES_NAMES):
+        mods.extend( [
+                        ("tfc{}".format(i), tfc.ConfParams(
+                                device=fanout_device_name,
+                                )),
+                     ] )
+
 
     if ENDPOINT_DEVICE_NAME != "":
         mods.extend( [
@@ -157,6 +177,7 @@ def generate(
             ("thi", None),
             ("tmc.*", None),
             ("tpc.*", None),
+            ("tfc.*", None),
             ("tec.*", None),
             ("hsi.*", None),
         ])
@@ -168,6 +189,7 @@ def generate(
             ("thi", None),
             ("tmc.*", None),
             ("tpc.*", None),
+            ("tfc.*", None),
             ("tec.*", None),
             ("hsi.*", None),
         ])
@@ -180,6 +202,7 @@ def generate(
             ("thi", None),
             ("tmc.*", None),
             ("tpc.*", None),
+            ("tfc.*", None),
             ("tec.*", None),
             ("hsi.*", None),
         ])
@@ -273,6 +296,23 @@ def generate(
         ])
     jstr = json.dumps(partition_print_status_cmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nPartition print status\n\n", jstr)
+
+    # fanout commands
+    fanout_io_reset_cmd = mcmd("fanout_io_reset", [
+            ("tfc.*", tcmd.IOResetCmdPayload(
+                      clock_config=FANOUT_CLOCK_FILE,
+                      soft=False
+                      )),
+        ])
+    jstr = json.dumps(fanout_io_reset_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nFanout IO reset\n\n", jstr)
+
+
+    fanout_print_status_cmd = mcmd("fanout_print_status", [
+            ("tfc.*", None),
+        ])
+    jstr = json.dumps(fanout_print_status_cmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nFanout print status\n\n", jstr)
 
     # hsi commands
     hsi_io_reset_cmd = mcmd("hsi_io_reset", [
@@ -408,6 +448,11 @@ def generate(
                         partition_print_status_cmd
                         ] )
     
+    if len(FANOUT_DEVICES_NAMES) != 0:
+        cmd_seq.extend( [
+                        fanout_io_reset_cmd, fanout_print_status_cmd,
+                        ] )
+
     if ENDPOINT_DEVICE_NAME != "":
         cmd_seq.extend( [
                         endpoint_io_reset_cmd, 
@@ -431,7 +476,13 @@ def generate(
     # Print them as json (to be improved/moved out)
     jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
     return jstr
-        
+
+def split_string(ctx, param, value):
+    if value is None:
+        return []
+
+    return value.split(',')
+
 if __name__ == '__main__':
     # Add -h as default help option
     CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -445,6 +496,9 @@ if __name__ == '__main__':
 
     @click.option('-m', '--master-device-name', default="PROD_MASTER")
     @click.option('--master-clock-file', default="")
+
+    @click.option('-f', '--fanout-devices-names', callback=split_string)
+    @click.option('--fanout-clock-file', default="")
 
     @click.option('-e', '--endpoint-device-name', default="")
     @click.option('--endpoint-clock-file', default="")
@@ -471,7 +525,7 @@ if __name__ == '__main__':
     def cli(run_number, gather_interval, gather_interval_debug, 
 
         master_device_name, master_clock_file,
-
+        fanout_devices_names, fanout_clock_file,
         endpoint_device_name, endpoint_clock_file, endpoint_address, endpoint_partition,
         hsi_device_name, hsi_clock_file, hsi_endpoint_address, hsi_endpoint_partition, hsi_re_mask, hsi_fe_mask, hsi_inv_mask, hsi_source,
         part_trig_mask, part_spill_gate, part_rate_control,
@@ -488,6 +542,8 @@ if __name__ == '__main__':
                     GATHER_INTERVAL_DEBUG = gather_interval_debug,
                     MASTER_DEVICE_NAME = master_device_name,
                     MASTER_CLOCK_FILE = master_clock_file,
+                    FANOUT_DEVICES_NAMES = fanout_devices_names,
+                    FANOUT_CLOCK_FILE = fanout_clock_file,
                     ENDPOINT_DEVICE_NAME = endpoint_device_name,
                     ENDPOINT_CLOCK_FILE = endpoint_clock_file,
                     ENDPOINT_ADDRESS = endpoint_address,

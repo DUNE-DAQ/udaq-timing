@@ -13,6 +13,9 @@ local types = {
 
     uhal_log_level : s.string("UHALLogLevel", pattern=moo.re.ident_only,
                     doc="Log level for uhal. Possible values are: fatal, error, warning, notice, info, debug."),
+    
+    fanout_device_names_vector: s.sequence("FanoutDeviceNamesVector", self.str,
+            doc="A vector of fanout device names"),
 
     conf: s.record("ConfParams", [
         s.field("connections_file", self.str, "",
@@ -23,6 +26,8 @@ local types = {
                 doc="Hardware device data gather debug interval [us]"),
         s.field("monitored_device_name_master", self.str, "",
                 doc="Name of timing master device to be monitored"),
+        s.field("monitored_device_names_fanout", self.fanout_device_names_vector,
+                doc="Names of timing fanout devices to be monitored"),
         s.field("monitored_device_name_endpoint", self.str, "",
                 doc="Name of timing endpoint device to be monitored"),
         s.field("monitored_device_name_hsi", self.str, "",
