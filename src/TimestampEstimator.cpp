@@ -94,7 +94,7 @@ TimestampEstimator::estimator_thread_fn(std::unique_ptr<appfwk::DAQSource<dfmess
             new_timestamp >= m_current_timestamp_estimate.load()) {
           m_current_timestamp_estimate.store(new_timestamp);
         } else {
-          TLOG() << "Not updating timestamp estimate backwards from " << m_current_timestamp_estimate.load() << " to "
+          TLOG_DEBUG(5) << "Not updating timestamp estimate backwards from " << m_current_timestamp_estimate.load() << " to "
                  << new_timestamp;
         }
       }
