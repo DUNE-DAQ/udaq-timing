@@ -20,7 +20,8 @@ daq_codegen( fakehsieventgenerator.jsonnet
 			 timingendpointcontroller.jsonnet
 			 timinghardwaremanagerpdi.jsonnet
 			 timingmastercontroller.jsonnet
-			 timingpartitioncontroller.jsonnet 
+			 timingpartitioncontroller.jsonnet
+			 timingfanoutcontroller.jsonnet 
 			 TEMPLATES Structs.hpp.j2 Nljs.hpp.j2 )
 
 daq_codegen( fakehsieventgeneratorinfo.jsonnet 
@@ -28,8 +29,9 @@ daq_codegen( fakehsieventgeneratorinfo.jsonnet
 			 hsireadoutinfo.jsonnet 
 			 timingendpointcontrollerinfo.jsonnet 
 			 timinghardwaremanagerpdiinfo.jsonnet  
-			 timingmastercontrollerinfo.jsonnet 
-			 timingpartitioncontrollerinfo.jsonnet 
+			 timingmastercontrollerinfo.jsonnet
+			 timingpartitioncontrollerinfo.jsonnet
+			 timingfanoutcontrollerinfo.jsonnet
 			 DEP_PKGS opmonlib TEMPLATES opmonlib/InfoStructs.hpp.j2 opmonlib/InfoNljs.hpp.j2 )
 
 ##############################################################################
@@ -52,6 +54,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC $ENV{UHAL_INC} $ENV{PUGIXML_IN
 ##############################################################################
 daq_add_plugin(TimingHardwareManagerPDI duneDAQModule LINK_LIBRARIES timing::timing timinglibs)
 daq_add_plugin(TimingMasterController duneDAQModule LINK_LIBRARIES timinglibs)
+daq_add_plugin(TimingFanoutController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingPartitionController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(TimingEndpointController duneDAQModule LINK_LIBRARIES timinglibs)
 daq_add_plugin(FakeHSIEventGenerator duneDAQModule LINK_LIBRARIES timinglibs)

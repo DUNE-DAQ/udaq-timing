@@ -37,6 +37,8 @@
 #include "timing/HSINode.hpp"
 #include "timing/OuroborosDesign.hpp"
 #include "timing/OverlordDesign.hpp"
+#include "timing/OuroborosMuxDesign.hpp"
+#include "timing/FanoutDesign.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQModuleHelper.hpp"

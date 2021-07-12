@@ -19,6 +19,8 @@
 
 #include "InfoGatherer.hpp"
 
+#include "timing/FanoutDesign.hpp"
+
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/DAQSink.hpp"
