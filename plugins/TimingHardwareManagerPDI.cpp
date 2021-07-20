@@ -251,8 +251,7 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector& ci, int level)
   module_info.rejected_hw_commands_counter = m_rejected_hw_commands_counter.load();
   module_info.failed_hw_commands_counter = m_failed_hw_commands_counter.load();
 
-  ci.add(module_info);
-
+  
   // retrieve and send hardware info
   timing::timingfirmwareinfo::TimingDevicesData devices_data;
   std::stringstream collector_stream;
@@ -260,20 +259,27 @@ TimingHardwareManagerPDI::get_info(opmonlib::InfoCollector& ci, int level)
   devices_data.collector = collector_stream.str();
 
   // TODO check
-  devices_data.device_data.clear();
+  //devices_data.device_data.clear();
 
   for (auto it = m_info_gatherers.begin(); it != m_info_gatherers.end(); ++it) {
     if (it->second.get()->get_last_gathered_time() != 0 && it->second.get()->get_op_mon_level() <= level) {
-      devices_data.device_data.push_back(it->second.get()->get_monitoring_data());
+      
+      if (it->first.find(m_cfg.monitored_device_name_master) != std::string::npos) {
+	TLOG() << "add master info: " << it->first;
+	module_info.master_info = it->second.get()->get_monitoring_data();
+     }
+
+      //devices_data.device_data.push_back(it->second.get()->get_monitoring_data());
+      //      ci.add(it->second.get()->get_monitoring_data());
     } else {
       TLOG_DEBUG(0) << "skipping gatherer: " << it->first << " with gathered time: " << it->second.get()->get_last_gathered_time() 
       << ", gatherer level: " << it->second.get()->get_op_mon_level() << ", opmon level: " << level;
     }
        
   }
-
-  if (devices_data.device_data.size())
-    ci.add(devices_data);
+  ci.add(module_info);
+  //  if (devices_data.device_data.size())
+  //  ci.add(devices_data);
 
   // maybe we should keep track of when we last send data, and only send if we have had an update since
 }
